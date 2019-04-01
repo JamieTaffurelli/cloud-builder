@@ -93,7 +93,7 @@
         },
         "osDiskCaching": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "None",
             "allowedValues": [
                 "None",
                 "ReadOnly",
