@@ -116,7 +116,7 @@
             }
         },
         "primary": {
-            "type": "boolean",
+            "type": "bool",
             "defaultValue": true,
             "allowedValues": [
                 true,
@@ -127,7 +127,7 @@
             }
         },
         "enableAcceleratedNetworking": {
-            "type": "boolean",
+            "type": "bool",
             "defaultValue": true,
             "allowedValues": [
                 true,
@@ -138,7 +138,7 @@
             }
         },
         "enableIpForwarding": {
-            "type": "boolean",
+            "type": "bool",
             "defaultValue": true,
             "allowedValues": [
                 true,
