@@ -1,0 +1,144 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Storage Account"
+            }
+        },
+        "apiversion": {
+            "type": "string",
+            "defaultValue": "2018-11-01",
+            "metadata": {
+                "description": "The version of ARM API to call"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "North Europe",
+                "West Europe"
+            ],
+            "metadata": {
+                "description": "The location to deploy the Storage Account to"
+            }
+        },
+        "kind": {
+            "type": "string",
+            "defaultValue": "Storage",
+            "allowedValues": [
+                "Storage",
+                "StorageV2",
+                "BlobStorage",
+                "FileStorage",
+                "BlockBlobStorage"
+            ],
+            "metadata": {
+                "description": "Type of Storage Account to deploy"
+            }
+        },
+        "accessTier": {
+            "type": "string",
+            "defaultValue": "Hot",
+            "allowedValues": [
+                "Hot",
+                "Cool"
+            ],
+            "metadata": {
+                "description": "Only for BlobStorage storage account kinds, define latency of data transfer"
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Standard_ZRS",
+                "Premium_LRS",
+                "Premium_ZRS"
+            ],
+            "metadata": {
+                "description": "Sku name to determine geo-replication and storage architecture (HDD or SSD) of Storage Account"
+            }
+        },
+        "customDomainName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Custom user domain to assign to Storage Account, uses CNAME source"
+            }
+        },
+        "bypass": {
+            "type": "string",
+            "defaultValue": "None",
+            "allowedValues": [
+                "None",
+                "Logging",
+                "Metrics",
+                "AzureServices",
+                "Logging, Metrics",
+                "Logging, AzureServices",
+                "Metrics, AzureServices"
+            ],
+            "metadata": {
+                "description": "Bypass network ACLs for Storage Account traffic"
+            }
+        },
+        
+        "tags": {
+            "type": "object"
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[parameters('apiVersion')]",
+            "kind": "[parameters('kind')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "sku": {
+                "name": "[parameters('skuName')]"
+            },
+            "properties": {
+                "customDomain": {
+                    "name": "[parameters('customDomainName')]"
+                },
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "networkAcls": {
+                    "bypass": "[parameters('bypass')]",
+                    "virtualNetworkRules": [
+                        {
+                            "id": "string",
+                            "action": "Allow"
+                        }
+                    ],
+                    "ipRules": [
+                        {
+                            "value": "string",
+                            "action": "Allow"
+                        }
+                    ],
+                    "defaultAction": "Deny"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "accessTier": "[if(equals(parameters('kind'),'BlobStorage'), parameters('accessTier'), json('null'))]"
+            }
+        }
+    ]
+}
