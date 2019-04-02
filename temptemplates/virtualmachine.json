@@ -19,8 +19,8 @@
             "type": "array",
             "defaultValue": "[resourceGroup().location]",
             "allowedValues": [
-                "North Europe",
-                "West Europe"
+                "northeurope",
+                "westeurope"
             ],
             "metadata": {
                 "description": "The location to deploy the Virtual Machine to"
@@ -38,6 +38,13 @@
             "defaultValue": "",
             "metadata": {
                 "description": "The ID of the Marketplace image publisher"
+            }
+        },
+        "planProductName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The ID of the Marketplace image product"
             }
         },
         "planPromotionCode": {
@@ -100,7 +107,28 @@
                 "ReadWrite"
             ],
             "metadata": {
-                "description": "The caching option of the Virtual Machine OS disk"
+                "description": "The caching option of the Virtual Machine OS disk (None, ReadOnly, ReadWrite), defaults to None for Standard storage, ReadOnly for Premium storage"
+            }
+        },
+        "osDiskCreateOption": {
+            "type": "string",
+            "defaultValue": "FromImage",
+            "allowedValues": [
+                "FromImage",
+                "Empty",
+                "Attach"
+            ],
+            "metadata": {
+                "description": "Specifies how the OS disk should be created"
+            }
+        },
+        "osDiskSizeInGB": {
+            "type": "integer",
+            "defaultValue": 127,
+            "minValue": 127,
+            "maxValue": 2048,
+            "metadata": {
+                "description": "Size of the OS, maximum size of 2048"
             }
         },
         "osDiskStorageAccountType": {
@@ -113,7 +141,51 @@
                 "UltraSSD_LRS"
             ],
             "metadata": {
-                "description": "The name of the Virtual Machine OS Managed Disk"
+                "description": "The underlying Storage Architecture of the Virtual Machine OS disk, only certain VM sizes will support certain Storage Account Types"
+            }
+        },
+        "ultraSsdEnabled": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Specifies whether VM can utilise Ultra SSD managed data disks"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Local admin user for the VM"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Local admin password for the VM"
+            }
+        },
+        "enableAutomaticUpdates": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable Automatic OS updates for the Virtual Machine"
+            }
+        },
+        "networkInterfaces": {
+            "type": "object",
+            "metadata": {
+                "description": "Specify Network Interfaces to attach to the Virtual Machine. Valid properties are nicResourceGroup (defaults to current), nicName and properties.primary"
+            }
+        },
+        "bootDiagnosticsStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account to output console output and screenshot images from the Virtual Machine"
+            }
+        },
+        "availabilitySetId": {
+            "type": "string",
+            "metadata": {
+                "description": "Resource ID of the Availabilty Set to deploy Virtual Machine to"
             }
         },
         "tags": {
@@ -121,7 +193,21 @@
         }
     },
     "variables": {
-        "osDiskCaching": "[if(and(equals(parameters('osDiskCaching'), ''), or(equals(parameters('osDiskStorageAccountType'), 'Premium_LRS'), equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS')))), 'ReadWrite', 'None')]"
+        "osDiskCaching": "[if(equals(parameters('osDiskCaching'), ''), if(or(equals(parameters('osDiskStorageAccountType'), 'Premium_LRS'), equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS')), 'ReadWrite', 'None'), parameters('osDiskCaching'))]",
+        "networkInterfaces": {
+            "copy": [
+                {
+                    "name": "networkInterfaces",
+                    "count": "[length(parameters('networkInterfaces'))]",
+                    "input": {
+                        "id": "[if(contains(parameters('networkInterfaces')[copyIndex('networkInterfaces')], 'nicResourceGroup'), resourceId(parameters('networkInterfaces')[copyIndex('networkInterfaces')].nicResourceGroup, 'Microsoft.Network/networkInterfaces', parameters('networkInterfaces')[copyIndex('networkInterfaces')].nicName), resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces')[copyIndex('networkInterfaces')].nicName))]",
+                        "properties": {
+                            "primary": "[parameters('networkInterfaces')[copyIndex('networkInterfaces')].properties.primary]"
+                        }
+                    }
+                }
+            ]
+        }
     },
     "resources": [
         {
@@ -134,7 +220,7 @@
                 "name": "[parameters('planName')]",
                 "publisher": "[parameters('planPublisherName')]",
                 "product": "[parameters('planProductName')]",
-                "promotionCode": "[parameters('promotionCode')]"
+                "promotionCode": "[parameters('planPromotionCode')]"
             },
             "properties": {
                 "hardwareProfile": {
@@ -150,123 +236,45 @@
                     "osDisk": {
                         "osType": "[parameters('osType')]",
                         "name": "[parameters('osDiskName')]",
-                        "caching": "[parameters('osDiskCaching')]",
-                        "writeAcceleratorEnabled": boolean,
-                        "diffDiskSettings": {
-                            "option": "Local"
-                        },
-                        "createOption": "string",
-                        "diskSizeGB": "integer",
+                        "caching": "[variables('osDiskCaching')]",
+                        "writeAcceleratorEnabled": false,
+                        "createOption": "[parameters('osDiskCreateOption')]",
+                        "diskSizeGB": "[parameters('osDiskSizeInGB')]",
                         "managedDisk": {
-                            "storageAccountType": "string"
+                            "storageAccountType": "[parameters('osDiskStorageAccountType')]"
                         }
-                    },
-                    "dataDisks": [
-                        {
-                            "lun": "integer",
-                            "name": "string",
-                            "vhd": {
-                                "uri": "string"
-                            },
-                            "image": {
-                                "uri": "string"
-                            },
-                            "caching": "string",
-                            "writeAcceleratorEnabled": boolean,
-                            "createOption": "string",
-                            "diskSizeGB": "integer",
-                            "managedDisk": {
-                                "id": "string",
-                                "storageAccountType": "string"
-                            }
-                        }
-                    ]
-                },
-                "additionalCapabilities": {
-                    "ultraSSDEnabled": boolean
-                },
-                "osProfile": {
-                    "computerName": "string",
-                    "adminUsername": "string",
-                    "adminPassword": "string",
-                    "customData": "string",
-                    "windowsConfiguration": {
-                        "provisionVMAgent": boolean,
-                        "enableAutomaticUpdates": boolean,
-                        "timeZone": "string",
-                        "additionalUnattendContent": [
-                            {
-                                "passName": "OobeSystem",
-                                "componentName": "Microsoft-Windows-Shell-Setup",
-                                "settingName": "string",
-                                "content": "string"
-                            }
-                        ],
-                        "winRM": {
-                            "listeners": [
-                                {
-                                    "protocol": "string",
-                                    "certificateUrl": "string"
-                                }
-                            ]
-                        }
-                    },
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": boolean,
-                        "ssh": {
-                            "publicKeys": [
-                                {
-                                    "path": "string",
-                                    "keyData": "string"
-                                }
-                            ]
-                        },
-                        "provisionVMAgent": boolean
-                    },
-                    "secrets": [
-                        {
-                            "sourceVault": {
-                                "id": "string"
-                            },
-                            "vaultCertificates": [
-                                {
-                                    "certificateUrl": "string",
-                                    "certificateStore": "string"
-                                }
-                            ]
-                        }
-                    ],
-                    "allowExtensionOperations": boolean
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "string",
-                            "properties": {
-                                "primary": boolean
-                            }
-                        }
-                    ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": boolean,
-                        "storageUri": "string"
                     }
                 },
-                "availabilitySet": {
-                    "id": "string"
+                "additionalCapabilities": {
+                    "ultraSSDEnabled": "[parameters('ultraSsdEnabled')]"
                 },
-                "licenseType": "string"
-            },
-            "identity": {
-                "type": "string",
-                "userAssignedIdentities": {}
-            },
-            "zones": [
-                "string"
-            ],
-            "resources": []
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
+                        "timeZone": "GMT Standard Time",
+                        "winRM": {},
+                        "allowExtensionOperations": true
+                    },
+                    "networkProfile": {
+                        "networkInterfaces": "[variables('networkInterfaces')]"
+                    },
+                    "diagnosticsProfile": {
+                        "bootDiagnostics": {
+                            "enabled": true,
+                            "storageUri": "[concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net')]"
+                        }
+                    },
+                    "availabilitySet": {
+                        "id": "[parameters('availabilitySetId')]"
+                    }
+                },
+                "identity": {
+                    "type": "SystemAssigned"
+                }
+            }
         }
     ]
 }

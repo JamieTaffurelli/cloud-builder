@@ -19,8 +19,8 @@
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "allowedValues": [
-                "North Europe",
-                "West Europe"
+                "northeurope",
+                "westeurope"
             ],
             "metadata": {
                 "description": "The location to deploy the Storage Account to"
@@ -113,7 +113,7 @@
                     "name": "virtualNetworkRules",
                     "count": "[length(parameters('virtualNetworkRules'))]",
                     "input": {
-                        "id": "[if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'subnetResourceGroup'), resourceId(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetResourceGroup, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName), resourceId(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName))]",
+                        "id": "[if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'subnetResourceGroup'), resourceId(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetResourceGroup, 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName), resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName))]",
                         "action": "[if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'action'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].action, variables('defaultaction'))]"
                     }
                 }

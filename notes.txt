@@ -1,0 +1,42 @@
+https://docs.microsoft.com/en-us/azure/virtual-machines/windows/how-to-enable-write-accelerator
+https://docs.microsoft.com/en-us/azure/virtual-machines/windows/premium-storage-performance
+https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview
+https://azure.microsoft.com/en-gb/blog/announcing-ultra-ssd-the-next-generation-of-azure-disks-technology-preview/
+
+
+
+
+/*{
+                            "listeners": [
+                                {
+                                    "protocol": "https",
+                                    //"certificateUrl": "string"
+                                }
+                            ]
+                        }
+                    },
+                    /*"linuxConfiguration": {
+                        "disablePasswordAuthentication": boolean,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "string",
+                                    "keyData": "string"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": boolean
+                    },
+                    "secrets": [
+                        {
+                            "sourceVault": {
+                                "id": "string"
+                            },
+                            "vaultCertificates": [
+                                {
+                                    "certificateUrl": "string",
+                                    "certificateStore": "string"
+                                }
+                            ]
+                        }
+                    ],*/
