@@ -2,6 +2,9 @@ https://docs.microsoft.com/en-us/azure/virtual-machines/windows/how-to-enable-wr
 https://docs.microsoft.com/en-us/azure/virtual-machines/windows/premium-storage-performance
 https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview
 https://azure.microsoft.com/en-gb/blog/announcing-ultra-ssd-the-next-generation-of-azure-disks-technology-preview/
+https://docs.microsoft.com/en-us/azure/security/azure-threat-detection
+https://docs.microsoft.com/en-us/azure-advanced-threat-protection/what-is-atp
+https://docs.microsoft.com/en-us/azure/storage/common/storage-advanced-threat-protection
 
 
 
