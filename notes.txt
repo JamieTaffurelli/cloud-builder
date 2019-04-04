@@ -5,6 +5,7 @@ https://azure.microsoft.com/en-gb/blog/announcing-ultra-ssd-the-next-generation-
 https://docs.microsoft.com/en-us/azure/security/azure-threat-detection
 https://docs.microsoft.com/en-us/azure-advanced-threat-protection/what-is-atp
 https://docs.microsoft.com/en-us/azure/storage/common/storage-advanced-threat-protection
+https://docs.microsoft.com/en-us/azure/security-center/security-center-adaptive-application 
 
 
 
