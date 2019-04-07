@@ -7,4 +7,5 @@ https://docs.microsoft.com/en-us/azure-advanced-threat-protection/what-is-atp
 https://docs.microsoft.com/en-us/azure/storage/common/storage-advanced-threat-protection
 https://docs.microsoft.com/en-us/azure/security-center/security-center-adaptive-application
 https://azsk.azurewebsites.net/README.html
+https://docs.microsoft.com/en-us/rest/api/storageservices/cross-origin-resource-sharing--cors--support-for-the-azure-storage-services
 https://cloudskills.fm/
