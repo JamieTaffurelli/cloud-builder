@@ -16,7 +16,7 @@
             }
         },
         "location": {
-            "type": "array",
+            "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "allowedValues": [
                 "northeurope",
@@ -123,7 +123,7 @@
             }
         },
         "osDiskSizeInGB": {
-            "type": "integer",
+            "type": "int",
             "defaultValue": 127,
             "minValue": 127,
             "maxValue": 2048,
@@ -171,7 +171,7 @@
             }
         },
         "networkInterfaces": {
-            "type": "object",
+            "type": "array",
             "metadata": {
                 "description": "Specify Network Interfaces to attach to the Virtual Machine. Valid properties are nicResourceGroup (defaults to current), nicName and properties.primary"
             }
@@ -182,10 +182,18 @@
                 "description": "Storage Account to output console output and screenshot images from the Virtual Machine"
             }
         },
-        "availabilitySetId": {
+        "availabilitySetResourceGroup": {
             "type": "string",
+            "defaultValue": "[resourceGroup().Name]",
             "metadata": {
-                "description": "Resource ID of the Availabilty Set to deploy Virtual Machine to"
+                "description": "Resource Group of the Availabilty Set to deploy Virtual Machine to"
+            }
+        },
+        "availabilitySetName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the Availabilty Set to deploy Virtual Machine to"
             }
         },
         "tags": {
@@ -207,6 +215,10 @@
                     }
                 }
             ]
+        },
+        "availabilitySetId": "[if(equals(parameters('availabilitySetName'), ''), json('null'), resourceId(parameters('availabilitySetResourceGroup'), 'Microsoft.Compute/availabilitySets', parameters('availabilitySetName')))]",
+        "availabilitySet": {
+            "id": "[variables('availabilitySetId')]"
         }
     },
     "resources": [
@@ -216,12 +228,6 @@
             "apiVersion": "[parameters('apiVersion')]",
             "location": "[parameters('location')]",
             "tags": "[parameters('tags')]",
-            "plan": {
-                "name": "[parameters('planName')]",
-                "publisher": "[parameters('planPublisherName')]",
-                "product": "[parameters('planProductName')]",
-                "promotionCode": "[parameters('planPromotionCode')]"
-            },
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
@@ -255,25 +261,23 @@
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
                         "timeZone": "GMT Standard Time",
-                        "winRM": {},
-                        "allowExtensionOperations": true
+                        "winRM": {}
                     },
-                    "networkProfile": {
-                        "networkInterfaces": "[variables('networkInterfaces')]"
-                    },
-                    "diagnosticsProfile": {
-                        "bootDiagnostics": {
-                            "enabled": true,
-                            "storageUri": "[concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net')]"
-                        }
-                    },
-                    "availabilitySet": {
-                        "id": "[parameters('availabilitySetId')]"
+                    "allowExtensionOperations": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": "[variables('networkInterfaces')]"
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net')]"
                     }
                 },
-                "identity": {
-                    "type": "SystemAssigned"
-                }
+                "availabilitySet": "[if(equals(variables('availabilitySetId'), json('null')), json('{}'), variables('availabilitySet'))]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
             }
         }
     ]
