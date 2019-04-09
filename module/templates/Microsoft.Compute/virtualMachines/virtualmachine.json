@@ -216,7 +216,7 @@
                 }
             ]
         },
-        "availabilitySetId": "[if(equals(parameters('availabilitySetName'), ''), json('null'), resourceId(parameters('availabilitySetResourceGroup'), 'Microsoft.Compute/availabilitySets', parameters('availabilitySetName')))]",
+        "availabilitySetId": "[if(equals(parameters('availabilitySetName'), ''), '', resourceId(parameters('availabilitySetResourceGroup'), 'Microsoft.Compute/availabilitySets', parameters('availabilitySetName')))]",
         "availabilitySet": {
             "id": "[variables('availabilitySetId')]"
         }
@@ -261,12 +261,14 @@
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
                         "timeZone": "GMT Standard Time",
-                        "winRM": {}
+                        "winRM": {
+                            "listeners": []
+                        }
                     },
                     "allowExtensionOperations": true
                 },
                 "networkProfile": {
-                    "networkInterfaces": "[variables('networkInterfaces')]"
+                    "networkInterfaces": "[variables('networkInterfaces').networkInterfaces]"
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
@@ -274,11 +276,12 @@
                         "storageUri": "[concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net')]"
                     }
                 },
-                "availabilitySet": "[if(equals(variables('availabilitySetId'), json('null')), json('{}'), variables('availabilitySet'))]"
+                "availabilitySet": "[if(equals(variables('availabilitySetId'), ''), json('null'), variables('availabilitySet'))]"
             },
             "identity": {
                 "type": "SystemAssigned"
             }
         }
-    ]
+    ],
+    "outputs": {}
 }
