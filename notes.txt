@@ -10,4 +10,5 @@ https://azsk.azurewebsites.net/README.html
 https://docs.microsoft.com/en-us/rest/api/storageservices/cross-origin-resource-sharing--cors--support-for-the-azure-storage-services
 https://docs.microsoft.com/en-us/azure/security/azure-security-antimalware
 https://docs.microsoft.com/en-us/azure/security/security-virtual-machines-overview
+https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
 https://cloudskills.fm/

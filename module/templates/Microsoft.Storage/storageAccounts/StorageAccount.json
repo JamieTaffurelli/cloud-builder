@@ -4,11 +4,13 @@
   "parameters": {
       "storageAccountName": {
           "type": "string",
+          "minLength": 3,
+          "maxLength": 24,
           "metadata": {
               "description": "The name of the Storage Account"
           }
       },
-      "apiversion": {
+      "apiVersion": {
           "type": "string",
           "defaultValue": "2018-11-01",
           "metadata": {
@@ -105,7 +107,10 @@
           }
       },
       "tags": {
-          "type": "object"
+          "type": "object",
+          "metadata": {
+            "description": "Tags to apply to Storage Account"
+          }
       }
   },
   "variables": {
