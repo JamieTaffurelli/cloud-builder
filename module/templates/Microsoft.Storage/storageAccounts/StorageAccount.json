@@ -116,7 +116,7 @@
                   "name": "virtualNetworkRules",
                   "count": "[if(equals(length(parameters('virtualNetworkRules')), 0), 1, length(parameters('virtualNetworkRules')))]",
                   "input": {
-                      "id": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyId', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'subnetResourceGroup'), resourceId(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetResourceGroup, 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName), resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName)))]",
+                      "id": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyId', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'subnetResourceGroup'), resourceId(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetResourceGroup, 'Microsoft.Network/virtualNetworks.subnets', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName)))]",
                       "action": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyAction', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'action'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].action, variables('defaultaction')))]"
                   }
               }
@@ -128,8 +128,8 @@
                   "name": "ipRules",
                   "count": "[if(equals(length(parameters('ipRules')), 0), 1, length(parameters('ipRules')))]",
                   "input": {
-                      "id": "[if(equals(length(parameters('ipRules')), 0), 'dummyId', parameters('ipRules')[copyIndex('ipRules')].value)]",
-                      "action": "[if(equals(length(parameters('ipRules')), 0), 'dummyAction', if(contains(parameters('ipRules')[copyIndex('ipRules')], 'action'), parameters('ipRules')[copyIndex('ipRules')].action, variables('defaultaction')))]"
+                      "value": "[if(equals(length(parameters('ipRules')), 0), 'dummyId', parameters('ipRules')[copyIndex('ipRules')].value)]",
+                      "action": "[if(equals(length(parameters('ipRules')), 0), 'dummyAction', if(contains(parameters('ipRules')[copyIndex('ipRules')], 'action'), parameters('ipRules')[copyIndex('ipRules')].action, variables('defaultAction')))]"
                   }
               }
           ]
@@ -163,8 +163,8 @@
               },
               "networkAcls": {
                   "bypass": "[parameters('bypass')]",
-                  "virtualNetworkRules": "[if(equals(length(parameters('virtualNetworkRules')), 0), json('[]'), variables('virtualNetworkRules'))]",
-                  "ipRules": "[if(equals(length(parameters('ipRules')), 0), json('[]'), variables('ipRules'))]",
+                  "virtualNetworkRules": "[if(equals(length(parameters('virtualNetworkRules')), 0), json('[]'), variables('virtualNetworkRules').virtualNetworkRules)]",
+                  "ipRules": "[if(equals(length(parameters('ipRules')), 0), json('[]'), variables('ipRules').ipRules)]",
                   "defaultAction": "[variables('defaultAction')]"
               },
               "supportsHttpsTrafficOnly": true,

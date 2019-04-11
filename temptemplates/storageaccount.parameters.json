@@ -8,6 +8,23 @@
         "bypass": {
             "value": "Logging, Metrics, AzureServices"
         },
+        "virtualNetworkRules": {
+            "value": [
+                {
+                    "virtualNetworkName": "z-uki-en1-test-np-net0101",
+                    "subnetName": "z-uki-en1-test-np-sub0101",
+                    "action": "Allow"
+                }
+            ]
+        },
+        "ipRules": {
+            "value": [
+                {
+                    "value": "85.159.153.57",
+                    "action": "Allow"
+                }
+            ]
+        },
         "tags": {
             "value": {
                 "testdeploy": "testdeploy"
