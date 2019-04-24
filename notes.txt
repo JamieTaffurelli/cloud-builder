@@ -12,4 +12,7 @@ https://docs.microsoft.com/en-us/azure/security/azure-security-antimalware
 https://docs.microsoft.com/en-us/azure/security/security-virtual-machines-overview
 https://docs.microsoft.com/en-us/azure/security-center/
 https://docs.microsoft.com/en-us/azure/architecture/best-practices/naming-conventions
+https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-soft-delete
+https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website
+https://docs.microsoft.com/en-us/azure/cdn/cdn-overview
 https://cloudskills.fm/

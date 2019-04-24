@@ -10,7 +10,7 @@
     },
     "apiVersion": {
       "type": "string",
-      "defaultValue": "2017-04-01",
+      "defaultValue": "2018-11-01",
       "metadata": {
         "description": "API version to invoke"
       }
