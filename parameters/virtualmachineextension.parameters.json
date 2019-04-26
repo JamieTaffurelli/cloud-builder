@@ -1,0 +1,38 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "value": "zsbukizz0101"
+        },
+        "vmExtensionName": {
+            "value": "antimalware"
+        },
+        "publisher": {
+            "value": "Microsoft.Azure.Security"
+        },
+        "type": {
+            "value": "IaaSAntimalware"
+        },
+        "typeHandlerVersion": {
+            "value": "1.5"
+        },
+        "settings": {
+            "value": {
+                "AntimalwareEnabled": "true",
+                "RealtimeProtectionEnabled": "true",
+                "ScheduledScanSettings": {
+                    "isEnabled": "true",
+                    "scanType": "Quick",
+                    "day": "7",
+                    "time": "120"
+                }
+            }
+        },
+        "tags": {
+            "value": {
+                "testdeploy": "testdeploy"
+            }
+        }
+    }
+}

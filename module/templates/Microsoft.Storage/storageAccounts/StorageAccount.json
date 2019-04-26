@@ -1,0 +1,180 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "storageAccountName": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 24,
+          "metadata": {
+              "description": "The name of the Storage Account"
+          }
+      },
+      "apiVersion": {
+          "type": "string",
+          "defaultValue": "2018-11-01",
+          "metadata": {
+              "description": "The version of ARM API to call"
+          }
+      },
+      "location": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().location]",
+          "allowedValues": [
+              "northeurope",
+              "westeurope"
+          ],
+          "metadata": {
+              "description": "The location to deploy the Storage Account to"
+          }
+      },
+      "kind": {
+          "type": "string",
+          "defaultValue": "StorageV2",
+          "allowedValues": [
+              "Storage",
+              "StorageV2",
+              "BlobStorage",
+              "FileStorage",
+              "BlockBlobStorage"
+          ],
+          "metadata": {
+              "description": "Type of Storage Account to deploy"
+          }
+      },
+      "skuName": {
+          "type": "string",
+          "defaultValue": "Standard_LRS",
+          "allowedValues": [
+              "Standard_LRS",
+              "Standard_GRS",
+              "Standard_RAGRS",
+              "Standard_ZRS",
+              "Premium_LRS",
+              "Premium_ZRS"
+          ],
+          "metadata": {
+              "description": "Sku name to determine geo-replication and storage architecture (HDD or SSD) of Storage Account"
+          }
+      },
+      "customDomainName": {
+          "type": "string",
+          "defaultValue": "",
+          "metadata": {
+              "description": "Custom user domain to assign to Storage Account, uses CNAME source"
+          }
+      },
+      "bypass": {
+          "type": "string",
+          "defaultValue": "None",
+          "allowedValues": [
+              "None",
+              "Logging",
+              "Metrics",
+              "AzureServices",
+              "Logging, Metrics",
+              "Logging, AzureServices",
+              "Metrics, AzureServices",
+              "Logging, Metrics, AzureServices"
+          ],
+          "metadata": {
+              "description": "Bypass network ACLs for Storage Account traffic"
+          }
+      },
+      "virtualNetworkRules": {
+          "type": "array",
+          "defaultValue": [],
+          "metadata": {
+              "description": "Allow or Deny traffic from subnets, allowed properties are: subnetResourceGroup (defaults to current), virtualNetworkName, subnetName and action (Allow or Deny, defaults to defaultAction)"
+          }
+      },
+      "ipRules": {
+          "type": "array",
+          "defaultValue": [],
+          "metadata": {
+              "description": "Allow or Deny traffic from an IP or CIDR range, allowed properties are: value (must be IPv4) and action (Allow or Deny, defaults to defaultAction)"
+          }
+      },
+      "accessTier": {
+          "type": "string",
+          "defaultValue": "Hot",
+          "allowedValues": [
+              "Hot",
+              "Cool"
+          ],
+          "metadata": {
+              "description": "Only for BlobStorage storage account kinds, define latency of data transfer"
+          }
+      },
+      "tags": {
+          "type": "object",
+          "metadata": {
+            "description": "Tags to apply to Storage Account"
+          }
+      }
+  },
+  "variables": {
+      "defaultAction": "Deny",
+      "virtualNetworkRules": {
+          "copy": [
+              {
+                  "name": "virtualNetworkRules",
+                  "count": "[if(equals(length(parameters('virtualNetworkRules')), 0), 1, length(parameters('virtualNetworkRules')))]",
+                  "input": {
+                      "id": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyId', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'subnetResourceGroup'), resourceId(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetResourceGroup, 'Microsoft.Network/virtualNetworks.subnets', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName)))]",
+                      "action": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyAction', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'action'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].action, variables('defaultaction')))]"
+                  }
+              }
+          ]
+      },
+      "ipRules": {
+          "copy": [
+              {
+                  "name": "ipRules",
+                  "count": "[if(equals(length(parameters('ipRules')), 0), 1, length(parameters('ipRules')))]",
+                  "input": {
+                      "value": "[if(equals(length(parameters('ipRules')), 0), 'dummyId', parameters('ipRules')[copyIndex('ipRules')].value)]",
+                      "action": "[if(equals(length(parameters('ipRules')), 0), 'dummyAction', if(contains(parameters('ipRules')[copyIndex('ipRules')], 'action'), parameters('ipRules')[copyIndex('ipRules')].action, variables('defaultAction')))]"
+                  }
+              }
+          ]
+      }
+  },
+  "resources": [
+      {
+          "name": "[parameters('storageAccountName')]",
+          "type": "Microsoft.Storage/storageAccounts",
+          "apiVersion": "[parameters('apiVersion')]",
+          "kind": "[parameters('kind')]",
+          "location": "[parameters('location')]",
+          "tags": "[parameters('tags')]",
+          "sku": {
+              "name": "[parameters('skuName')]"
+          },
+          "properties": {
+              "customDomain": {
+                  "name": "[parameters('customDomainName')]"
+              },
+              "encryption": {
+                  "services": {
+                      "file": {
+                          "enabled": true
+                      },
+                      "blob": {
+                          "enabled": true
+                      }
+                  },
+                  "keySource": "Microsoft.Storage"
+              },
+              "networkAcls": {
+                  "bypass": "[parameters('bypass')]",
+                  "virtualNetworkRules": "[if(equals(length(parameters('virtualNetworkRules')), 0), json('[]'), variables('virtualNetworkRules').virtualNetworkRules)]",
+                  "ipRules": "[if(equals(length(parameters('ipRules')), 0), json('[]'), variables('ipRules').ipRules)]",
+                  "defaultAction": "[variables('defaultAction')]"
+              },
+              "supportsHttpsTrafficOnly": true,
+              "accessTier": "[if(equals(parameters('kind'),'BlobStorage'), parameters('accessTier'), json('null'))]"
+          }
+      }
+  ]
+}
