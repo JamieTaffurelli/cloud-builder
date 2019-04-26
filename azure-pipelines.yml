@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'Hosted Windows Container'
+  name: 'Hosted Windows Container'
 
 steps:
 - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
