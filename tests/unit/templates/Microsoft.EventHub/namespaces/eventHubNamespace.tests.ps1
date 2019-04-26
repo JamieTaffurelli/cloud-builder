@@ -159,7 +159,7 @@ Describe "eventHubNamespace Parameter Validation" {
         }
     }
 
-    Context "virtualNetworkRules Validation" {
+    Context "kafkaEnabled Validation" {
 
         It "Has kafkaEnabled parameter" {
 

@@ -1,4 +1,4 @@
-$cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
+<#$cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
 $interfaceCmdletDirectory  = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
 $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "internal"
 
@@ -30,4 +30,4 @@ Describe "${cmdletFile}" {
             { ConvertTo-ABParameterFile -EnvironmentPath "TestDrive:\envfile.json" -OutputPath "TestDrive:\dir" -Schema "https://schema.notazure.com/schema.json" } | should throw "Cannot validate argument on parameter 'Schema'. The `" `$PSItem -like `"https://schema.management.azure.com/schemas/*/deploymentParameters.json#`""
         }
     }
-}
+}#>
