@@ -31,24 +31,6 @@ Describe "storageAccount Parameter Validation" {
         }
     }
 
-    Context "apiVersion Validation" {
-
-        It "Has apiversion parameter" {
-
-            $json.parameters.apiVersion | should not be $null
-        }
-
-        It "apiversion parameter is of type string" {
-
-            $json.parameters.apiVersion.type | should be "string"
-        }
-
-        It "apiVersion parameter default value is 2018-11-01" {
-
-            $json.parameters.apiVersion.defaultValue | should be "2018-11-01"
-        }
-    }
-
     Context "location Validation" {
 
         It "Has location parameter" {
@@ -238,6 +220,14 @@ Describe "storageAccount Parameter Validation" {
 }
 
 Describe "storageAccount Resource Validation" {
+
+    Context "apiVersion Validation" {
+
+        It "apiVersion value is 2018-11-01" {
+
+            $json.resources.apiVersion | should be "2018-11-01"
+        }
+    }
 
     Context "Network ACL Validation" {
 

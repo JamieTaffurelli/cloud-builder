@@ -8,13 +8,6 @@
                 "description": "The name of the Virtual Machine that you wish to create."
             }
         },
-        "apiversion": {
-            "type": "string",
-            "defaultValue": "2018-10-01",
-            "metadata": {
-                "description": "The version of ARM API to call"
-            }
-        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -225,7 +218,7 @@
         {
             "name": "[parameters('vmName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "[parameters('apiVersion')]",
+            "apiVersion": "2018-10-01",
             "location": "[parameters('location')]",
             "tags": "[parameters('tags')]",
             "properties": {
