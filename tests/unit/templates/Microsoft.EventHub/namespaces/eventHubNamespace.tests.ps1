@@ -1,5 +1,5 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
-$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), "module"
+$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 Describe "eventHubNamespace Parameter Validation" {
 
