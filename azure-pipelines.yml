@@ -14,7 +14,7 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
   inputs:
-    testResultsFormat: 'JUnit'
+    testResultsFormat: 'NUnit'
     testResultsFiles: 'test-results.xml'
     searchFolder: '$(System.DefaultWorkingDirectory)'
     mergeTestResults: false
