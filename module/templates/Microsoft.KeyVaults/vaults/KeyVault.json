@@ -8,12 +8,6 @@
         "description": "Name of the Key Vault"
       }
     },
-    "apiVersion": {
-      "type": "string",
-      "metadata": {
-        "description": "API version to invoke"
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",

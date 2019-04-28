@@ -8,13 +8,6 @@
         "description": "Name of the Event Hub Namespace"
       }
     },
-    "apiVersion": {
-      "type": "string",
-      "defaultValue": "2018-11-01",
-      "metadata": {
-        "description": "API version to invoke"
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -81,7 +74,7 @@
     {
       "name": "[parameters('eventHubNamespaceName')]",
       "type": "Microsoft.EventHub/namespaces",
-      "apiVersion": "[parameters('apiVersion')]",
+      "apiVersion": "2018-11-01",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {

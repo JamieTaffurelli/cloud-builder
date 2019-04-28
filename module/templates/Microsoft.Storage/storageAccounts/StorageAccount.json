@@ -10,13 +10,6 @@
               "description": "The name of the Storage Account"
           }
       },
-      "apiVersion": {
-          "type": "string",
-          "defaultValue": "2018-11-01",
-          "metadata": {
-              "description": "The version of ARM API to call"
-          }
-      },
       "location": {
           "type": "string",
           "defaultValue": "[resourceGroup().location]",
@@ -144,7 +137,7 @@
       {
           "name": "[parameters('storageAccountName')]",
           "type": "Microsoft.Storage/storageAccounts",
-          "apiVersion": "[parameters('apiVersion')]",
+          "apiVersion": "2018-11-01",
           "kind": "[parameters('kind')]",
           "location": "[parameters('location')]",
           "tags": "[parameters('tags')]",
