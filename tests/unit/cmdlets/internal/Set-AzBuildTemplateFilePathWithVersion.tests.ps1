@@ -1,5 +1,6 @@
-$moduleDirectory = $PSScriptRoot -Replace [Regex]::Escape("tests\unit\cmdlets\internal"), "module"
-Import-Module -Name (Join-Path -Path $moduleDirectory -ChildPath "AzureBuilder.psm1" -Resolve) -Force
+$cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
+$internalCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
+. (Join-Path -Path $internalcmdletDirectory -ChildPath $cmdletFile -Resolve)
 
 Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
