@@ -11,6 +11,22 @@ steps:
     resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
     CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
 
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)\test-results.xml' 
+    mergeTestResults: false
+    failTaskOnFailedTests: false
+    publishRunAttachments: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish TCode Coverage'
+  inputs:
+    codeCoverageTool: 'JaCoCo'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+    failIfCoverageEmpty: true
+
 - task: PowerShell@2
   displayName: 'Version ARM Templates'
   inputs:
