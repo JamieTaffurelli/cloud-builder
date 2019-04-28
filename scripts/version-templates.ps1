@@ -12,7 +12,8 @@ param
     $OutputFolder = $env:BUILD_ARTIFACTSTAGINGDIRECTORY
 )
 
-Install-Module -Name Az -SkipPublisherCheck
+Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+Install-Module -Name Az -Force -Verbose -Scope CurrentUser
 
 Import-Module "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\module\AzureBuilder.psd1" -Force
 
