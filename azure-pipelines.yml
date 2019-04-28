@@ -15,3 +15,8 @@ steps:
   inputs:
     resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
     CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)\scripts\version-templates.ps1'
