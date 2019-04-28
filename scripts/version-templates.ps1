@@ -12,7 +12,8 @@ param
     $OutputFolder = $env:BUILD_ARTIFACTSTAGINGDIRECTORY
 )
     
-Import-Module "$(Split-Path -Path $PSScriptRoot)\module\azurebuild.psd1"
-
+Import-Module "$(Split-Path -Path $PSScriptRoot)\module\azurebuild.psd1" -Force
+Write-Host "b: $OutputFolder"
+Write-Host "c: $env:BUILD_ARTIFACTSTAGINGDIRECTORY"
 Copy-AzBuildTemplateFilesWithVersion -SearchFolder $SearchFolder -OutputFolder $OutputFolder
 
