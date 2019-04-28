@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -11,7 +6,38 @@ pool:
 
 steps:
 - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
-  displayName: 'Pester Test Runner'
+  displayName: 'Run Unit Tests'
   inputs:
     resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
     CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: 'test-results.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    mergeTestResults: false
+    failTaskOnFailedTests: false
+    publishRunAttachments: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage'
+  inputs:
+    codeCoverageTool: 'JaCoCo'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+    failIfCoverageEmpty: true
+
+- task: PowerShell@2
+  displayName: 'Version ARM Templates'
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)\scripts\version-templates.ps1'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish ARM Templates'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'templates' 
+    publishLocation: 'Container'
+    parallel: false

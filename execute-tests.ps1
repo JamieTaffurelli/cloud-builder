@@ -1,1 +1,1 @@
-Invoke-Pester -Script "${PSScriptRoot}\tests\*"
+Invoke-Pester -Script "${PSScriptRoot}\tests\*" -Verbose
