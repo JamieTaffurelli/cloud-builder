@@ -21,7 +21,7 @@ steps:
     publishRunAttachments: true
 
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish TCode Coverage'
+  displayName: 'Publish Code Coverage'
   inputs:
     codeCoverageTool: 'JaCoCo'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
