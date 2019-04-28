@@ -11,7 +11,8 @@ param
     [String]
     $OutputFolder = $env:BUILD_ARTIFACTSTAGINGDIRECTORY
 )
-    
+
+Install-Module Az
 Import-Module "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\module\AzureBuilder.psd1" -Force
 
 Copy-AzBuildTemplateFilesWithVersion -SearchFolder $SearchFolder -OutputFolder $OutputFolder
