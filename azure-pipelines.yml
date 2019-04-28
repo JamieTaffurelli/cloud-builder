@@ -6,17 +6,19 @@ pool:
 
 steps:
 - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
-  displayName: 'Pester Test Runner'
+  displayName: 'Run Unit Tests'
   inputs:
     resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
     CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
 
 - task: PowerShell@2
+  displayName: 'Version ARM Templates'
   inputs:
     targetType: 'filePath'
     filePath: '$(System.DefaultWorkingDirectory)\scripts\version-templates.ps1'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish ARM Templates'
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'templates' 
