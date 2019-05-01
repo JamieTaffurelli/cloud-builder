@@ -43,7 +43,7 @@ steps:
     parallel: false
 
 - task: CopyFiles@2
-  displayName: 'Publish ARM Templates'
+  displayName: 'Copy Example Deployment Templates to Staging Directory'
   inputs:
     sourceFolder: '$(System.DefaultWorkingDirectory)\examples'
     contents: '**\*' 
