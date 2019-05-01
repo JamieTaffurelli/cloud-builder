@@ -9,7 +9,7 @@ param
     [Parameter()]
     [ValidateScript( { $_ | Test-Path -PathType "Container" -IsValid } )]
     [String]
-    $OutputFolder = $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+    $OutputFolder = "$env:BUILD_ARTIFACTSTAGINGDIRECTORY\templates"
 )
 
 Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
