@@ -119,7 +119,9 @@
                     }
                 }
             },
-            "dependsOn": ["[resourceId('Microsoft.Resources/deployments', 'vnet')]"]
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'vnet')]"
+            ]
         }
     ],
     "outputs": {}

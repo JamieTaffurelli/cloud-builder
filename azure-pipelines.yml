@@ -37,7 +37,25 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish ARM Templates'
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\templates' 
     artifactName: 'templates' 
+    publishLocation: 'Container'
+    parallel: false
+
+- task: CopyFiles@2
+  displayName: 'Publish ARM Templates'
+  inputs:
+    sourceFolder: '$(System.DefaultWorkingDirectory)\examples'
+    contents: '**\*' 
+    targetFolder: '$(Build.ArtifactStagingDirectory)\examples'
+    cleanTargetFolder: true 
+    overWrite: true
+    flattenFolders: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Example Deployment Templates'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\examples' 
+    artifactName: 'examples' 
     publishLocation: 'Container'
     parallel: false
