@@ -19,6 +19,12 @@
                 }
             ]
         },
+        "nicName": {
+            "value": "nic"
+        },
+        "privateIpAddress": {
+            "value": "10.29.56.10"
+        },
         "tags": {
             "value": {
                 "testdeploy": "testdeploy"

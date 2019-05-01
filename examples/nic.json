@@ -40,6 +40,18 @@
                 "description": "The subnets to provision in the Virtual Network"
             }
         },
+        "nicName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Network Interface that you wish to create."
+            }
+        },
+        "privateIpAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "IP address to assign to IP configuration"
+            }
+        },
         "tags": {
             "type": "object",
             "metadata": {
@@ -49,13 +61,14 @@
     },
     "variables": {
         "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/', parameters('templateContainerName'), '/')]",
-        "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]"
+        "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
+        "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]"
     },
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
-            "name": "linkedTemplate",
+            "name": "vnet",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -77,6 +90,36 @@
                     }
                 }
             }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "nic",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('networkInterfaceTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[parameters('nicName')]"
+                    },
+                    "privateIpAddress": {
+                        "value": "[parameters('privateIpAddress')]"
+                    },
+                    "subnetVirtualNetworkName": {
+                        "value": "[parameters('virtualNetworkName')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnets')[0].name]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "dependsOn": ["[resourceId('Microsoft.Resources/deployments', 'vnet')]"]
         }
     ],
     "outputs": {}
