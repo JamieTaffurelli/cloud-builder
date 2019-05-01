@@ -127,18 +127,18 @@
                 false
             ],
             "metadata": {
-                "description": "Sets this Network Interface as the Primary Network Interface on a VM"
+                "description": "Enables bypassing of host and switch whilst maintaining policies"
             }
         },
         "enableIpForwarding": {
             "type": "bool",
-            "defaultValue": false,
+            "defaultValue": true,
             "allowedValues": [
                 true,
                 false
             ],
             "metadata": {
-                "description": "Sets this Network Interface as the Primary Network Interface on a VM"
+                "description": "Allows forwarding of traffic to other IP addresses"
             }
         },
         "tags": {

@@ -1,0 +1,126 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "templateStorageAccountName": {
+            "type": "string",
+            "defaultValue": "templatessa6546",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            }
+        },
+        "templateContainerName": {
+            "type": "string",
+            "defaultValue": "templates",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            }
+        },
+        "templatesSas": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            }
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "metadata": {
+                "description": "The CIDR ranges allocated to the Virtual Network"
+            }
+        },
+        "subnets": {
+            "type": "array",
+            "metadata": {
+                "description": "The subnets to provision in the Virtual Network"
+            }
+        },
+        "nicName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Network Interface that you wish to create."
+            }
+        },
+        "privateIpAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "IP address to assign to IP configuration"
+            }
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags to apply to Virtual Network"
+            }
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/', parameters('templateContainerName'), '/')]",
+        "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
+        "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "vnet",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('vNetTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "virtualNetworkName": {
+                        "value": "[parameters('virtualNetworkName')]"
+                    },
+                    "addressPrefixes": {
+                        "value": "[parameters('addressPrefixes')]"
+                    },
+                    "subnets": {
+                        "value": "[parameters('subnets')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "nic",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('networkInterfaceTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "nicName": {
+                        "value": "[parameters('nicName')]"
+                    },
+                    "privateIpAddress": {
+                        "value": "[parameters('privateIpAddress')]"
+                    },
+                    "subnetVirtualNetworkName": {
+                        "value": "[parameters('virtualNetworkName')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnets')[0].name]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "dependsOn": ["[resourceId('Microsoft.Resources/deployments', 'vnet')]"]
+        }
+    ],
+    "outputs": {}
+}
