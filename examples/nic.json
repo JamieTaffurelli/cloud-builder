@@ -61,10 +61,23 @@
     },
     "variables": {
         "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/', parameters('templateContainerName'), '/')]",
+        "functionTemplateUrl": "[concat(variables('templateBaseUrl'), 'functions/azbuild.1.0.0.0.json', parameters('templatesSas'))]",
         "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
         "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]"
     },
     "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "function",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('functionTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
@@ -89,7 +102,10 @@
                         "value": "[parameters('tags')]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'function')]"
+            ]
         },
         {
             "type": "Microsoft.Resources/deployments",

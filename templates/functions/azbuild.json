@@ -5,7 +5,7 @@
         {
             "namespace": "azBuild",
             "members": {
-                "addStringProperty": {
+                "setResourceGroupProperty": {
                     "parameters": [
                         {
                             "name": "inputObject",
@@ -14,12 +14,12 @@
                         {
                             "name": "propertyName",
                             "type": "string"
-                        },
-                        {
-                            "name": "propertyValue",
-                            "type": "string"
                         }
-                    ]
+                    ],
+                    "output": {
+                        "type": "string",
+                        "value": "[if(contains(parameters('inputObject'), parameters('propertyName')), parameters('inputObject').parameters('propertyName'), resourceGroup().id)]"
+                    }
                 }
             }
         }
