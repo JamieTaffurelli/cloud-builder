@@ -26,7 +26,7 @@ Describe "Template Validation" {
 
             It "${armTemplatePath} has a resource block" {
 
-                $arm.resources | should not be $null
+                ($arm.PSObject.Properties.Name -contains "resources") | should be $true
             }
         }
     }
