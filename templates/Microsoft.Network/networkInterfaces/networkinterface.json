@@ -43,6 +43,13 @@
                 "description": "IP address to assign to IP configuration"
             }
         },
+        "subnetSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "Subscription ID of the Subnet the IP is allocated to"
+            }
+        },
         "subnetResourceGroupName": {
             "type": "string",
             "defaultValue": "[resourceGroup().Name]",
@@ -145,6 +152,9 @@
             "type": "object"
         }
     },
+    "variables": {
+        
+    },
     "resources": [
         {
             "name": "[parameters('nicName')]",
@@ -160,7 +170,7 @@
                             "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
                             "privateIPAddress": "[parameters('privateIpAddress')]",
                             "subnet": {
-                                "id": "[resourceId(parameters('subnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('subnetVirtualNetworkName'), parameters('subnetName'))]"
+                                "id": "[resourceId(parameters('subnetSubscriptionId'), parameters('subnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('subnetVirtualNetworkName'), parameters('subnetName'))]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "[parameters('privateIpAddressVersion')]"
