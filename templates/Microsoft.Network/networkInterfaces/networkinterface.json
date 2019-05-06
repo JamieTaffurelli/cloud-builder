@@ -145,6 +145,9 @@
             "type": "object"
         }
     },
+    "variables": {
+        "subnet": "[azbuild.setResourceGroupProperty()]"
+    },
     "resources": [
         {
             "name": "[parameters('nicName')]",
