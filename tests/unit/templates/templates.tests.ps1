@@ -1,5 +1,5 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
-$templateFolderPath = Split-Path -Path ($testPath -replace [regex]::Escape("tests\unit"), "module") -Parent
+$templateFolderPath = Split-Path -Path ($testPath -replace [regex]::Escape("tests\unit"), [String]::Empty) -Parent
 $armTemplatePaths = (Get-ChildItem -Path $templateFolderPath -Recurse -File -Filter "*.json").FullName
 
 Describe "Template Validation" {
@@ -22,11 +22,6 @@ Describe "Template Validation" {
             It "${armTemplatePath} has valid content version" {
 
                 $arm.contentVersion -as [version] | should not be $null 
-            }
-
-            It "${armTemplatePath} has a resource" {
-
-                $arm.resources.Count | should not be 0 
             }
         }
     }
