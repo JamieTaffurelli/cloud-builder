@@ -23,6 +23,11 @@ Describe "Template Validation" {
 
                 $arm.contentVersion -as [version] | should not be $null 
             }
+
+            It "${armTemplatePath} has a resource block" {
+
+                ($arm.PSObject.Properties.Name -contains "resources") | should be $true
+            }
         }
     }
 }
