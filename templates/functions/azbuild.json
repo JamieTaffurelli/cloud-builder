@@ -18,7 +18,7 @@
                     ],
                     "output": {
                         "type": "string",
-                        "value": "[if(contains(parameters('inputObject'), parameters('propertyName')), parameters('inputObject').parameters('propertyName'), resourceGroup().id)]"
+                        "value": "[if(contains(parameters('inputObject'), parameters('propertyName')), parameters('inputObject').parameters, resourceGroup().id)]"
                     }
                 }
             }
