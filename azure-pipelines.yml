@@ -10,6 +10,8 @@ steps:
   inputs:
     resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
     CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+    CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module'
+    run32Bit: false
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
