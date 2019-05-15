@@ -20,6 +20,12 @@ function Copy-AzBuildBlobItem
         [String]
         $ContainerName,
 
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('FullName')]
+        [String]
+        $File,
+
         [Parameter(ParameterSetName = 'DynamicAuth')]
         [ValidateSet('OAuth', 'Key', 'Anonymous')]
         [String]
