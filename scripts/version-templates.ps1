@@ -2,12 +2,12 @@
 param
 (
     [Parameter()]
-    [ValidateScript( { $_ | Test-Path -PathType "Container" } )]
+    [ValidateScript( { $PSItem | Test-Path -PathType "Container" } )]
     [String]
     $SearchFolder = "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\templates",
 
     [Parameter()]
-    [ValidateScript( { $_ | Test-Path -PathType "Container" -IsValid } )]
+    [ValidateScript( { $PSItem | Test-Path -PathType "Container" -IsValid } )]
     [String]
     $OutputFolder = "$env:BUILD_ARTIFACTSTAGINGDIRECTORY\templates"
 )

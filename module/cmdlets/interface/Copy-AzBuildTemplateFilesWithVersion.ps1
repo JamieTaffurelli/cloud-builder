@@ -11,12 +11,12 @@ function Copy-AzBuildTemplateFilesWithVersion
     param
     (
         [Parameter()]
-        [ValidateScript( { $_ | Test-Path -PathType "Container" } )]
+        [ValidateScript( { $PSItem | Test-Path -PathType "Container" } )]
         [String]
         $SearchFolder = (Get-Location),
 
         [Parameter(Mandatory = $true)]
-        [ValidateScript( { $_ | Test-Path -PathType "Container" -IsValid } )]
+        [ValidateScript( { $PSItem | Test-Path -PathType "Container" -IsValid } )]
         [String]
         $OutputFolder
     )

@@ -15,17 +15,17 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
         It "Errors if SearchFolder does not exist" {
 
-            { Copy-AzBuildTemplateFilesWithVersion -SearchFolder "TestDrive:\folder" -OutputFolder "TestDrive\versioned" } | should throw "Cannot validate argument on parameter 'SearchFolder'. The `" `$_ | Test-Path -PathType `"Container`" `" validation script for the argument with value `"TestDrive:\folder`" did not return a result of True. Determine why the validation script failed, and then try the command again."
+            { Copy-AzBuildTemplateFilesWithVersion -SearchFolder "TestDrive:\folder" -OutputFolder "TestDrive\versioned" } | should throw "Cannot validate argument on parameter 'SearchFolder'. The `" `$PSItem | Test-Path -PathType `"Container`" `" validation script for the argument with value `"TestDrive:\folder`" did not return a result of True. Determine why the validation script failed, and then try the command again."
         }
 
         It "Errors if SearchFolder is a file" {
 
-            { Copy-AzBuildTemplateFilesWithVersion -SearchFolder "TestDrive:\templates\template1.json" -OutputFolder "TestDrive\versioned" } | should throw "Cannot validate argument on parameter 'SearchFolder'. The `" `$_ | Test-Path -PathType `"Container`" `" validation script for the argument with value `"TestDrive:\templates\template1.json`" did not return a result of True. Determine why the validation script failed, and then try the command again."
+            { Copy-AzBuildTemplateFilesWithVersion -SearchFolder "TestDrive:\templates\template1.json" -OutputFolder "TestDrive\versioned" } | should throw "Cannot validate argument on parameter 'SearchFolder'. The `" `$PSItem | Test-Path -PathType `"Container`" `" validation script for the argument with value `"TestDrive:\templates\template1.json`" did not return a result of True. Determine why the validation script failed, and then try the command again."
         }
 
         It "Errors if OutputFolder is not a valid path" {
 
-            { Copy-AzBuildTemplateFilesWithVersion -SearchFolder "TestDrive:\templates" -OutputFolder "TestDrive:\>" } | should throw "Cannot validate argument on parameter 'OutputFolder'. The `" `$_ | Test-Path -PathType `"Container`" -IsValid `" validation script for the argument with value `"TestDrive:\>`" did not return a result of True. Determine why the validation script failed, and then try the command again."
+            { Copy-AzBuildTemplateFilesWithVersion -SearchFolder "TestDrive:\templates" -OutputFolder "TestDrive:\>" } | should throw "Cannot validate argument on parameter 'OutputFolder'. The `" `$PSItem | Test-Path -PathType `"Container`" -IsValid `" validation script for the argument with value `"TestDrive:\>`" did not return a result of True. Determine why the validation script failed, and then try the command again."
         }
     }
 

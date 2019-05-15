@@ -15,47 +15,35 @@ function Copy-AzBuildBlobItem
         [String]
         $StorageAccountName,
 
-        [Parameter()]
-        [ValidateSet('Default', 'Key', 'Anonymous')]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [String]
-        $AuthMethod = 'Default',
+        $ContainerName,
+
+        [Parameter(ParameterSetName = 'DynamicAuth')]
+        [ValidateSet('OAuth', 'Key', 'Anonymous')]
+        [String]
+        $AuthMethod = 'OAuth',
 
         [Parameter(Mandatory = $true, ParameterSetName = 'StaticKeyAuth')]
         [ValidateNotNullOrEmpty()]
         [String]
-        $StorageAccountKey
+        $StorageAccountKey,
+        
+        [Parameter(Mandatory = $true, ParameterSetName = 'StaticSasAuth')]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SasToken
     )
     begin
     {
         Write-Verbose "Starting $($MyInvocation.MyCommand.Name)"
 
-        if($PSCmdlet.ParameterSetName -eq "DynamicAuth")
-        {
-            $storageAccount = Get-AzStorageAccount | Where-Object { $_.StorageAccountName -eq $StorageAccountName }
-
-            if(!($storageAccount))
-            {
-                Write-Error "Storage Account '${StorageAccountName}' not found, make sure it exists and you have the permissions to view it"
-            }
-        }
-        
-
-        if(($PSCmdlet.ParameterSetName -eq "StaticKeyAuth") -or ($AuthMethod -eq "Key"))
-        {
-            Write-Warning "Consider using default OAuth method of authentication for V2 Storage Accounts"
-
-            if($AuthMethod -eq "Key")
-            {
-                $key = (Get-AzStorageAccountKey -ResourceGroupName $storageAccount.ResourceGroupName -Name $StorageAccountName)[0]
-            }
-            
-            $storageContext = New-AzStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $key
-        }
+        Write-Verbose "Creating context for ${StorageAccountName}"
+        $storageContext = New-AzBuildStorageContext
     }
     process
     {
-        
-
         
     }
     end
