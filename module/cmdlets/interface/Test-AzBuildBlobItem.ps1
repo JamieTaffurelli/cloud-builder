@@ -1,4 +1,4 @@
-function Copy-AzBuildBlobItem
+function Test-AzBuildBlobItem
 {
     <#
         .DESCRIPTION
@@ -20,13 +20,7 @@ function Copy-AzBuildBlobItem
         [String]
         $ContainerName,
 
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( { $PSItem | Test-Path -Leaf } )]
-        [Alias('FullName')]
-        [String]
-        $File,
-
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $Blob,
@@ -49,12 +43,7 @@ function Copy-AzBuildBlobItem
         [Parameter(Mandatory = $true, ParameterSetName = 'StorageContext')]
         [ValidateNotNullOrEmpty()]
         [Microsoft.Azure.Commands.Common.Authentication.Abstractions.IStorageContext]
-        $Context,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [Switch]
-        $SkipExisting
+        $Context
     )
     begin
     {
@@ -86,22 +75,22 @@ function Copy-AzBuildBlobItem
                 throw "Parameter set not recognised"
             }
         }
-        
-        Write-Verbose "Checking container ${ContainerName} exists in ${StorageAccountName}"
-        $storageContext | Get-AzStorageContainer -Name $ContainerName -ErrorAction Stop | Out-Null
     }
     process
     {
-        $blobExists = Test-AzBuildBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob $Blob -Context $Context
+        try
+        {   
+            Get-AzureStorageBlob -Blob $Blob -Container $ContainerName -Context $Context -ErrorAction Stop | Out-Null
 
-        if($blobExists -and $SkipExisting)
-        {
-            Write-Verbose "Blob ${Blob} exists, skipping"
+            return $true
         }
-        else 
+        catch [Microsoft.WindowsAzure.Commands.Storage.Common.ResourceNotFoundException]
         {
-            Write-Verbose "Uploading ${Blob}"
-            Set-AzStorageBlobContent -File $File -Blob $Blob -Container $ContainerName -Context $storageContext -Force
+            return $false 
+        }
+        catch
+        {
+            Write-Error $PSItem
         }
     }
     end
