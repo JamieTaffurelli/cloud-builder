@@ -43,13 +43,13 @@ function Test-AzBuildBlobItem
         [Parameter(Mandatory = $true, ParameterSetName = 'StorageContext')]
         [ValidateNotNullOrEmpty()]
         [Microsoft.Azure.Commands.Common.Authentication.Abstractions.IStorageContext]
-        $Context
+        $StorageContext
     )
     begin
     {
         Write-Verbose "Starting $($MyInvocation.MyCommand.Name)"
 
-        switch($PSItem.ParameterSetName)
+        switch($PSCmdlet.ParameterSetName)
         {
             "DynamicAuth"
             {
@@ -68,6 +68,7 @@ function Test-AzBuildBlobItem
             }
             "StorageContext"
             {
+                $context = $StorageContext
                 break
             }
             default
@@ -80,13 +81,18 @@ function Test-AzBuildBlobItem
     {
         try
         {   
-            Get-AzureStorageBlob -Blob $Blob -Container $ContainerName -Context $Context -ErrorAction Stop | Out-Null
-
-            return $true
+            if(Get-AzStorageBlob -Blob $Blob -Container $ContainerName -Context $context -ErrorAction Stop)
+            {
+                return $true
+            }
+            else 
+            {
+                return $false
+            }
         }
         catch [Microsoft.WindowsAzure.Commands.Storage.Common.ResourceNotFoundException]
         {
-            return $false 
+            return $false
         }
         catch
         {

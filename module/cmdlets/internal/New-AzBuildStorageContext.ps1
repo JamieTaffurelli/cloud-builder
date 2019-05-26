@@ -1,12 +1,5 @@
-function Copy-AzBuildBlobItem
+function New-AzBuildStorageContext
 {
-    <#
-        .DESCRIPTION
-        
-
-        .EXAMPLE
-        
-    #>
     [CmdletBinding(DefaultParameterSetName = 'DynamicAuth')]
     param
     (
@@ -14,22 +7,6 @@ function Copy-AzBuildBlobItem
         [ValidateNotNullOrEmpty()]
         [String]
         $StorageAccountName,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $ContainerName,
-
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( { $PSItem | Test-Path -Leaf } )]
-        [Alias('FullName')]
-        [String]
-        $File,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [String]
-        $Blob,
 
         [Parameter(ParameterSetName = 'DynamicAuth')]
         [ValidateSet('OAuth', 'Key', 'Anonymous')]
@@ -40,72 +17,62 @@ function Copy-AzBuildBlobItem
         [ValidateNotNullOrEmpty()]
         [String]
         $StorageAccountKey,
-        
+
         [Parameter(Mandatory = $true, ParameterSetName = 'StaticSasAuth')]
         [ValidateNotNullOrEmpty()]
         [String]
-        $SasToken,
-
-        [Parameter(Mandatory = $true, ParameterSetName = 'StorageContext')]
-        [ValidateNotNullOrEmpty()]
-        [Microsoft.Azure.Commands.Common.Authentication.Abstractions.IStorageContext]
-        $Context,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [Switch]
-        $SkipExisting
+        $SasToken
     )
     begin
     {
         Write-Verbose "Starting $($MyInvocation.MyCommand.Name)"
-
-        switch($PSItem.ParameterSetName)
-        {
-            "DynamicAuth"
-            {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -AuthMethod $AuthMethod
-                break
-            }
-            "StaticKeyAuth"
-            {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
-                break
-            }
-            "StaticSasAuth"
-            {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -SasToken $SasToken
-                break
-            }
-            "StorageContext"
-            {
-                break
-            }
-            default
-            {
-                throw "Parameter set not recognised"
-            }
-        }
-        
-        Write-Verbose "Checking container ${ContainerName} exists in ${StorageAccountName}"
-        $storageContext | Get-AzStorageContainer -Name $ContainerName -ErrorAction Stop | Out-Null
     }
     process
     {
-        $blobExists = Test-AzBuildBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob $Blob -Context $Context
+        if($PSCmdlet.ParameterSetName -eq "DynamicAuth")
+        {
+            $storageAccount = Get-AzBuildResource -Name $StorageAccountName -Type "StorageAccount"
+        }
 
-        if($blobExists -and $SkipExisting)
-        {
-            Write-Verbose "Blob ${Blob} exists, skipping"
+        $params = @{
+            StorageAccountName = $StorageAccountName
+            Protocol           = "https"
         }
-        else 
+
+        if((@("StaticKeyAuth", "StaticSasAuth") -contains $PSCmdlet.ParameterSetName) -or ($AuthMethod -eq "Key"))
         {
-            Write-Verbose "Uploading ${Blob}"
-            Set-AzStorageBlobContent -File $File -Blob $Blob -Container $ContainerName -Context $storageContext -Force
+            Write-Warning "Consider using default OAuth method of authentication for Storage Account authentication"
+
+            if(($PSCmdlet.ParameterSetName -eq "StaticKeyAuth") -or ($AuthMethod -eq "Key"))
+            {
+                if($AuthMethod -eq "Key")
+                {
+                    $StorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $storageAccount.ResourceGroupName -Name $StorageAccountName)[0]
+                }
+
+                $params.Add('StorageAccountKey', $StorageAccountKey)
+            }
+            else 
+            {
+                $params.Add('SasToken', $SasToken)
+            }
         }
+        else
+        {
+            if($AuthMethod -eq "OAuth")
+            {
+                $params.Add('UseConnectedAccount', $true)
+            }
+            else 
+            {
+                $params.Add('Anonymous', $true)
+            }
+        }
+
+        return (New-AzStorageContext @params)
     }
     end
     {
         Write-Verbose "Finished $($MyInvocation.MyCommand.Name)"
     }
-}
+} 
