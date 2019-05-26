@@ -29,11 +29,6 @@ function New-AzBuildStorageContext
     }
     process
     {
-        if($PSCmdlet.ParameterSetName -eq "DynamicAuth")
-        {
-            $storageAccount = Get-AzBuildResource -Name $StorageAccountName -Type "StorageAccount"
-        }
-
         $params = @{
             StorageAccountName = $StorageAccountName
             Protocol           = "https"
@@ -47,6 +42,7 @@ function New-AzBuildStorageContext
             {
                 if($AuthMethod -eq "Key")
                 {
+                    $storageAccount = Get-AzBuildResource -Name $StorageAccountName -Type "Storage Account"
                     $StorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $storageAccount.ResourceGroupName -Name $StorageAccountName)[0]
                 }
 

@@ -8,7 +8,7 @@ function Get-AzBuildResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('StorageAccount')]
+        [ValidateSet('Storage Account')]
         [String]
         $Type
     )
@@ -20,13 +20,13 @@ function Get-AzBuildResource
     {
         switch($Type)
         {
-            "StorageAccount"
+            "Storage Account"
             {
-                $resources = Get-AzStorageAccount | Where-Object { $PSItem.StorageAccountName -eq $Name }
+                $resources = Get-AzStorageAccount | Where-Object { ($PSItem -ne $null) -and ($PSItem.StorageAccountName -eq $Name) }
             }
-            "Default"
+            default
             {
-                $resources = Get-AzResource | Where-Object { $PSItem.Name -eq $Name}
+                $resources = Get-AzResource | Where-Object { ($PSItem -ne $null) -and ($PSItem.Name -eq $Name) }
             }
         }
 
@@ -36,7 +36,7 @@ function Get-AzBuildResource
         }
         else 
         {
-            Write-Error "${Type} '${StorageAccountName}' not found, make sure it exists and you have the permissions to view it"    
+            Write-Error "${Type} '${Name}' not found, make sure it exists and you have the permissions to view it"    
         }
     }
     end

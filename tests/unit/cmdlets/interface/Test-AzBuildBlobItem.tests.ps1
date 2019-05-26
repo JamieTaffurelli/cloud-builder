@@ -6,12 +6,11 @@ $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "inte
 
 Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
-
-    Mock -CommandName New-AzBuildStorageContext -MockWith {}
-    Mock -CommandName Get-AzStorageBlob -MockWith {}
-
     Context "Storage Context Validation" {
 
+        Mock -CommandName New-AzBuildStorageContext -MockWith {}
+        Mock -CommandName Get-AzStorageBlob -MockWith {}
+        
         It "Uses OAuth authentication if specified" {
 
             Test-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" | Out-Null
