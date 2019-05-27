@@ -21,7 +21,7 @@ function Copy-AzBuildItem
         $ContainerName,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( { $PSItem | Test-Path -Leaf } )]
+        [ValidateScript( { $PSItem | Test-Path -PathType Leaf } )]
         [Alias('FullName')]
         [String]
         $File,
@@ -49,7 +49,7 @@ function Copy-AzBuildItem
         [Parameter(Mandatory = $true, ParameterSetName = 'StorageContext')]
         [ValidateNotNullOrEmpty()]
         [Microsoft.Azure.Commands.Common.Authentication.Abstractions.IStorageContext]
-        $Context,
+        $StorageContext,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -60,7 +60,7 @@ function Copy-AzBuildItem
     {
         Write-Verbose "Starting $($MyInvocation.MyCommand.Name)"
 
-        switch($PSItem.ParameterSetName)
+        switch($PSCmdlet.ParameterSetName)
         {
             "DynamicAuth"
             {
@@ -79,6 +79,7 @@ function Copy-AzBuildItem
             }
             "StorageContext"
             {
+                $context = $StorageContext
                 break
             }
             default
@@ -92,7 +93,7 @@ function Copy-AzBuildItem
     }
     process
     {
-        $blobExists = Test-AzBuildBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob $Blob -Context $Context
+        $blobExists = Test-AzBuildBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob $Blob -StorageContext $Context
 
         if($blobExists -and $SkipExisting)
         {
@@ -100,7 +101,7 @@ function Copy-AzBuildItem
         }
         else 
         {
-            Write-Verbose "Uploading ${Blob}"
+            Write-Host "Uploading ${Blob}"
             Set-AzStorageBlobContent -File $File -Blob $Blob -Container $ContainerName -Context $storageContext -Force
         }
     }
