@@ -102,7 +102,7 @@ function Copy-AzBuildItem
         else 
         {
             Write-Host "Uploading ${Blob}"
-            Set-AzStorageBlobContent -File $File -Blob $Blob -Container $ContainerName -Context $storageContext -Force
+            Set-AzStorageBlobContent -File $File -Blob $Blob -Container $ContainerName -Context $Context -Force
         }
     }
     end

@@ -50,6 +50,14 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $StorageAccountKey -eq "StorageKey" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
         }
+
+        It "Uses static sas authentication by if specified" {
+
+            Test-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -SasToken "StorageSas" | Out-Null
+
+            Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $SasToken -eq "StorageSas" }
+            Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
+        }
     }
 
     Context "Blob Retreival Validation" {
