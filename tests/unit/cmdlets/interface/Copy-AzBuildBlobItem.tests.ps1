@@ -8,6 +8,7 @@ $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "inte
 Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
     New-Item -Path "TestDrive:\blob1.txt" -ItemType File
+    New-Item -Path "TestDrive:\blob2.txt" -ItemType File
 
     Context "Storage Context Validation" {
 
@@ -147,6 +148,17 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
             Assert-MockCalled -CommandName Test-AzBuildBlobItem -Times 1 -Scope It -Exactly
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly
             Assert-MockCalled -CommandName Write-Verbose -Times 0 -Scope It -Exactly -ParameterFilter { $Message -eq "Blob storage/blob.txt exists, skipping" }
+        }
+
+        It "Accepts file object and fullname pipeline input" {
+
+            Mock -CommandName Test-AzBuildBlobItem -MockWith { }
+
+            @("TestDrive:\blob1.txt", (Get-Item -Path "TestDrive:\blob2.txt")) | Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" | Out-Null
+
+            Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq "TestDrive:\blob1.txt" }
+            Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq "${TestDrive}\blob2.txt" }
+            Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 2 -Scope It -Exactly
         }
     }
 }
