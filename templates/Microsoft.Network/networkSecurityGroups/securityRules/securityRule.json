@@ -38,35 +38,113 @@
                 "description": "Traffic Protocol (TCP or UDP)."
             }
         },
+        "sourceAddressPrefixes": {
+            "type": "array",
+            "metadata": {
+                "description": "Source traffic CIDR, IP or Tags"
+            }
+        },
+        "destinationAddressPrefixes": {
+            "type": "array",
+            "metadata": {
+                "description": "Destination traffic CIDR, IP or Tags"
+            }
+        },
+        "sourcePortRanges": {
+            "type": "array",
+            "defaultValue": [
+                "*"
+            ],
+            "metadata": {
+                "description": "Destination traffic port numbers"
+            }
+        },
+        "destinationPortRanges": {
+            "type": "array",
+            "metadata": {
+                "description": "Destination traffic port numbers"
+            }
+        },
+        "access": {
+            "type": "string",
+            "defaultValue": "Deny",
+            "allowedValues": [
+                "Allow",
+                "Deny"
+            ],
+            "metadata": {
+                "description": "Allow or deny traffic satisfying Security Rule conditions"
+            }
+        },
+        "priority": {
+            "type": "int",
+            "minValue": 100,
+            "maxValue": 4096,
+            "metadata": {
+                "description": "Priorty of the Security Rule, the lower the value the higher the priority"
+            }
+        },
+        "direction": {
+            "type": "string",
+            "allowedValues": [
+                "Inbound",
+                "Outbound"
+            ],
+            "metadata": {
+                "description": "Specifies if Security Rule should apply to incoming or outgoing traffic"
+            }
+        },
         "tags": {
             "type": "object"
         }
     },
-    "variables": {},
+    "functions": [
+        {
+            "namespace": "securityRule",
+            "members": {
+                "setStringOrArrayProperty": {
+                    "parameters": [
+                        {
+                            "name": "stringPropertyName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "arrayPropertyName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "propertyValue",
+                            "type": "array"
+                        }
+                    ],
+                    "output": {
+                        "type": "string",
+                        "value": "[if(equals(length(parameters('propertyValue')), 1), concat('{\"', parameters('stringPropertyName'), '\":\"', first(parameters('propertyValue')), '\"}'), concat('{\"', parameters('arrayPropertyName'), '\":\"', parameters('propertyValue'), '\"}'))]"
+                    }
+                }
+            }
+        }
+    ],
+    "variables": {
+        "defaultProperties": {
+            "description": "[parameters('description')]",
+            "protocol": "[parameters('protocol')]",
+            "access": "[parameters('access')]",
+            "priority": "[parameters('priority')]",
+            "direction": "[parameters('direction')]"
+        },
+        "sourceAddressPrefixes": "[json(securityRule.setStringOrArrayProperty('sourceAddressPrefix', 'sourceAddressPrefixes', parameters('sourceAddressPrefixes')))]",
+        "destinationAddressPrefixes": "[json(securityRule.setStringOrArrayProperty('destinationAddressPrefix', 'destinationAddressPrefixes', parameters('destinationAddressPrefixes')))]",
+        "sourcePortRanges": "[json(securityRule.setStringOrArrayProperty('sourcePortRange', 'sourcePortRanges', parameters('sourcePortRanges')))]",
+        "destinationPortRanges": "[json(securityRule.setStringOrArrayProperty('destinationPortRange', 'destinationPortRanges', parameters('destinationPortRanges')))]",
+        "properties": "[union(variables('defaultProperties'), variables('sourceAddressPrefixes'), variables('destinationAddressPrefixes'), variables('sourcePortRanges'), variables('destinationPortRanges'))]"
+    },
     "resources": [
         {
             "name": "[concat(parameters('nsgName'), '/', parameters('securityRuleName'))]",
             "type": "Microsoft.Network/networkSecurityGroups/securityRules",
             "apiVersion": "2018-11-01",
-            "properties": {
-                "description": "[parameters('description')]",
-                "protocol": "[parameters('protocol')]",
-                "sourceAddressPrefixes": [
-                    "string"
-                ],
-                "destinationAddressPrefixes": [
-                    "string"
-                ],
-                "sourcePortRanges": [
-                    "string"
-                ],
-                "destinationPortRanges": [
-                    "string"
-                ],
-                "access": "string",
-                "priority": "integer",
-                "direction": "string"
-            }
+            "properties": "[variables('properties')]"
         }
     ]
 }
