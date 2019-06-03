@@ -41,7 +41,7 @@ function Test-AzBuildBlobItem
         $SasToken,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'StorageContext')]
-        [ValidateNotNullOrEmpty()]
+        [AllowNull()]
         [Microsoft.Azure.Commands.Common.Authentication.Abstractions.IStorageContext]
         $StorageContext
     )
