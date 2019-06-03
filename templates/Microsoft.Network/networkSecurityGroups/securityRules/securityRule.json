@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "securityRuleName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Security Rule that you wish to create."
+            }
+        },
+        "nsgName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Network Security Group that the rule is attached to."
+            }
+        },
+        "description": {
+            "type": "string",
+            "metadata": {
+                "description": "Description of the Security Rule."
+            }
+        },
+        "description": {
+            "type": "string",
+            "metadata": {
+                "description": "Description of the Security Rule."
+            }
+        },
+        "protocol": {
+            "type": "string",
+            "defaultValue": "TCP",
+            "allowedValues": [
+                "TCP",
+                "UDP",
+                "*"
+            ],
+            "metadata": {
+                "description": "Traffic Protocol (TCP or UDP)."
+            }
+        },
+        "tags": {
+            "type": "object"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('nsgName'), '/', parameters('securityRuleName'))]",
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2018-11-01",
+            "properties": {
+                "description": "[parameters('description')]",
+                "protocol": "[parameters('protocol')]",
+                "sourceAddressPrefixes": [
+                    "string"
+                ],
+                "destinationAddressPrefixes": [
+                    "string"
+                ],
+                "sourcePortRanges": [
+                    "string"
+                ],
+                "destinationPortRanges": [
+                    "string"
+                ],
+                "access": "string",
+                "priority": "integer",
+                "direction": "string"
+            }
+        }
+    ]
+}

@@ -43,30 +43,10 @@
                 "description": "IP address to assign to IP configuration"
             }
         },
-        "subnetSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "Subscription ID of the Subnet the IP is allocated to"
-            }
-        },
-        "subnetResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().Name]",
-            "metadata": {
-                "description": "Resource Group of the Subnet the IP is allocated to"
-            }
-        },
-        "subnetVirtualNetworkName": {
+        "subnetId": {
             "type": "string",
             "metadata": {
-                "description": "Name of the Virtual Network the IP is allocated to"
-            }
-        },
-        "subnetName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Subnet the IP is allocated to"
+                "description": "Resource ID of the Subnet the IP is allocated to"
             }
         },
         "privateIpAddressVersion": {
@@ -118,10 +98,6 @@
         "primary": {
             "type": "bool",
             "defaultValue": true,
-            "allowedValues": [
-                true,
-                false
-            ],
             "metadata": {
                 "description": "Sets this Network Interface as the Primary Network Interface on a VM"
             }
@@ -129,10 +105,6 @@
         "enableAcceleratedNetworking": {
             "type": "bool",
             "defaultValue": false,
-            "allowedValues": [
-                true,
-                false
-            ],
             "metadata": {
                 "description": "Enables bypassing of host and switch whilst maintaining policies"
             }
@@ -140,10 +112,6 @@
         "enableIpForwarding": {
             "type": "bool",
             "defaultValue": true,
-            "allowedValues": [
-                true,
-                false
-            ],
             "metadata": {
                 "description": "Allows forwarding of traffic to other IP addresses"
             }
@@ -152,9 +120,7 @@
             "type": "object"
         }
     },
-    "variables": {
-        
-    },
+    "variables": {},
     "resources": [
         {
             "name": "[parameters('nicName')]",
@@ -170,7 +136,7 @@
                             "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
                             "privateIPAddress": "[parameters('privateIpAddress')]",
                             "subnet": {
-                                "id": "[resourceId(parameters('subnetSubscriptionId'), parameters('subnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('subnetVirtualNetworkName'), parameters('subnetName'))]"
+                                "id": "[parameters('subnetId')]"
                             },
                             "primary": true,
                             "privateIPAddressVersion": "[parameters('privateIpAddressVersion')]"
