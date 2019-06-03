@@ -1,159 +1,150 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "nicName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Network Interface that you wish to create."
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "northeurope",
-                "westeurope"
-            ],
-            "metadata": {
-                "description": "The location to deploy the Network Interface to"
-            }
-        },
-        "ipConfigurationName": {
-            "type": "string",
-            "defaultValue": "ipconfig1",
-            "metadata": {
-                "description": "The name of the IP configuration"
-            }
-        },
-        "privateIpAllocationMethod": {
-            "type": "string",
-            "defaultValue": "static",
-            "allowedValues": [
-                "static",
-                "dynamic"
-            ],
-            "metadata": {
-                "description": "Method of IP allocation when requested (static or dynamic)"
-            }
-        },
-        "privateIPAddress": {
-            "type": "string",
-            "metadata": {
-                "description": "IP address to assign to IP configuration"
-            }
-        },
-        "subnetId": {
-            "type": "string",
-            "metadata": {
-                "description": "Resource ID of the Subnet the IP is allocated to"
-            }
-        },
-        "privateIpAddressVersion": {
-            "type": "string",
-            "defaultValue": "IPv4",
-            "allowedValues": [
-                "IPv4",
-                "IPv6"
-            ],
-            "metadata": {
-                "description": "Specifies IPv4 or IPv6 IP address"
-            }
-        },
-        "dnsServers": {
-            "type": "array",
-            "defaultValue": [],
-            "metadata": {
-                "description": "Specifies DNS servers the Network Interface should use, use AzureProvidedDNS for Azure DNS resolution"
-            }
-        },
-        "appliedDnsServers": {
-            "type": "array",
-            "defaultValue": [],
-            "metadata": {
-                "description": "Union of all DNS servers for all Network Interfaces that are in the same availability set as this Network Interface"
-            }
-        },
-        "internalDnsNameLabel": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Relative DNS name for Network Interface for communication between VMs in the same Virtual Network"
-            }
-        },
-        "internalFqdn": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Fully qualified DNS name for Network Interface for communication between VMs in the same Virtual Network"
-            }
-        },
-        "internalDomainNameSuffix": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "DNS suffix for Network Interface, full DNS name can be obtained by concatenating VM name with DNS suffix"
-            }
-        },
-        "primary": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Sets this Network Interface as the Primary Network Interface on a VM"
-            }
-        },
-        "enableAcceleratedNetworking": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Enables bypassing of host and switch whilst maintaining policies"
-            }
-        },
-        "enableIpForwarding": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Allows forwarding of traffic to other IP addresses"
-            }
-        },
-        "tags": {
-            "type": "object"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nicName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Network Interface that you wish to create."
+      }
     },
-    "variables": {},
-    "resources": [
-        {
-            "name": "[parameters('nicName')]",
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2018-11-01",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('tags')]",
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Network Interface to"
+      }
+    },
+    "ipConfigurationName": {
+      "type": "string",
+      "defaultValue": "ipconfig1",
+      "metadata": {
+        "description": "The name of the IP configuration"
+      }
+    },
+    "privateIpAllocationMethod": {
+      "type": "string",
+      "defaultValue": "static",
+      "allowedValues": ["static", "dynamic"],
+      "metadata": {
+        "description": "Method of IP allocation when requested (static or dynamic)"
+      }
+    },
+    "privateIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "IP address to assign to IP configuration"
+      }
+    },
+    "subnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID of the Subnet the IP is allocated to"
+      }
+    },
+    "privateIpAddressVersion": {
+      "type": "string",
+      "defaultValue": "IPv4",
+      "allowedValues": ["IPv4", "IPv6"],
+      "metadata": {
+        "description": "Specifies IPv4 or IPv6 IP address"
+      }
+    },
+    "dnsServers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies DNS servers the Network Interface should use, use AzureProvidedDNS for Azure DNS resolution"
+      }
+    },
+    "appliedDnsServers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Union of all DNS servers for all Network Interfaces that are in the same availability set as this Network Interface"
+      }
+    },
+    "internalDnsNameLabel": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Relative DNS name for Network Interface for communication between VMs in the same Virtual Network"
+      }
+    },
+    "internalFqdn": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Fully qualified DNS name for Network Interface for communication between VMs in the same Virtual Network"
+      }
+    },
+    "internalDomainNameSuffix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "DNS suffix for Network Interface, full DNS name can be obtained by concatenating VM name with DNS suffix"
+      }
+    },
+    "primary": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Sets this Network Interface as the Primary Network Interface on a VM"
+      }
+    },
+    "enableAcceleratedNetworking": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enables bypassing of host and switch whilst maintaining policies"
+      }
+    },
+    "enableIpForwarding": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Allows forwarding of traffic to other IP addresses"
+      }
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('nicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-11-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[parameters('ipConfigurationName')]",
             "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "[parameters('ipConfigurationName')]",
-                        "properties": {
-                            "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
-                            "privateIPAddress": "[parameters('privateIpAddress')]",
-                            "subnet": {
-                                "id": "[parameters('subnetId')]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "[parameters('privateIpAddressVersion')]"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": "[parameters('dnsServers')]",
-                    "appliedDnsServers": "[parameters('appliedDnsServers')]",
-                    "internalDnsNameLabel": "[if(equals(parameters('internalDnsNameLabel'), ''), json('null'), parameters('internalDnsNameLabel'))]",
-                    "internalFqdn": "[parameters('internalFqdn')]",
-                    "internalDomainNameSuffix": "[parameters('internalDomainNameSuffix')]"
-                },
-                "primary": "[parameters('primary')]",
-                "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]",
-                "enableIPForwarding": "[parameters('enableIPForwarding')]"
+              "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
+              "privateIPAddress": "[parameters('privateIpAddress')]",
+              "subnet": {
+                "id": "[parameters('subnetId')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "[parameters('privateIpAddressVersion')]"
             }
-        }
-    ]
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": "[parameters('dnsServers')]",
+          "appliedDnsServers": "[parameters('appliedDnsServers')]",
+          "internalDnsNameLabel": "[if(equals(parameters('internalDnsNameLabel'), ''), json('null'), parameters('internalDnsNameLabel'))]",
+          "internalFqdn": "[parameters('internalFqdn')]",
+          "internalDomainNameSuffix": "[parameters('internalDomainNameSuffix')]"
+        },
+        "primary": "[parameters('primary')]",
+        "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]",
+        "enableIPForwarding": "[parameters('enableIPForwarding')]"
+      }
+    }
+  ]
 }

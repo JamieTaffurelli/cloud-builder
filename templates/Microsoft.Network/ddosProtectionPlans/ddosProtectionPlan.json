@@ -2,10 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "nsgName": {
+    "ddosProtectionPlanName": {
       "type": "string",
       "metadata": {
-        "description": "The name of the Network Security Group that you wish to create."
+        "description": "The name of the DDOS Protection Plan that you wish to create."
       }
     },
     "location": {
@@ -13,7 +13,7 @@
       "defaultValue": "[resourceGroup().location]",
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
-        "description": "The location to deploy the Network Security Group to"
+        "description": "The location to deploy the DDOS Protection Plan to"
       }
     },
     "tags": {
@@ -23,11 +23,12 @@
   "variables": {},
   "resources": [
     {
-      "name": "[parameters('nsgName')]",
-      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('ddosProtectionPlanName')]",
+      "type": "Microsoft.Network/ddosProtectionPlans",
       "apiVersion": "2018-11-01",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]"
+      "tags": "[parameters('tags')]",
+      "properties": {}
     }
   ]
 }

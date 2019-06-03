@@ -11,10 +11,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "Location of the Event Hub Namespace"
       }
@@ -22,10 +19,7 @@
     "sku": {
       "type": "string",
       "defaultValue": "Standard",
-      "allowedValues": [
-        "Basic",
-        "Standard"
-      ],
+      "allowedValues": ["Basic", "Standard"],
       "metadata": {
         "description": "The messaging tier for Event Hub Namespace"
       }
