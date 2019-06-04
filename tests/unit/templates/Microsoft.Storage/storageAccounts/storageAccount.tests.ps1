@@ -233,7 +233,7 @@ Describe "storageAccount Resource Validation" {
 
         It "Default action is deny" {
 
-            ($json.resources.networkAcls.defaultAction -eq "Deny") | should be $true
+            $json.resources.properties.networkAcls.defaultAction -eq "Deny" | should be $true
         }
     }
 
