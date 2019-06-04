@@ -106,10 +106,10 @@
       "copy": [
         {
           "name": "virtualNetworkRules",
-          "count": "[if(equals(length(parameters('virtualNetworkRules')), 0), 1, length(parameters('virtualNetworkRules')))]",
+          "count": "[if(empty(parameters('virtualNetworkRules')), 1, length(parameters('virtualNetworkRules')))]",
           "input": {
-            "id": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyId', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetId)]",
-            "action": "[if(equals(length(parameters('virtualNetworkRules')), 0), 'dummyAction', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'action'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].action, variables('defaultaction')))]"
+            "id": "[if(empty(parameters('virtualNetworkRules')), 'dummyId', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetId)]",
+            "action": "[if(empty(parameters('virtualNetworkRules')), 'dummyAction', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'action'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].action, variables('defaultaction')))]"
           }
         }
       ]
@@ -118,10 +118,10 @@
       "copy": [
         {
           "name": "ipRules",
-          "count": "[if(equals(length(parameters('ipRules')), 0), 1, length(parameters('ipRules')))]",
+          "count": "[if(empty(parameters('ipRules')), 1, length(parameters('ipRules')))]",
           "input": {
-            "value": "[if(equals(length(parameters('ipRules')), 0), 'dummyId', parameters('ipRules')[copyIndex('ipRules')].value)]",
-            "action": "[if(equals(length(parameters('ipRules')), 0), 'dummyAction', if(contains(parameters('ipRules')[copyIndex('ipRules')], 'action'), parameters('ipRules')[copyIndex('ipRules')].action, variables('defaultAction')))]"
+            "value": "[if(empty(parameters('ipRules')), 'dummyId', parameters('ipRules')[copyIndex('ipRules')].value)]",
+            "action": "[if(empty(parameters('ipRules')), 'dummyAction', if(contains(parameters('ipRules')[copyIndex('ipRules')], 'action'), parameters('ipRules')[copyIndex('ipRules')].action, variables('defaultAction')))]"
           }
         }
       ]
@@ -155,9 +155,9 @@
         },
         "networkAcls": {
           "bypass": "[parameters('bypass')]",
-          "virtualNetworkRules": "[if(equals(length(parameters('virtualNetworkRules')), 0), json('[]'), variables('virtualNetworkRules').virtualNetworkRules)]",
-          "ipRules": "[if(equals(length(parameters('ipRules')), 0), json('[]'), variables('ipRules').ipRules)]",
-          "defaultAction": "[variables('defaultAction')]"
+          "virtualNetworkRules": "[if(empty(parameters('virtualNetworkRules')), json('[]'), variables('virtualNetworkRules').virtualNetworkRules)]",
+          "ipRules": "[if(empty(parameters('ipRules')), json('[]'), variables('ipRules').ipRules)]",
+          "defaultAction": "Deny"
         },
         "supportsHttpsTrafficOnly": true,
         "accessTier": "[if(equals(parameters('kind'),'BlobStorage'), parameters('accessTier'), json('null'))]"

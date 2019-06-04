@@ -13,7 +13,7 @@
       "defaultValue": "[resourceGroup().location]",
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
-        "description": "The location to deploy the DDOS Protection Plan to"
+        "description": "The location to deploy the Disk to"
       }
     },
     "sku": {
@@ -26,7 +26,15 @@
         "UltraSSD_LRS"
       ],
       "metadata": {
-        "description": "The underlying Storage Architecture of the disk, only certain VM sizes will support certain skus"
+        "description": "The underlying Storage Architecture of the Disk, only certain VM sizes will support certain skus"
+      }
+    },
+    "diskSizeGB": {
+      "type": "int",
+      "minValue": 32,
+      "maxValue": 32767,
+      "metadata": {
+        "description": "The size in GB of the disk to be created"
       }
     },
     "tags": {
@@ -46,30 +54,11 @@
       },
       "properties": {
         "creationData": {
-          "createOption": "string",
-          "storageAccountId": "string",
-          "sourceUri": "string",
-          "sourceResourceId": "string"
+          "createOption": "Empty"
         },
-        "diskSizeGB": "integer",
+        "diskSizeGB": "[parameters('diskSizeGB')]",
         "encryptionSettingsCollection": {
-          "enabled": boolean,
-          "encryptionSettings": [
-            {
-              "diskEncryptionKey": {
-                "sourceVault": {
-                  "id": "string"
-                },
-                "secretUrl": "string"
-              },
-              "keyEncryptionKey": {
-                "sourceVault": {
-                  "id": "string"
-                },
-                "keyUrl": "string"
-              }
-            }
-          ]
+          "enabled": false
         }
       }
     }

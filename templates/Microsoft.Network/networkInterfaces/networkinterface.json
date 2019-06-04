@@ -137,7 +137,7 @@
         "dnsSettings": {
           "dnsServers": "[parameters('dnsServers')]",
           "appliedDnsServers": "[parameters('appliedDnsServers')]",
-          "internalDnsNameLabel": "[if(equals(parameters('internalDnsNameLabel'), ''), json('null'), parameters('internalDnsNameLabel'))]",
+          "internalDnsNameLabel": "[if(empty(parameters('internalDnsNameLabel')), json('null'), parameters('internalDnsNameLabel'))]",
           "internalFqdn": "[parameters('internalFqdn')]",
           "internalDomainNameSuffix": "[parameters('internalDomainNameSuffix')]"
         },

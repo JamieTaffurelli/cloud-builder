@@ -5,7 +5,7 @@
     "keyVaultName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the Key Vault"
+        "description": "Name of the Key Vault."
       }
     },
     "location": {
@@ -13,7 +13,22 @@
       "defaultValue": "[resourceGroup().location]",
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
-        "description": "Location of the Key Vault"
+        "description": "Location of the Key Vault."
+      }
+    },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]",
+      "metadata": {
+        "description": "Specifies the Azure Active Directory tenant ID that should be used for authenticating requests to the Key Vault."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": ["Standard", "Premium"],
+      "metadata": {
+        "description": "Specifies whether the Key Vault is a standard vault or a premium vault."
       }
     },
     "enabledForDeployment": {
@@ -37,98 +52,82 @@
         "description": "Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
       }
     },
-    "tenantId": {
+    "bypass": {
       "type": "string",
-      "defaultValue": "[subscription().tenantId]",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "AzureServices"
+      ],
       "metadata": {
-        "description": "Specifies the Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. Get it by using Get-AzSubscription cmdlet."
+        "description": "Specifies what traffic can bypass network ACLs."
       }
     },
-    "objectId": {
-      "type": "string",
-      "metadata": {
-        "description": "Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets."
-      }
-    },
-    "keysPermissions": {
+    "ipRules": {
       "type": "array",
-      "defaultValue": ["list"],
       "metadata": {
-        "description": "Specifies the permissions to keys in the vault. Valid values are: all, encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, and purge."
+        "description": "List of IP addresses to allow traffic from"
       }
     },
-    "secretsPermissions": {
+    "virtualNetworkRules": {
       "type": "array",
-      "defaultValue": ["list"],
       "metadata": {
-        "description": "Specifies the permissions to secrets in the vault. Valid values are: all, get, list, set, delete, backup, restore, recover, and purge."
+        "description": "List of subnet IDs to allow traffic from"
       }
     },
-    "skuName": {
-      "type": "string",
-      "defaultValue": "Standard",
-      "allowedValues": ["Standard", "Premium"],
-      "metadata": {
-        "description": "Specifies whether the key vault is a standard vault or a premium vault."
-      }
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "ipRules": {
+      "copy": [
+        {
+          "name": "ipRules",
+          "count": "[if(empty(parameters('ipRules')), 1, length(parameters('ipRules')))]",
+          "input": {
+            "value": "[if(empty(parameters('ipRules')), 'dummyIp', parameters('ipRules')[copyIndex('ipRules')])]"
+          }
+        }
+      ]
     },
-    "secretsObject": {
-      "type": "secureObject",
-      "defaultValue": "{}",
-      "metadata": {
-        "description": "Specifies all secrets {\"secretName\":\"\",\"secretValue\":\"\"} wrapped in a secure object."
-      }
+    "virtualNetworkRules": {
+      "copy": [
+        {
+          "name": "virtualNetworkRules",
+          "count": "[if(empty(parameters('virtualNetworkRules')), 1, length(parameters('virtualNetworkRules')))]",
+          "input": {
+            "id": "[if(empty(parameters('virtualNetworkRules')), 'dummyVNetRule', parameters('ipRules')[copyIndex('virtualNetworkRules')])]"
+          }
+        }
+      ]
     }
   },
   "resources": [
     {
-      "type": "Microsoft.KeyVault/vaults",
       "name": "[parameters('keyVaultName')]",
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2018-02-14",
       "location": "[parameters('location')]",
-      "apiVersion": "2018-02-14",
-      "tags": {
-        "displayName": "KeyVault"
-      },
+      "tags": "[parameters('tags')]",
       "properties": {
-        "enabledForDeployment": "[parameters('enabledForDeployment')]",
-        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
-        "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
         "tenantId": "[parameters('tenantId')]",
-        "accessPolicies": [
-          {
-            "objectId": "[parameters('objectId')]",
-            "tenantId": "[parameters('tenantId')]",
-            "permissions": {
-              "keys": "[parameters('keysPermissions')]",
-              "secrets": "[parameters('secretsPermissions')]"
-            }
-          }
-        ],
         "sku": {
-          "name": "[parameters('skuName')]",
-          "family": "A"
+          "family": "A",
+          "name": "[parameters('skuName')]"
         },
+        "enabledForDeployment": "[parameters('enabledForDeployment')]",
+        "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
+        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+        "enableSoftDelete": true,
+        "createMode": "recover",
+        "enablePurgeProtection": true,
         "networkAcls": {
-          "value": {
-            "defaultAction": "Allow",
-            "bypass": "AzureServices"
-          }
+          "bypass": "[parameters('bypass')]",
+          "defaultAction": "Deny",
+          "ipRules": "[variables('ipRules').ipRules]",
+          "virtualNetworkRules": "[variables('virtualNetworkRules').virtualNetworkRules]"
         }
-      }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "name": "[concat(parameters('keyVaultName'), '/', parameters('secretsObject').secrets[copyIndex()].secretName)]",
-      "apiVersion": "2018-02-14",
-      "dependsOn": [
-        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
-      ],
-      "copy": {
-        "name": "secretsCopy",
-        "count": "[length(parameters('secretsObject').secrets)]"
-      },
-      "properties": {
-        "value": "[parameters('secretsObject').secrets[copyIndex()].secretValue]"
       }
     }
   ]

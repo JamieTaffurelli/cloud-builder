@@ -173,7 +173,7 @@
     }
   },
   "variables": {
-    "osDiskCaching": "[if(equals(parameters('osDiskCaching'), ''), if(or(equals(parameters('osDiskStorageAccountType'), 'Premium_LRS'), equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS')), 'ReadWrite', 'None'), parameters('osDiskCaching'))]",
+    "osDiskCaching": "[if(empty(parameters('osDiskCaching')), if(or(equals(parameters('osDiskStorageAccountType'), 'Premium_LRS'), equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS')), 'ReadWrite', 'None'), parameters('osDiskCaching'))]",
     "networkInterfaces": {
       "copy": [
         {
