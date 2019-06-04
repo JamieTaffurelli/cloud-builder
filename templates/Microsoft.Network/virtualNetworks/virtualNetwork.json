@@ -11,10 +11,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "Location of the Virtual Network"
       }
@@ -38,6 +35,12 @@
         "description": "The subnets to provision in the Virtual Network"
       }
     },
+    "ddosProtectionPlanId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the DDOS protection plan to associated with the Virtual Network"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -56,9 +59,9 @@
             "properties": {
               "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
               "networkSecurityGroup": {
-                "id": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupResourceGroup'), resourceId(parameters('subnets')[copyIndex('subnets')].networkSecurityGroupResourceGroup, 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupName), resourceId('Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupName))]"
+                "id": "[parameters('subnets')[copyIndex('subnets')].networkSecurityGroup.id]"
               },
-              "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableResourceGroup'), resourceId(parameters('subnets')[copyIndex('subnets')].routeTableResourceGroup, 'Microsoft.Network/routeTables', parameters('subnets')[copyIndex('subnets')].routeTableName), resourceId('Microsoft.Network/routeTables', parameters('subnets')[copyIndex('subnets')].routeTableName)), '\"}')), json('null'))]",
+              "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', parameters('subnets')[copyIndex('subnets')].routeTableId, '\"}')), json('null'))]",
               "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, json('null'))]"
             }
           }
@@ -81,8 +84,11 @@
           "dnsServers": "[parameters('dnsServers')]"
         },
         "subnets": "[variables('subnets').subnets]",
-        "enableDdosProtection": false,
-        "enableVmProtection": true
+        "enableVmProtection": true,
+        "enableDdosProtection": true,
+        "ddosProtectionPlan": {
+          "id": "[parameters('ddosProtectionPlanId')]"
+        }
       }
     }
   ],
