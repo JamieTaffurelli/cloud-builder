@@ -45,6 +45,7 @@ steps:
   displayName: 'Run AzSK ARM Template Checker'
   inputs:
     ARMTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
+    'SkipControlsFromFile': '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
     DisableAutoUpdate: false
 
 - task: PowerShell@2
