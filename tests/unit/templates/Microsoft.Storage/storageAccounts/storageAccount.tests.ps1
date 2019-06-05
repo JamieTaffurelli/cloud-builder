@@ -1,7 +1,7 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
 $armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
-Describe "storageAccount Parameter Validation" {
+Describe "Storage Account Parameter Validation" {
 
     Context "storageAccountName Validation" {
 
@@ -20,12 +20,12 @@ Describe "storageAccount Parameter Validation" {
             ($json.parameters.storageAccountName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
 
-        It "storageAccountName parameter is minlength is 3" {
+        It "storageAccountName parameter minimum length is 3" {
 
             $json.parameters.storageAccountName.minLength | should be 3
         }
 
-        It "storageAccountName parameter is maxlength is 24" {
+        It "storageAccountName parameter maximum length is 24" {
 
             $json.parameters.storageAccountName.maxLength | should be 24
         }
@@ -112,7 +112,7 @@ Describe "storageAccount Parameter Validation" {
             $json.parameters.customDomainName.type | should be "string"
         }
 
-        It "customDomainName parameter default value is and empty string" {
+        It "customDomainName parameter default value is an empty string" {
 
             $json.parameters.customDomainName.defaultValue | should be ([String]::Empty)
         }
@@ -155,7 +155,7 @@ Describe "storageAccount Parameter Validation" {
 
         It "virtualNetworkRules parameter default value is an empty array" {
 
-            $json.parameters.virtualNetworkRules.defaultValue | should be @()
+            $json.parameters.virtualNetworkRules.defaultValue.Count | should be 0
         }
     }
 
@@ -173,7 +173,7 @@ Describe "storageAccount Parameter Validation" {
 
         It "ipRules parameter default value is an empty array" {
 
-            $json.parameters.ipRules.defaultValue | should be @()
+            $json.parameters.ipRules.defaultValue.Count | should be 0
         }
     }
 
@@ -219,7 +219,7 @@ Describe "storageAccount Parameter Validation" {
     }
 }
 
-Describe "storageAccount Resource Validation" {
+Describe "Storage Account Resource Validation" {
 
     Context "apiVersion Validation" {
 
@@ -231,9 +231,14 @@ Describe "storageAccount Resource Validation" {
 
     Context "Network ACL Validation" {
 
-        It "Default action is deny" {
+        It "Default action is deny when no rule is satisfied" {
 
             $json.resources.properties.networkAcls.defaultAction -eq "Deny" | should be $true
+        }
+
+        It "Default action for explicit network ACLs is allow" {
+
+            $json.variables.defaultAction -eq "Allow" | should be $true
         }
     }
 

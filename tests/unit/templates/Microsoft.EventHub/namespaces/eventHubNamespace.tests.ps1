@@ -1,7 +1,7 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
 $armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
-Describe "eventHubNamespace Parameter Validation" {
+Describe "Event Hub Namespace Parameter Validation" {
 
     Context "eventHubNamespaceName Validation" {
 
@@ -15,7 +15,7 @@ Describe "eventHubNamespace Parameter Validation" {
             $json.parameters.eventHubNamespaceName.type | should be "string"
         }
 
-        It "storageAccountName parameter is mandatory" {
+        It "eventHubNamespaceName parameter is mandatory" {
 
             ($json.parameters.eventHubNamespaceName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
@@ -178,7 +178,7 @@ Describe "eventHubNamespace Parameter Validation" {
     }
 }
 
-Describe "eventHubNamespace Resource Validation" {
+Describe "Event Hub Namespace Resource Validation" {
 
     Context "apiVersion Validation" {
 

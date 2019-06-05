@@ -4,6 +4,8 @@
   "parameters": {
     "securityRuleName": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
       "metadata": {
         "description": "The name of the Security Rule that you wish to create."
       }
@@ -12,12 +14,6 @@
       "type": "string",
       "metadata": {
         "description": "The name of the Network Security Group that the rule is attached to."
-      }
-    },
-    "description": {
-      "type": "string",
-      "metadata": {
-        "description": "Description of the Security Rule."
       }
     },
     "description": {
@@ -61,7 +57,6 @@
     },
     "access": {
       "type": "string",
-      "defaultValue": "Deny",
       "allowedValues": ["Allow", "Deny"],
       "metadata": {
         "description": "Allow or deny traffic satisfying Security Rule conditions"

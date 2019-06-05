@@ -101,7 +101,7 @@
     }
   },
   "variables": {
-    "defaultAction": "Deny",
+    "defaultAction": "Allow",
     "virtualNetworkRules": {
       "copy": [
         {
