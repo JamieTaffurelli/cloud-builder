@@ -41,6 +41,12 @@ steps:
     summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
     failIfCoverageEmpty: true
 
+- task: AzSKARMTemplateChecker@1
+  displayName: 'Run AzSK ARM Template Checker'
+  inputs:
+    ARMTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
+    DisableAutoUpdate: false
+
 - task: PowerShell@2
   displayName: 'Version ARM Templates'
   inputs:
@@ -55,12 +61,6 @@ steps:
     publishLocation: 'Container'
     parallel: false
 
-- task: AzSKARMTemplateChecker@1
-  displayName: 'Run AzSK ARM Template Checker'
-  inputs:
-    ARMTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
-    DisableAutoUpdate: false
-    
 - task: CopyFiles@2
   displayName: 'Copy Example Deployment Templates to Staging Directory'
   inputs:
