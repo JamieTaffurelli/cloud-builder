@@ -4,6 +4,8 @@
   "parameters": {
     "nicName": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
       "metadata": {
         "description": "The name of the Network Interface that you wish to create."
       }
@@ -55,14 +57,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Specifies DNS servers the Network Interface should use, use AzureProvidedDNS for Azure DNS resolution"
-      }
-    },
-    "appliedDnsServers": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Union of all DNS servers for all Network Interfaces that are in the same availability set as this Network Interface"
+        "description": "Specifies DNS servers the Network Interface should use, default is Azure Provided DNS"
       }
     },
     "internalDnsNameLabel": {
@@ -111,7 +106,9 @@
       "type": "object"
     }
   },
-  "variables": {},
+  "variables": {
+    "dnsServers": "[if(empty(parameters('dnsServers')), json('[\"AzureProvidedDNS\"]'), parameters('dnsServers'))]"
+  },
   "resources": [
     {
       "name": "[parameters('nicName')]",
@@ -136,7 +133,6 @@
         ],
         "dnsSettings": {
           "dnsServers": "[parameters('dnsServers')]",
-          "appliedDnsServers": "[parameters('appliedDnsServers')]",
           "internalDnsNameLabel": "[if(empty(parameters('internalDnsNameLabel')), json('null'), parameters('internalDnsNameLabel'))]",
           "internalFqdn": "[parameters('internalFqdn')]",
           "internalDomainNameSuffix": "[parameters('internalDomainNameSuffix')]"

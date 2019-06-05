@@ -4,6 +4,8 @@
   "parameters": {
     "virtualNetworkName": {
       "type": "string",
+      "minLength": 2,
+      "maxLength": 64,
       "metadata": {
         "description": "Name of the Virtual Network"
       }
@@ -26,7 +28,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "The DNS Servers to apply to Virtual Network. Default value \"\" will use Azure provided DNS"
+        "description": "The DNS Servers to apply to Virtual Network. Default value [] will use Azure provided DNS"
       }
     },
     "subnets": {
