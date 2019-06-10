@@ -54,9 +54,11 @@ $exclusionTemplates = ((Get-ChildItem -Path $SearchFolder -File -Recurse).FullNa
 
 if($AsCsv)
 {
-    $csvExclusionTemplates = ($exclusionTemplates -join ',') -replace $SearchFolder, [String]::Empty
-    Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${csvExclusionTemplates}"
-    return $csvExclusionTemplates
+    $csvExclusionTemplatesFullPath = ($exclusionTemplates -join ',')
+    $csvExclusionTemplatesRelativePath = ($csvExclusionTemplatesFullPath -replace $SearchFolder, [String]::Empty).TrimStart('\')
+
+    Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${csvExclusionTemplatesRelativePath}"
+    return $csvExclusionTemplatesFullPath
 }
 else
 {
