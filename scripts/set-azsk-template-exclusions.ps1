@@ -56,13 +56,16 @@ if($AsCsv)
 {
     $csvExclusionTemplatesFullPath = ($exclusionTemplates -join ',')
 
+    Write-Host "Search folder:"
+    Write-Host $SearchFolder
+    
     Write-Host "Full paths:"
     Write-Host $csvExclusionTemplatesFullPath
     $csvExclusionTemplatesRelativePath = (($csvExclusionTemplatesFullPath -replace [Regex]::Escape($SearchFolder), [String]::Empty) -replace [Regex]::Escape(',\'), ",").Trim('\')
 
     Write-Host "Relative paths:"
     Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${csvExclusionTemplatesRelativePath}"
-    
+
     return $csvExclusionTemplatesFullPath
 }
 else
