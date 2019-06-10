@@ -64,6 +64,7 @@ if($AsCsv)
     $csvExclusionTemplatesRelativePath = (($csvExclusionTemplatesFullPath -replace [Regex]::Escape("D:\_work\1\s\templates"), [String]::Empty) -replace [Regex]::Escape(',\'), ",").Trim('\')
 
     Write-Host "Relative paths:"
+    Write-Host $csvExclusionTemplatesRelativePath
     Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${csvExclusionTemplatesRelativePath}"
 
     return $csvExclusionTemplatesFullPath
