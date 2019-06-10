@@ -57,7 +57,7 @@ steps:
   inputs:
     armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
     skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
-    excludeFiles: 'Microsoft.Compute\disks\dataDisk.json,Microsoft.Compute\virtualMachines\windowsVirtualMachine.json,Microsoft.Compute\virtualMachines\extensions\virtualMachineExtension.json,Microsoft.KeyVault\vaults\accessPolicies\accessPolicies.json,Microsoft.Network\ddosProtectionPlans\ddosProtectionPlan.json,Microsoft.Network\networkInterfaces\networkinterface.json,Microsoft.Network\networkSecurityGroups\networkSecurityGroup.json,Microsoft.Network\networkSecurityGroups\securityRules\securityRule.json'
+    excludeFiles: 'dataDisk.json'
     disableAutoUpdate: false
 
 - task: PowerShell@2
