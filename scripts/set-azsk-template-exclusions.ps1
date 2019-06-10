@@ -55,8 +55,8 @@ $exclusionTemplates = ((Get-ChildItem -Path $SearchFolder -File -Recurse).FullNa
 if($AsCsv)
 {
     $csvExclusionTemplates = $exclusionTemplates -join ','
-    
-    Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${exclusionTemplcsvExclusionTemplatesates}"
+
+    Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${exclusionTemplates}"
     return $csvExclusionTemplates
 }
 else
