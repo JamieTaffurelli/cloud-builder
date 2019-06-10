@@ -56,7 +56,7 @@ if($AsCsv)
 {
     $csvExclusionTemplates = $exclusionTemplates -join ','
 
-    Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${exclusionTemplates}"
+    Write-Host "##vso[task.setvariable variable=ExclusionTemplates]${csvExclusionTemplates}"
     return $csvExclusionTemplates
 }
 else
