@@ -16,32 +16,11 @@
         "description": "The location to deploy the Virtual Machine to"
       }
     },
-    "planName": {
-      "type": "string",
-      "defaultValue": "",
+    "purchasePlanRequired": {
+      "type": "bool",
+      "defaultValue": false,
       "metadata": {
-        "description": "The ID of the Marketplace image"
-      }
-    },
-    "planPublisherName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The ID of the Marketplace image publisher"
-      }
-    },
-    "planProductName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The ID of the Marketplace image product"
-      }
-    },
-    "planPromotionCode": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "The promo code of the Marketplace image"
+        "description": "Specify if VM image deployed requires purchase plan, usually only required for third party images."
       }
     },
     "vmSize": {
@@ -71,14 +50,6 @@
         "description": "The publisher of the Virtual Machine OS disk image"
       }
     },
-    "osType": {
-      "type": "string",
-      "defaultValue": "Windows",
-      "allowedValues": ["Windows", "Linux"],
-      "metadata": {
-        "description": "The type of the Virtual Machine OS, Windows or Linux"
-      }
-    },
     "osDiskName": {
       "type": "string",
       "metadata": {
@@ -87,8 +58,8 @@
     },
     "osDiskCaching": {
       "type": "string",
-      "defaultValue": "None",
-      "allowedValues": ["None", "ReadOnly", "ReadWrite"],
+      "defaultValue": "",
+      "allowedValues": ["", "None", "ReadOnly", "ReadWrite"],
       "metadata": {
         "description": "The caching option of the Virtual Machine OS disk (None, ReadOnly, ReadWrite), defaults to None for Standard storage, ReadOnly for Premium storage"
       }
@@ -99,6 +70,13 @@
       "allowedValues": ["FromImage", "Empty", "Attach"],
       "metadata": {
         "description": "Specifies how the OS disk should be created"
+      }
+    },
+    "writeAcceleratorEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Specifies whether writeAccelerator should be enabled or disabled on the disk."
       }
     },
     "osDiskSizeInGB": {
@@ -121,13 +99,6 @@
       ],
       "metadata": {
         "description": "The underlying Storage Architecture of the Virtual Machine OS disk, only certain VM sizes will support certain Storage Account Types"
-      }
-    },
-    "ultraSsdEnabled": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Specifies whether VM can utilise Ultra SSD managed data disks"
       }
     },
     "adminUsername": {
@@ -155,17 +126,43 @@
         "description": "Specify Network Interfaces to attach to the Virtual Machine. Valid properties are Id (resource ID of NIC), nicName and isPrimary (true or false)"
       }
     },
-    "bootDiagnosticsStorageAccountName": {
+    "diagnosticsStorageAccountName": {
       "type": "string",
       "metadata": {
-        "description": "Storage Account to output console output and screenshot images from the Virtual Machine"
+        "description": "Storage Account to store diagnostic information from the Virtual Machine."
+      }
+    },
+    "diagnosticsStorageAccountResourceGroup": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of Storage Account to store diagnostic information from the Virtual Machine."
+      }
+    },
+    "diagnosticsStorageAccountSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID of Storage Account to store diagnostic information from the Virtual Machine."
       }
     },
     "availabilitySetId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Name of the Availabilty Set to deploy Virtual Machine to"
+        "description": "Resource ID of the Availabilty Set to deploy Virtual Machine to"
+      }
+    },
+    "templateContainerUrl": {
+      "type": "string",
+      "metadata": {
+        "descriptions": "URL of blob container templates are located"
+      }
+    },
+    "templateSas": {
+      "type": "securestring",
+      "metadata": {
+        "descriptions": "URL of blob container templates are located"
       }
     },
     "tags": {
@@ -173,6 +170,11 @@
     }
   },
   "variables": {
+    "purchasePlan": {
+      "name": "[parameters('imageSku')]",
+      "publisher": "[parameters('imagePublisher')]",
+      "product": "[parameters('imageOffer')]"
+    },
     "osDiskCaching": "[if(empty(parameters('osDiskCaching')), if(or(equals(parameters('osDiskStorageAccountType'), 'Premium_LRS'), equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS')), 'ReadWrite', 'None'), parameters('osDiskCaching'))]",
     "networkInterfaces": {
       "copy": [
@@ -190,15 +192,25 @@
     },
     "availabilitySet": {
       "id": "[parameters('availabilitySetId')]"
-    }
+    },
+    "diagnosticStorageAccountResourceId": "[resourceId(parameters('diagnosticsStorageAccountSubscriptionId'), parameters('diagnosticsStorageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('diagnosticsStorageAccountName'))]",
+    "vmExtensionTemplateVersion": "1.0.0.0",
+    "vmExtensionsTemplateUrl": "[concat(parameters('templateContainerUrl'), 'Microsoft.Compute/virtualMachines/extensions/virtualMachineExtension', variables('vmExtensionTemplateVersion'), parameters('templateSas'))]",
+    "vmDiagnosticsWadLogs": "<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"Security!*[System[(Level = 1 or Level = 2)]]\" /> <DataSource name=\"System!*[System[(Level = 1 or Level = 2)]]\" /></WindowsEventLog>",
+    "vmDiagnosticsWadPerformanceCounters1": "<PerformanceCounters scheduledTransferPeriod=\"PT1M\"><PerformanceCounterConfiguration counterSpecifier=\"\\Processor(_Total)\\% Processor Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"CPU utilization\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Processor(_Total)\\% Privileged Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"CPU privileged time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Processor(_Total)\\% User Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"CPU user time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Processor Information(_Total)\\Processor Frequency\" sampleRate=\"PT15S\" unit=\"Count\"><annotation displayName=\"CPU frequency\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\System\\Processes\" sampleRate=\"PT15S\" unit=\"Count\"><annotation displayName=\"Processes\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Process(_Total)\\Thread Count\" sampleRate=\"PT15S\" unit=\"Count\"><annotation displayName=\"Threads\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Process(_Total)\\Handle Count\" sampleRate=\"PT15S\" unit=\"Count\"><annotation displayName=\"Handles\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Memory\\% Committed Bytes In Use\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Memory usage\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Memory\\Available Bytes\" sampleRate=\"PT15S\" unit=\"Bytes\"><annotation displayName=\"Memory available\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Memory\\Committed Bytes\" sampleRate=\"PT15S\" unit=\"Bytes\"><annotation displayName=\"Memory committed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\Memory\\Commit Limit\" sampleRate=\"PT15S\" unit=\"Bytes\"><annotation displayName=\"Memory commit limit\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active time\" locale=\"en-us\"/></PerformanceCounterConfiguration>",
+    "vmDiagnosticsWadPerformanceCounters2": "<PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Read Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active read time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\% Disk Write Time\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk active write time\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Transfers/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Reads/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk read operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Writes/sec\" sampleRate=\"PT15S\" unit=\"CountPerSecond\"><annotation displayName=\"Disk write operations\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Read Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk read speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\PhysicalDisk(_Total)\\Disk Write Bytes/sec\" sampleRate=\"PT15S\" unit=\"BytesPerSecond\"><annotation displayName=\"Disk write speed\" locale=\"en-us\"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier=\"\\LogicalDisk(_Total)\\% Free Space\" sampleRate=\"PT15S\" unit=\"Percent\"><annotation displayName=\"Disk free space (percentage)\" locale=\"en-us\"/></PerformanceCounterConfiguration></PerformanceCounters>",
+    "vmDiagnosticsWadConfigStart": "[concat(variables('vmDiagnosticsWadLogs'), variables('vmDiagnosticsWadPerformanceCounters1'), variables('vmDiagnosticsWadPerformanceCounters2'), '<Metrics resourceId=\"')]",
+    "vmDiagnosticsWadMetricsResourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name , '/providers/', 'Microsoft.Compute/virtualMachines/')]",
+    "vmDiagnosticsWadConfigEnd": "\"><MetricAggregation scheduledTransferPeriod=\"PT1H\"/><MetricAggregation scheduledTransferPeriod=\"PT1M\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>"
   },
   "resources": [
     {
       "name": "[parameters('vmName')]",
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-10-01",
+      "apiVersion": "2019-03-01",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
+      "plan": "[if(equals(parameters('purchasePlanRequired'), json('true')), variables('purchasePlan'), json('null'))]",
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -211,10 +223,10 @@
             "version": "latest"
           },
           "osDisk": {
-            "osType": "[parameters('osType')]",
+            "osType": "Windows",
             "name": "[parameters('osDiskName')]",
             "caching": "[variables('osDiskCaching')]",
-            "writeAcceleratorEnabled": false,
+            "writeAcceleratorEnabled": "[parameters('writeAcceleratorEnabled')]",
             "createOption": "[parameters('osDiskCreateOption')]",
             "diskSizeGB": "[parameters('osDiskSizeInGB')]",
             "managedDisk": {
@@ -223,13 +235,14 @@
           }
         },
         "additionalCapabilities": {
-          "ultraSSDEnabled": "[parameters('ultraSsdEnabled')]"
+          "ultraSSDEnabled": "[if(equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS'), json('true'), json('false'))]"
         },
         "osProfile": {
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
+            "provisionVMAgent": true,
             "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
             "timeZone": "GMT Standard Time",
             "winRM": {
@@ -244,7 +257,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net')]"
+            "storageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net')]"
           }
         },
         "availabilitySet": "[if(equals(parameters('availabilitySetId'), ''), json('null'), variables('availabilitySet'))]"
@@ -252,6 +265,113 @@
       "identity": {
         "type": "SystemAssigned"
       }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "BGInfoVMExtension",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('vmExtensionsTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "vmExtensionName": {
+            "value": "BGInfo"
+          },
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "publisher": {
+            "value": "Microsoft.Compute"
+          },
+          "type": {
+            "value": "BGInfo"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "Microsoft.Insights.VMDiagnosticsSettings",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('vmExtensionsTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "vmExtensionName": {
+            "value": "Microsoft.Insights.VMDiagnosticsSettings"
+          },
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "publisher": {
+            "value": "Microsoft.Azure.Diagnostics.IaaSDiagnostics"
+          },
+          "type": {
+            "value": "Microsoft.Insights.VMDiagnosticsSettings"
+          },
+          "settings": {
+            "value": {
+              "xmlcfg": "[base64(concat(variables('vmDiagnosticsWadConfigStart'), variables('vmDiagnosticsWadMetricsResourceId'), parameters('vmName'), variables('vmDiagnosticsWadConfigEnd')))]",
+              "storageAccountName": "[parameters('diagnosticsStorageAccountName')]"
+            }
+          },
+          "protectedSettings": {
+            "storageAccountName": "[parameters('diagnosticsStorageAccountName')]",
+            "storageAccountKey": "[listkeys(variables('diagnosticStorageAccountResourceId'), '2015-06-15').key1]",
+            "storageAccountEndpoint": "https://core.windows.net"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "DependencyAgentWindowsVMExtenstion",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('vmExtensionsTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "vmExtensionName": {
+            "value": "DependencyAgentWindows"
+          },
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "publisher": {
+            "value": "Microsoft.Azure.Monitoring.DependencyAgent"
+          },
+          "type": {
+            "value": "DependencyAgentWindows"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
     }
   ],
   "outputs": {}
