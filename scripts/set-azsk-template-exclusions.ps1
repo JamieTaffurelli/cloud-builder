@@ -38,7 +38,7 @@ foreach($templateFilePath in $templateFilePaths)
 {
     $json = Get-Content -Path $templateFilePath | ConvertFrom-Json
 
-    if($inclusionTemplates -notcontains $json.resources.type)
+    if($inclusionTemplates | Where-Object { $json.resources.type -notcontains $PSItem })
     {
         Write-Verbose "${templateFilePath} will be excluded from AzSK ARM template scanning"
         $excludedTemplateFileNames += Split-Path -Path $templateFilePath -Leaf
