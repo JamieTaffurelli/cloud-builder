@@ -12,23 +12,23 @@ param
 )
 
 $inclusionTemplates = @(
-    "Microsoft.Web\sites", 
-    "Microsoft.Cdn\profiles", 
-    "Microsoft.DocumentDb\databaseAccounts", 
-    "Microsoft.DataLakeStore\accounts", 
-    "Microsoft.Cache\Redis", 
-    "Microsoft.Sql\servers", 
-    "Microsoft.Storage\storageAccounts", 
-    "Microsoft.Network\trafficmanagerprofiles", 
-    "Microsoft.ServiceFabric\clusters", 
-    "Microsoft.ContainerService\ManagedClusters",
-    "Microsoft.Logic\workflows",
-    "Microsoft.ContainerRegistry\registries",
-    "Microsoft.KeyVault\vaults",
-    "Microsoft.Network\virtualNetworks",
-    "Microsoft.Search\searchServices",
-    "Microsoft.EventHub\namespaces",
-    "Microsoft.ContainerInstance\containerGroups"
+    "Microsoft.Web/sites", 
+    "Microsoft.Cdn/profiles", 
+    "Microsoft.DocumentDb/databaseAccounts", 
+    "Microsoft.DataLakeStore/accounts", 
+    "Microsoft.Cache/Redis", 
+    "Microsoft.Sql/servers", 
+    "Microsoft.Storage/storageAccounts", 
+    "Microsoft.Network/trafficmanagerprofiles", 
+    "Microsoft.ServiceFabric/clusters", 
+    "Microsoft.ContainerService/ManagedClusters",
+    "Microsoft.Logic/workflows",
+    "Microsoft.ContainerRegistry/registries",
+    "Microsoft.KeyVault/vaults",
+    "Microsoft.Network/virtualNetworks",
+    "Microsoft.Search/searchServices",
+    "Microsoft.EventHub/namespaces",
+    "Microsoft.ContainerInstance/containerGroups"
 )
 
 $templateFilePaths = (Get-ChildItem -Path $SearchFolder -Recurse -File).FullName
