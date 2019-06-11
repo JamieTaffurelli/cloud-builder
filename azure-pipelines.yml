@@ -4,6 +4,9 @@ trigger:
 pool:
   name: 'Hosted Windows Container'
 
+variables:
+  Syste.Debug: true
+
 steps:
 - task: PowerShell@2
   inputs:
