@@ -60,7 +60,7 @@ steps:
   inputs:
     armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
     skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
-    excludeFiles: 'dataDisk.json,windowsVirtualMachine.json,virtualMachineExtension.json,accessPolicies.json,ddosProtectionPlan.json,networkSecurityGroup.json,securityRule.json,virtualNetwork.json'
+    excludeFiles: '$(ExclusionTemplates)'
     disableAutoUpdate: false
 
 - task: PowerShell@2
