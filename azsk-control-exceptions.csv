@@ -1,2 +1,0 @@
-"ControlId","FeatureName","Status","SupportedResources","Severity","PropertyPath","LineNumber","CurrentValue","ExpectedProperty","ExpectedValue","ResourcePath","ResourceLineNumber","Description","FilePath"
-"Azure_KeyVault_AuthZ_Grant_Min_Access_policies","KeyVault","Failed","Microsoft.KeyVault/vaults","Medium","Not found","-1","","$.properties.accessPolicies","Verify current value","resources[0]","107","All Key Vault access policies must be defined with minimum required permissions to keys and secrets",".\templates\Microsoft.KeyVault\vaults\keyVault.json"
