@@ -1,0 +1,100 @@
+trigger:
+- master
+
+pool:
+  name: 'Hosted Windows Container'
+
+variables:
+  Syste.Debug: true
+
+steps:
+- task: PowerShell@2
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)\install-modules.ps1'
+    arguments: '"az"'
+    errorActionPreference: 'stop'
+    failOnStderr: false
+    ignoreLASTEXITCODE: false
+    pwsh: false
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+  displayName: 'Run Unit Tests'
+  inputs:
+    resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
+    codeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+    codeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
+    run32Bit: false
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: 'test-results.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    mergeTestResults: false
+    failTaskOnFailedTests: false
+    publishRunAttachments: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage'
+  inputs:
+    codeCoverageTool: 'JaCoCo'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+    failIfCoverageEmpty: true
+
+- task: PowerShell@2
+  displayName: 'Exclude Unscannable ARM Templates'
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)\scripts\set-azsk-template-exclusions.ps1'
+    arguments: '-AsCsv'
+    errorActionPreference: 'stop'
+    failOnStderr: false
+    ignoreLASTEXITCODE: false
+    pwsh: false
+
+- task: AzSKARMTemplateChecker@1
+  displayName: 'Run AzSK ARM Template Checker'
+  inputs:
+    armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
+    skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
+    excludeFiles: 'dataDisk.json,windowsVirtualMachine.json,virtualMachineExtension.json,accessPolicies.json,ddosProtectionPlan.json,networkSecurityGroup.json,securityRule.json,virtualNetwork.json'
+    disableAutoUpdate: false
+
+- task: PowerShell@2
+  displayName: 'Version ARM Templates'
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)\scripts\version-templates.ps1'
+    errorActionPreference: 'stop'
+    failOnStderr: false
+    ignoreLASTEXITCODE: false
+    pwsh: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish ARM Templates'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\templates' 
+    artifactName: 'templates' 
+    publishLocation: 'Container'
+    parallel: false
+
+- task: CopyFiles@2
+  displayName: 'Copy Example Deployment Templates to Staging Directory'
+  inputs:
+    sourceFolder: '$(System.DefaultWorkingDirectory)\examples'
+    contents: '**\*' 
+    targetFolder: '$(Build.ArtifactStagingDirectory)\examples'
+    cleanTargetFolder: true 
+    overWrite: true
+    flattenFolders: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Example Deployment Templates'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\examples' 
+    artifactName: 'examples' 
+    publishLocation: 'Container'
+    parallel: false

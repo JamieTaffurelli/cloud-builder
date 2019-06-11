@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace that you wish to create."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [
+        "Free",
+        "Standard",
+        "Premium",
+        "Unlimited",
+        "PerNode",
+        "PerGB2018",
+        "Standalone"
+      ],
+      "metadata": {
+        "description": "The sku of the Log Analytics Workspace that you wish to create."
+      }
+    },
+    "retentionInDays": {
+      "type": "int",
+      "defaultValue": 400,
+      "minValue": 10,
+      "maxValue": 730,
+      "metadata": {
+        "description": "The amount of time to retain logs for, if sku is unlimited then this value will be ignored and unlimited retention will be set."
+      }
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "retentionInDays": "[if(equals(parameters('sku'), 'Unlimited'), -1, parameters('retentionInDays'))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('logAnalyticsName')]",
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2015-11-01-preview",
+      "location": "westeurope",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('sku')]"
+        },
+        "retentionInDays": "[variables('retentionInDays')]"
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "eventHubNamespaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Event Hub Namespace"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "Location of the Event Hub Namespace"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": ["Basic", "Standard"],
+      "metadata": {
+        "description": "The messaging tier for Event Hub Namespace"
+      }
+    },
+    "capacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 20,
+      "metadata": {
+        "description": "Throughput units for Event Hub Namespace"
+      }
+    },
+    "isAutoInflateEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Auto Inflation for the Event Hub Namespace"
+      }
+    },
+    "maximumThroughputUnits": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 0,
+      "maxValue": 20,
+      "metadata": {
+        "description": "Maximum throughput units for Event Hub Namespace when Auto Inflate is enabled"
+      }
+    },
+    "kafkaEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable Kafka for the Event Hub Namespace"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Event Hub Namespace"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('eventHubNamespaceName')]",
+      "type": "Microsoft.EventHub/namespaces",
+      "apiVersion": "2018-11-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]",
+        "tier": "[parameters('sku')]",
+        "capacity": "[parameters('capacity')]"
+      },
+      "properties": {
+        "isAutoInflateEnabled": "[parameters('isAutoInflateEnabled')]",
+        "maximumThroughputUnits": "[parameters('maximumThroughputUnits')]",
+        "kafkaEnabled": "[parameters('kafkaEnabled')]"
+      }
+    }
+  ],
+  "outputs": {}
+}
