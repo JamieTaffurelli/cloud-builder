@@ -85,14 +85,7 @@
         "dhcpOptions": {
           "dnsServers": "[parameters('dnsServers')]"
         },
-        "subnets": [
-          {
-            "name": "[variables('subnet1Name')]",
-            "properties": {
-              "addressPrefix": "10.0.0.0/24"
-            }
-          }
-        ],
+        "subnets": "[variables('subnets').subnets]",
         "enableVmProtection": true,
         "enableDdosProtection": true,
         "ddosProtectionPlan": {

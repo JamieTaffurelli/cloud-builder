@@ -25,7 +25,6 @@ $inclusionTemplates = @(
     "Microsoft.Logic/workflows",
     "Microsoft.ContainerRegistry/registries",
     "Microsoft.KeyVault/vaults",
-    "Microsoft.Network/virtualNetworks",
     "Microsoft.Search/searchServices",
     "Microsoft.EventHub/namespaces",
     "Microsoft.ContainerInstance/containerGroups"
