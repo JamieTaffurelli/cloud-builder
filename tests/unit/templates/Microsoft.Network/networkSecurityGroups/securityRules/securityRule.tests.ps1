@@ -258,16 +258,6 @@ Describe "Security Rule Parameter Validation" {
 
 Describe "Security Rule Function Validation" {
 
-    Context "apiVersion Validation" {
-
-        It "apiVersion value is 2018-11-01" {
-
-            $json.resources.apiVersion | should be "2018-11-01"
-        }
-    }
-}
-Describe "Security Rule Function Validation" {
-
     Context "securityRule Namespace Validation" {
 
         It "securityRule namespace exists" {
