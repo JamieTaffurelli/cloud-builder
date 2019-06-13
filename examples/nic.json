@@ -34,36 +34,6 @@
         "description": "Security rules of nsg"
       }
     },
-    "virtualNetworkName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the Virtual Network"
-      }
-    },
-    "addressPrefixes": {
-      "type": "array",
-      "metadata": {
-        "description": "The CIDR ranges allocated to the Virtual Network"
-      }
-    },
-    "subnets": {
-      "type": "array",
-      "metadata": {
-        "description": "The subnets to provision in the Virtual Network"
-      }
-    },
-    "nicName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the Network Interface that you wish to create."
-      }
-    },
-    "privateIpAddress": {
-      "type": "string",
-      "metadata": {
-        "description": "IP address to assign to IP configuration"
-      }
-    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -228,65 +198,6 @@
       },
       "dependsOn": ["[concat('Microsoft.Resources/deployments', 'nsg')]"]
     }
-    /*{
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2018-05-01",
-      "name": "vnet",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('vNetTemplateUrl')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "virtualNetworkName": {
-            "value": "[parameters('virtualNetworkName')]"
-          },
-          "addressPrefixes": {
-            "value": "[parameters('addressPrefixes')]"
-          },
-          "subnets": {
-            "value": "[parameters('subnets')]"
-          },
-          "tags": {
-            "value": "[parameters('tags')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'function')]"
-      ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2018-05-01",
-      "name": "nic",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('networkInterfaceTemplateUrl')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "nicName": {
-            "value": "[parameters('nicName')]"
-          },
-          "privateIpAddress": {
-            "value": "[parameters('privateIpAddress')]"
-          },
-          "subnetVirtualNetworkName": {
-            "value": "[parameters('virtualNetworkName')]"
-          },
-          "subnetName": {
-            "value": "[parameters('subnets')[0].name]"
-          },
-          "tags": {
-            "value": "[parameters('tags')]"
-          }
-        }
-      },
-      "dependsOn": ["[resourceId('Microsoft.Resources/deployments', 'vnet')]"]
-    }*/
   ],
   "outputs": {}
 }
