@@ -113,7 +113,7 @@
           "uri": "[variables('nsgTemplateUrl')]",
           "contentVersion": "1.0.0.0"
         },
-        "parameters": "[union(parameters('nsgRules'), json('\"nsgName\": \"[parameters(''nsgName)]\"'))]"
+        "parameters": "[union(parameters('nsgRules')[copyIndex()], json('\"nsgName\": \"[parameters(''nsgName)]\"'))]"
       },
       "dependsOn": ["[concat('Microsoft.Resources/deployments', 'nsg')]"]
     }
