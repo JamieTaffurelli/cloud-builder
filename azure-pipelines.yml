@@ -5,7 +5,7 @@ pool:
   name: 'Hosted Windows Container'
 
 variables:
-  System.Debug: true
+  System.Debug: false
 
 steps:
 - task: PowerShell@2
