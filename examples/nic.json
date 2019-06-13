@@ -29,7 +29,7 @@
       }
     },
     "nsgRules": {
-      "type": "object",
+      "type": "array",
       "metadata": {
         "description": "Security rules of nsg"
       }
