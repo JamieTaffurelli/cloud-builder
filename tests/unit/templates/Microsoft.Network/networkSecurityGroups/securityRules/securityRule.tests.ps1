@@ -236,24 +236,6 @@ Describe "Security Rule Parameter Validation" {
             (Compare-Object -ReferenceObject $json.parameters.direction.allowedValues -DifferenceObject @("Inbound", "Outbound")).Length | should be 0
         }
     }
-
-    Context "tags Validation" {
-
-        It "Has tags parameter" {
-
-            $json.parameters.tags | should not be $null
-        }
-
-        It "tags parameter is of type object" {
-
-            $json.parameters.tags.type | should be "object"
-        }
-
-        It "tags parameter is mandatory" {
-
-            ($json.parameters.tags.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
 }
 
 Describe "Security Rule Function Validation" {

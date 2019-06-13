@@ -76,9 +76,6 @@
       "metadata": {
         "description": "Specifies if Security Rule should apply to incoming or outgoing traffic"
       }
-    },
-    "tags": {
-      "type": "object"
     }
   },
   "functions": [
