@@ -39,6 +39,9 @@
           "direction": "Inbound"
         }
       ]
+    },
+    "tags": {
+      "purpose": "nsgExample"
     }
   }
 }
