@@ -19,7 +19,7 @@
         },
         {
           "securityRuleName": "Deny-OutBound-Any-Any-21.23",
-          "description": "Allow outbound traffic on ports 21 to 23",
+          "description": "Deny outbound traffic on ports 21 to 23",
           "sourceAddressPrefixes": ["*"],
           "destinationAddressPrefixes": ["*"],
           "destinationPortRanges": ["21-23"],
@@ -41,7 +41,9 @@
       ]
     },
     "tags": {
-      "purpose": "nsgExample"
+      "value": {
+        "purpose": "nsgExample"
+      }
     }
   }
 }
