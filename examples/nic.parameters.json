@@ -1,34 +1,120 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "virtualNetworkName": {
-            "value": "vnet"
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nsgName": {
+      "value": "vnet"
+    },
+    "nsgRules": {
+      "value": [
+        {
+          "securityRuleName": {
+            "value": "Allow-OutBound-TCP-Internet-80-443"
+          },
+          "description": {
+            "value": "Allow outbound TCP traffic on ports 80 and 443"
+          },
+          "sourceAddressPrefixes": {
+            "value": ["VirtualNetwork"]
+          },
+          "destinationAddressPrefixes": {
+            "value": ["Internet"]
+          },
+          "destinationPortRanges": {
+            "value": ["80", "443"]
+          },
+          "access": {
+            "value": "Allow"
+          },
+          "priority": {
+            "value": 4095
+          },
+          "direction": {
+            "value": "Outbound"
+          }
         },
-        "addressPrefixes": {
-            "value": [
-                "10.29.56.0/26"
-            ]
+        {
+          "securityRuleName": {
+            "value": "Deny-OutBound-Any-Any-21.23"
+          },
+          "description": {
+            "value": "Allow outbound traffic on ports 21 to 23"
+          },
+          "sourceAddressPrefixes": {
+            "value": ["*"]
+          },
+          "destinationAddressPrefixes": {
+            "value": ["*"]
+          },
+          "destinationPortRanges": {
+            "value": ["21-23"]
+          },
+          "access": {
+            "value": "Deny"
+          },
+          "priority": {
+            "value": 4096
+          },
+          "direction": {
+            "value": "Outbound"
+          }
         },
-        "subnets": {
-            "value": [
-                {
-                    "name": "subnet",
-                    "addressPrefix": "10.29.56.0/28",
-                    "networkSecurityGroupName": "nsg1"
-                }
-            ]
-        },
-        "nicName": {
-            "value": "nic"
-        },
-        "privateIpAddress": {
-            "value": "10.29.56.10"
-        },
-        "tags": {
-            "value": {
-                "testdeploy": "testdeploy"
-            }
+        {
+          "securityRuleName": {
+            "value": "Allow-Inbound-TCP-10.29.82.75_10.29.82.0/28-1433"
+          },
+          "description": {
+            "value": "Allow inbound traffic on port 1433"
+          },
+          "sourceAddressPrefixes": {
+            "value": ["10.29.82.75", "10.29.82.0/28"]
+          },
+          "destinationAddressPrefixes": {
+            "value": ["10.29.82.74"]
+          },
+          "SourcePortRanges": {
+            "value": ["80-2000"]
+          },
+          "destinationPortRanges": {
+            "value": ["1433"]
+          },
+          "access": {
+            "value": "Allow"
+          },
+          "priority": {
+            "value": 4096
+          },
+          "direction": {
+            "value": "Inbound"
+          }
         }
+      ]
+    },
+    "virtualNetworkName": {
+      "value": "vnet"
+    },
+    "addressPrefixes": {
+      "value": ["10.29.56.0/26"]
+    },
+    "subnets": {
+      "value": [
+        {
+          "name": "subnet",
+          "addressPrefix": "10.29.56.0/28",
+          "networkSecurityGroupName": "nsg1"
+        }
+      ]
+    },
+    "nicName": {
+      "value": "nic"
+    },
+    "privateIpAddress": {
+      "value": "10.29.56.10"
+    },
+    "tags": {
+      "value": {
+        "testdeploy": "testdeploy"
+      }
     }
+  }
 }
