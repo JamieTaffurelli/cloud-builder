@@ -76,6 +76,14 @@ Describe "Network Security Group Parameter Validation" {
 
 Describe "Network Security Group Resource Validation" {
 
+    Context "type Validation" {
+
+        It "type value is Microsoft.Network/networkSecurityGroups" {
+
+            $json.resources.type | should be "Microsoft.Network/networkSecurityGroups"
+        }
+    }
+
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2018-11-01" {

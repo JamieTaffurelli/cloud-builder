@@ -221,6 +221,14 @@ Describe "Storage Account Parameter Validation" {
 
 Describe "Storage Account Resource Validation" {
 
+    Context "type Validation" {
+
+        It "type value is Microsoft.Storage/storageAccounts" {
+
+            $json.resources.type | should be "Microsoft.Storage/storageAccounts"
+        }
+    }
+
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2018-11-01" {

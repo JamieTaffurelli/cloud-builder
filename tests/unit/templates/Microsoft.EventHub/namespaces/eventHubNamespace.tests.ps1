@@ -180,6 +180,14 @@ Describe "Event Hub Namespace Parameter Validation" {
 
 Describe "Event Hub Namespace Resource Validation" {
 
+    Context "type Validation" {
+
+        It "type value is Microsoft.EventHub/namespaces" {
+
+            $json.resources.type | should be "Microsoft.EventHub/namespaces"
+        }
+    }
+
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2018-11-01" {

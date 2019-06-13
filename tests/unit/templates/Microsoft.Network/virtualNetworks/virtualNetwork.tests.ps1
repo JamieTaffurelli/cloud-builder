@@ -148,6 +148,14 @@ Describe "Virtual Network Parameter Validation" {
 
 Describe "Virtual Network Resource Validation" {
 
+    Context "type Validation" {
+
+        It "type value is Microsoft.Network/virtualNetworks" {
+
+            $json.resources.type | should be "Microsoft.Network/virtualNetworks"
+        }
+    }
+
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2018-11-01" {

@@ -4,6 +4,8 @@
   "parameters": {
     "vmName": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 15,
       "metadata": {
         "description": "The name of the Virtual Machine that you wish to create."
       }
@@ -118,6 +120,13 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable Automatic OS updates for the Virtual Machine"
+      }
+    },
+    "winRMListeners": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specify protocol and optional certificate url for WinRM agent"
       }
     },
     "networkInterfaces": {
@@ -246,7 +255,7 @@
             "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
             "timeZone": "GMT Standard Time",
             "winRM": {
-              "listeners": []
+              "listeners": "[parameters('WinRMListeners')]"
             }
           },
           "allowExtensionOperations": true
@@ -257,7 +266,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net')]"
+            "storageUri": "[reference(variables('diagnosticStorageAccountResourceId')).primaryEndpoints.blob]"
           }
         },
         "availabilitySet": "[if(equals(parameters('availabilitySetId'), ''), json('null'), variables('availabilitySet'))]"
@@ -269,7 +278,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "BGInfoVMExtension",
+      "name": "BGInfo",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -328,9 +337,11 @@
             }
           },
           "protectedSettings": {
-            "storageAccountName": "[parameters('diagnosticsStorageAccountName')]",
-            "storageAccountKey": "[listkeys(variables('diagnosticStorageAccountResourceId'), '2015-06-15').key1]",
-            "storageAccountEndpoint": "https://core.windows.net"
+            "value": {
+              "storageAccountName": "[parameters('diagnosticsStorageAccountName')]",
+              "storageAccountKey": "[listkeys(variables('diagnosticStorageAccountResourceId'), '2015-06-15').key1]",
+              "storageAccountEndpoint": "https://core.windows.net"
+            }
           },
           "tags": {
             "value": "[parameters('tags')]"
@@ -344,7 +355,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "DependencyAgentWindowsVMExtenstion",
+      "name": "DependencyAgentWindows",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
