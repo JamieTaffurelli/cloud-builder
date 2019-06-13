@@ -102,18 +102,129 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "nsgRules",
-      "copy": {
-        "count": "[length(parameters('nsgRules'))]",
-        "name": "nsg-rule-loop"
-      },
+      "name": "nsgRule1",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('nsgTemplateUrl')]",
           "contentVersion": "1.0.0.0"
         },
-        "parameters": "[union(parameters('nsgRules')[copyIndex()], json('\"nsgName\": \"[parameters(''nsgName)]\"'))]"
+        "parameters": {
+          "nsgName": {
+            "value": "[parameters('nsgName')]"
+          },
+          "securityRuleName": {
+            "value": "[parameters('nsgRules')[0].securityRuleName]"
+          },
+          "description": {
+            "value": "[parameters('nsgRules')[0].description]"
+          },
+          "sourceAddressPrefixes": {
+            "value": "[parameters('nsgRules')[0].sourceAddressPrefixes]"
+          },
+          "destinationAddressPrefixes": {
+            "value": "[parameters('nsgRules')[0].destinationAddressPrefixes]"
+          },
+          "destinationPortRanges": {
+            "value": "[parameters('nsgRules')[0].destinationPortRanges]"
+          },
+          "access": {
+            "value": "[parameters('nsgRules')[0].access]"
+          },
+          "priority": {
+            "value": "[parameters('nsgRules')[0].priority]"
+          },
+          "direction": {
+            "value": "[parameters('nsgRules')[0].direction]"
+          }
+        }
+      },
+      "dependsOn": ["[concat('Microsoft.Resources/deployments', 'nsg')]"]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "nsgRule2",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('nsgTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nsgName": {
+            "value": "[parameters('nsgName')]"
+          },
+          "securityRuleName": {
+            "value": "[parameters('nsgRules')[1].securityRuleName]"
+          },
+          "description": {
+            "value": "[parameters('nsgRules')[1].description]"
+          },
+          "sourceAddressPrefixes": {
+            "value": "[parameters('nsgRules')[1].sourceAddressPrefixes]"
+          },
+          "destinationAddressPrefixes": {
+            "value": "[parameters('nsgRules')[1].destinationAddressPrefixes]"
+          },
+          "destinationPortRanges": {
+            "value": "[parameters('nsgRules')[1].destinationPortRanges]"
+          },
+          "access": {
+            "value": "[parameters('nsgRules')[1].access]"
+          },
+          "priority": {
+            "value": "[parameters('nsgRules')[1].priority]"
+          },
+          "direction": {
+            "value": "[parameters('nsgRules')[1].direction]"
+          }
+        }
+      },
+      "dependsOn": ["[concat('Microsoft.Resources/deployments', 'nsg')]"]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "nsgRule2",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('nsgTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nsgName": {
+            "value": "[parameters('nsgName')]"
+          },
+          "securityRuleName": {
+            "value": "[parameters('nsgRules')[2].securityRuleName]"
+          },
+          "description": {
+            "value": "[parameters('nsgRules')[2].description]"
+          },
+          "sourceAddressPrefixes": {
+            "value": "[parameters('nsgRules')[2].sourceAddressPrefixes]"
+          },
+          "destinationAddressPrefixes": {
+            "value": "[parameters('nsgRules')[2].destinationAddressPrefixes]"
+          },
+          "sourcePortRanges": {
+            "value": "[parameters('nsgRules')[2].sourcePortRanges]"
+          },
+          "destinationPortRanges": {
+            "value": "[parameters('nsgRules')[2].destinationPortRanges]"
+          },
+          "access": {
+            "value": "[parameters('nsgRules')[2].access]"
+          },
+          "priority": {
+            "value": "[parameters('nsgRules')[2].priority]"
+          },
+          "direction": {
+            "value": "[parameters('nsgRules')[2].direction]"
+          }
+        }
       },
       "dependsOn": ["[concat('Microsoft.Resources/deployments', 'nsg')]"]
     }
