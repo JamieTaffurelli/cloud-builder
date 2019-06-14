@@ -81,6 +81,7 @@ steps:
     artifactName: 'templates' 
     publishLocation: 'Container'
     parallel: false
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
 - task: CopyFiles@2
   displayName: 'Copy Example Deployment Templates to Staging Directory'
@@ -91,6 +92,7 @@ steps:
     cleanTargetFolder: true 
     overWrite: true
     flattenFolders: false
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Example Deployment Templates'
@@ -99,3 +101,4 @@ steps:
     artifactName: 'examples' 
     publishLocation: 'Container'
     parallel: false
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

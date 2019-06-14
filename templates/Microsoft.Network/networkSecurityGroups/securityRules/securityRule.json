@@ -131,7 +131,7 @@
       "properties": "[variables('properties')]"
     }
   ],
-  "output": {
+  "outputs": {
     "inputs": {
       "type": "object",
       "value": {
