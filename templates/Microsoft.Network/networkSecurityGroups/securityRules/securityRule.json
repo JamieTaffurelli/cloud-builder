@@ -113,10 +113,14 @@
       "priority": "[parameters('priority')]",
       "direction": "[parameters('direction')]"
     },
-    "sourceAddressPrefixes": "[json(securityRule.setStringOrArrayProperty('sourceAddressPrefix', 'sourceAddressPrefixes', parameters('sourceAddressPrefixes')))]",
-    "destinationAddressPrefixes": "[json(securityRule.setStringOrArrayProperty('destinationAddressPrefix', 'destinationAddressPrefixes', parameters('destinationAddressPrefixes')))]",
-    "sourcePortRanges": "[json(securityRule.setStringOrArrayProperty('sourcePortRange', 'sourcePortRanges', parameters('sourcePortRanges')))]",
-    "destinationPortRanges": "[json(securityRule.setStringOrArrayProperty('destinationPortRange', 'destinationPortRanges', parameters('destinationPortRanges')))]",
+    "sourceAddressPrefixesString": "[securityRule.setStringOrArrayProperty('sourceAddressPrefix', 'sourceAddressPrefixes', parameters('sourceAddressPrefixes'))]",
+    "sourceAddressPrefixes": "[json(variables('sourceAddressPrefixesString'))]",
+    "destinationAddressPrefixesString": "[securityRule.setStringOrArrayProperty('destinationAddressPrefix', 'destinationAddressPrefixes', parameters('destinationAddressPrefixes'))]",
+    "destinationAddressPrefixes": "[json(variables('destinationAddressPrefixesString'))]",
+    "sourcePortRangesString": "[securityRule.setStringOrArrayProperty('sourcePortRange', 'sourcePortRanges', parameters('sourcePortRanges'))]",
+    "sourcePortRanges": "[json(variables('sourcePortRangesString'))]",
+    "destinationPortRangesString": "[securityRule.setStringOrArrayProperty('destinationPortRange', 'destinationPortRanges', parameters('destinationPortRanges')))]",
+    "destinationPortRanges": "[json(variables('destinationPortRangesString'))]",
     "properties": "[union(variables('defaultProperties'), variables('sourceAddressPrefixes'), variables('destinationAddressPrefixes'), variables('sourcePortRanges'), variables('destinationPortRanges'))]"
   },
   "resources": [
@@ -126,5 +130,30 @@
       "apiVersion": "2018-11-01",
       "properties": "[variables('properties')]"
     }
-  ]
+  ],
+  "output": {
+    "inputs": {
+      "type": "object",
+      "value": {
+        "description": "[variables('defaultProperties').description]",
+        "protocol": "[variables('defaultProperties').protocol]",
+        "access": "[variables('defaultProperties').access]",
+        "priority": "[variables('defaultProperties').priority]",
+        "direction": "[variables('defaultProperties').direction]",
+        "sourceAddressPrefixesString": "[variables('sourceAddressPrefixesString')]",
+        "sourceAddressPrefixes": "[variables('sourceAddressPrefixes')]",
+        "destinationAddressPrefixesString": "[variables('destinationAddressPrefixesString')]",
+        "destinationAddressPrefixes": "[variables('destinationAddressPrefixes')]",
+        "sourcePortRangesString": "[variables('sourcePortRangesString')]",
+        "sourcePortRanges": "[variables('sourcePortRanges')]",
+        "destinationPortRangesString": "[variables('destinationPortRangesString')]",
+        "destinationPortRanges": "[variables('destinationPortRanges')]",
+        "properties": "[variables('properties')]"
+      },
+      "securityRule": {
+        "type": "object",
+        "value": "[reference(resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups/securityRules', concat(parameters('nsgName'), '/', parameters('securityRuleName'))))]"
+      }
+    }
+  }
 }
