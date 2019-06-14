@@ -149,11 +149,11 @@
         "destinationPortRangesString": "[variables('destinationPortRangesString')]",
         "destinationPortRanges": "[variables('destinationPortRanges')]",
         "properties": "[variables('properties')]"
-      },
-      "securityRule": {
-        "type": "object",
-        "value": "[reference(resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups/securityRules', concat(parameters('nsgName'), '/', parameters('securityRuleName'))))]"
       }
+    },
+    "securityRule": {
+      "type": "object",
+      "value": "[reference(resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups/securityRules', concat(parameters('nsgName'), '/', parameters('securityRuleName'))))]"
     }
   }
 }
