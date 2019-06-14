@@ -119,7 +119,7 @@
     "destinationAddressPrefixes": "[json(variables('destinationAddressPrefixesString'))]",
     "sourcePortRangesString": "[securityRule.setStringOrArrayProperty('sourcePortRange', 'sourcePortRanges', parameters('sourcePortRanges'))]",
     "sourcePortRanges": "[json(variables('sourcePortRangesString'))]",
-    "destinationPortRangesString": "[securityRule.setStringOrArrayProperty('destinationPortRange', 'destinationPortRanges', parameters('destinationPortRanges')))]",
+    "destinationPortRangesString": "[securityRule.setStringOrArrayProperty('destinationPortRange', 'destinationPortRanges', parameters('destinationPortRanges'))]",
     "destinationPortRanges": "[json(variables('destinationPortRangesString'))]",
     "properties": "[union(variables('defaultProperties'), variables('sourceAddressPrefixes'), variables('destinationAddressPrefixes'), variables('sourcePortRanges'), variables('destinationPortRanges'))]"
   },
