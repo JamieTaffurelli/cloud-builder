@@ -99,7 +99,7 @@
           ],
           "output": {
             "type": "string",
-            "value": "[if(equals(length(parameters('propertyValue')), 1), concat('{\"', parameters('stringPropertyName'), '\":\"', first(parameters('propertyValue')), '\"}'), concat('{\"', parameters('arrayPropertyName'), '\":\"', string(parameters('propertyValue')), '\"}'))]"
+            "value": "[if(equals(length(parameters('propertyValue')), 1), concat('{\"', parameters('stringPropertyName'), '\":\"', first(parameters('propertyValue')), '\"}'), concat('{\"', parameters('arrayPropertyName'), '\":', string(parameters('propertyValue')), '}'))]"
           }
         }
       }
