@@ -30,5 +30,11 @@
       "tags": "[parameters('tags')]",
       "properties": {}
     }
-  ]
+  ],
+  "outputs": {
+    "ddosProtectionPlan": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/ddosProtectionPlans', parameters('ddosProtectionPlanName')))]"
+    }
+  }
 }
