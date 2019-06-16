@@ -1,34 +1,49 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "virtualNetworkName": {
-            "value": "vnet"
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "nsgName": {
+      "value": "nsg"
+    },
+    "nsgRules": {
+      "value": [
+        {
+          "securityRuleName": "Allow-OutBound-TCP-Internet-80-443",
+          "description": "Allow outbound TCP traffic on ports 80 and 443",
+          "sourceAddressPrefixes": ["VirtualNetwork"],
+          "destinationAddressPrefixes": ["Internet"],
+          "destinationPortRanges": ["80", "443"],
+          "access": "Allow",
+          "priority": 4095,
+          "direction": "Outbound"
         },
-        "addressPrefixes": {
-            "value": [
-                "10.29.56.0/26"
-            ]
+        {
+          "securityRuleName": "Deny-OutBound-Any-Any-21.23",
+          "description": "Deny outbound traffic on ports 21 to 23",
+          "sourceAddressPrefixes": ["*"],
+          "destinationAddressPrefixes": ["*"],
+          "destinationPortRanges": ["21-23"],
+          "access": "Deny",
+          "priority": 4096,
+          "direction": "Outbound"
         },
-        "subnets": {
-            "value": [
-                {
-                    "name": "subnet",
-                    "addressPrefix": "10.29.56.0/28",
-                    "networkSecurityGroupName": "nsg1"
-                }
-            ]
-        },
-        "nicName": {
-            "value": "nic"
-        },
-        "privateIpAddress": {
-            "value": "10.29.56.10"
-        },
-        "tags": {
-            "value": {
-                "testdeploy": "testdeploy"
-            }
+        {
+          "securityRuleName": "Allow-Inbound-TCP-10.29.82.75_10.29.82.0/28-1433",
+          "description": "Allow inbound traffic on port 1433",
+          "sourceAddressPrefixes": ["10.29.82.75", "10.29.82.0/28"],
+          "destinationAddressPrefixes": ["10.29.82.74"],
+          "sourcePortRanges": ["80-2000"],
+          "destinationPortRanges": ["1433"],
+          "access": "Allow",
+          "priority": 4096,
+          "direction": "Inbound"
         }
+      ]
+    },
+    "tags": {
+      "value": {
+        "purpose": "nsgExample"
+      }
     }
+  }
 }

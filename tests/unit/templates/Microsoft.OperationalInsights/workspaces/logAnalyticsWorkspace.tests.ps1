@@ -76,6 +76,14 @@ Describe "Log Analytics Workspace Parameter Validation" {
 
 Describe "Log Analytics Workspace Validation" {
 
+    Context "type Validation" {
+
+        It "type value is Microsoft.OperationalInsights/workspaces" {
+
+            $json.resources.type | should be "Microsoft.OperationalInsights/workspaces"
+        }
+    }
+
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2015-11-01-preview" {

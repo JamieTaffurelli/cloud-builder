@@ -307,6 +307,14 @@ Describe "Network Interface Parameter Validation" {
 
 Describe "Network Interface Resource Validation" {
 
+    Context "type Validation" {
+
+        It "type value is Microsoft.Network/networkInterfaces" {
+
+            $json.resources.type | should be "Microsoft.Network/networkInterfaces"
+        }
+    }
+
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2018-11-01" {
