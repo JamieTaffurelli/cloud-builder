@@ -34,6 +34,12 @@
         "description": "Security rules of nsg"
       }
     },
+    "ddosProtectionPlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of DDOS Protection Plan"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -45,6 +51,7 @@
     "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/', parameters('templateContainerName'), '/')]",
     "nsgTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkSecurityGroups/networkSecurityGroup.1.0.0.0.json', parameters('templatesSas'))]",
     "nsgRuleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkSecurityGroups/securityRules/securityRule.1.0.0.0.json', parameters('templatesSas'))]",
+    "ddosProtectionPlanTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/ddosProtectionPlans/ddosProtectionPlan.1.0.0.0.json', parameters('templatesSas'))]",
     "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
     "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]"
   },
@@ -197,6 +204,23 @@
         }
       },
       "dependsOn": ["[concat('Microsoft.Resources/deployments', '/', 'nsg')]"]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "ddosPlan",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('ddosProtectionPlanTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "ddosProtectionPlanName": {
+            "value": "[parameters('ddosProtectionPlanName')]"
+          }
+        }
+      }
     }
   ],
   "outputs": {}

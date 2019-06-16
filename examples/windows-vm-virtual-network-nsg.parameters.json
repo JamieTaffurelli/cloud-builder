@@ -18,31 +18,34 @@
           "direction": "Outbound"
         },
         {
-          "securityRuleName": "Deny-OutBound-Any-Any-21.23",
-          "description": "Deny outbound traffic on ports 21 to 23",
+          "securityRuleName": "Deny-Outbound-Any-Any-Any",
+          "description": "Deny all outbound traffic",
           "sourceAddressPrefixes": ["*"],
           "destinationAddressPrefixes": ["*"],
-          "destinationPortRanges": ["21-23"],
+          "destinationPortRanges": ["80", "443"],
           "access": "Deny",
           "priority": 4096,
           "direction": "Outbound"
         },
         {
-          "securityRuleName": "Allow-Inbound-TCP-10.29.82.75_10.29.82.0-1433",
-          "description": "Allow inbound traffic on port 1433",
-          "sourceAddressPrefixes": ["10.29.82.75", "10.29.82.0/28"],
-          "destinationAddressPrefixes": ["10.29.82.74"],
-          "sourcePortRanges": ["80-2000"],
-          "destinationPortRanges": ["1433"],
-          "access": "Allow",
+          "securityRuleName": "Deny-Inbound-Any-Any-Any",
+          "description": "Deny all inbound traffic",
+          "sourceAddressPrefixes": ["*"],
+          "destinationAddressPrefixes": ["*"],
+          "sourcePortRanges": ["*"],
+          "destinationPortRanges": ["*"],
+          "access": "Deny",
           "priority": 4096,
           "direction": "Inbound"
         }
       ]
     },
+    "ddosProtectionPlanName": {
+      "value": "ddosPlan"
+    },
     "tags": {
       "value": {
-        "purpose": "nsgExample"
+        "purpose": "windows-vm-example"
       }
     }
   }
