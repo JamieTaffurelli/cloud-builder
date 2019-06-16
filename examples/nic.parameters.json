@@ -28,7 +28,7 @@
           "direction": "Outbound"
         },
         {
-          "securityRuleName": "Allow-Inbound-TCP-10.29.82.75_10.29.82.0/28-1433",
+          "securityRuleName": "Allow-Inbound-TCP-10.29.82.75_10.29.82.0-1433",
           "description": "Allow inbound traffic on port 1433",
           "sourceAddressPrefixes": ["10.29.82.75", "10.29.82.0/28"],
           "destinationAddressPrefixes": ["10.29.82.74"],
