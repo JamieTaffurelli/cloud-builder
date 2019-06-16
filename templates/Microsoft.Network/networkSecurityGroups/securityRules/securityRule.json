@@ -153,7 +153,7 @@
     },
     "securityRule": {
       "type": "object",
-      "value": "[reference(resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups/securityRules', concat(parameters('nsgName'), '/', parameters('securityRuleName'))))]"
+      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('nsgName'), parameters('securityRuleName')))]"
     }
   }
 }
