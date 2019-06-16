@@ -218,6 +218,9 @@
         "parameters": {
           "ddosProtectionPlanName": {
             "value": "[parameters('ddosProtectionPlanName')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
           }
         }
       }
