@@ -73,7 +73,7 @@
     "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
     "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]",
     "networkSecurityGroup": {
-      "id": "[concat(subscription().subscriptionId, '/', resourceGroup().name, '/Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
+      "id": "[concat('/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
     },
     "subnets": {
       "copy": [
