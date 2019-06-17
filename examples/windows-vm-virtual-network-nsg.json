@@ -279,9 +279,6 @@
           "subnets": {
             "value": "[variables('subnets').subnets]"
           },
-          "subnets": {
-            "value": "[variables('subnets').subnets]"
-          },
           "ddosProtectionPlanId": {
             "value": "[resourceId('Microsoft.Network/ddosProtectionPlans', parameters('ddosProtectionPlanName'))]"
           },
