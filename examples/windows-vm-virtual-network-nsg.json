@@ -40,6 +40,24 @@
         "description": "Name of DDOS Protection Plan"
       }
     },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Virtual Network"
+      }
+    },
+    "addressPrefixes": {
+      "type": "array",
+      "metadata": {
+        "description": "Address space of the Virtual Network"
+      }
+    },
+    "subnets": {
+      "type": "array",
+      "metadata": {
+        "description": "Name of DDOS Protection Plan"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -53,7 +71,23 @@
     "nsgRuleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkSecurityGroups/securityRules/securityRule.1.0.0.0.json', parameters('templatesSas'))]",
     "ddosProtectionPlanTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/ddosProtectionPlans/ddosProtectionPlan.1.0.0.0.json', parameters('templatesSas'))]",
     "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
-    "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]"
+    "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]",
+    "networkSecurityGroup": {
+      "id": "[concat(subscription().subscriptionId, resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+    },
+    "subnets": {
+      "copy": [
+        {
+          "name": "subnets",
+          "count": "[length(parameters('subnets'))]",
+          "input": {
+            "name": "[parameters('subnets')[copyIndex('subnets')].name]",
+            "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
+            "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+          }
+        }
+      ]
+    }
   },
   "resources": [
     {
@@ -218,6 +252,38 @@
         "parameters": {
           "ddosProtectionPlanName": {
             "value": "[parameters('ddosProtectionPlanName')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "vnet",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('vNetTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "addressPrefixes": {
+            "value": "[parameters('addressPrefixes')]"
+          },
+          "subnets": {
+            "value": "[variables('subnets').subnets]"
+          },
+          "subnets": {
+            "value": "[variables('subnets').subnets]"
+          },
+          "ddosProtectionPlanId": {
+            "value": "[reference('ddosPlan').outputs.ddosProtectionPlan.Id]"
           },
           "tags": {
             "value": "[parameters('tags')]"

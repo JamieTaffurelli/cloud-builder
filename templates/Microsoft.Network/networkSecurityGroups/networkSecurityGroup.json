@@ -31,5 +31,11 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]"
     }
-  ]
+  ],
+  "outputs": {
+    "networkSecurityGroup": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')))]"
+    }
+  }
 }

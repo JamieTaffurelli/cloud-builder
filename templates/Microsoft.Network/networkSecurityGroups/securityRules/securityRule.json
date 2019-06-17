@@ -132,25 +132,6 @@
     }
   ],
   "outputs": {
-    "inputs": {
-      "type": "object",
-      "value": {
-        "description": "[variables('defaultProperties').description]",
-        "protocol": "[variables('defaultProperties').protocol]",
-        "access": "[variables('defaultProperties').access]",
-        "priority": "[variables('defaultProperties').priority]",
-        "direction": "[variables('defaultProperties').direction]",
-        "sourceAddressPrefixesString": "[variables('sourceAddressPrefixesString')]",
-        "sourceAddressPrefixes": "[variables('sourceAddressPrefixes')]",
-        "destinationAddressPrefixesString": "[variables('destinationAddressPrefixesString')]",
-        "destinationAddressPrefixes": "[variables('destinationAddressPrefixes')]",
-        "sourcePortRangesString": "[variables('sourcePortRangesString')]",
-        "sourcePortRanges": "[variables('sourcePortRanges')]",
-        "destinationPortRangesString": "[variables('destinationPortRangesString')]",
-        "destinationPortRanges": "[variables('destinationPortRanges')]",
-        "properties": "[variables('properties')]"
-      }
-    },
     "securityRule": {
       "type": "object",
       "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('nsgName'), parameters('securityRuleName')))]"
