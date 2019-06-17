@@ -283,7 +283,7 @@
             "value": "[variables('subnets').subnets]"
           },
           "ddosProtectionPlanId": {
-            "value": "[reference('ddosPlan').outputs.ddosProtectionPlan.Id]"
+            "value": "[resourceId('Microsoft.Network/ddosProtectionPlans', parameters('ddosProtectionPlanName'))]"
           },
           "tags": {
             "value": "[parameters('tags')]"
