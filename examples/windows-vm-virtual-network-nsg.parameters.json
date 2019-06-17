@@ -43,6 +43,24 @@
     "ddosProtectionPlanName": {
       "value": "ddosPlan"
     },
+    "virtualNetworkName": {
+      "value": "vnet"
+    },
+    "addressPrefixes": {
+      "value": ["10.28.72.0/26"]
+    },
+    "subnets": {
+      "value": [
+        {
+          "name": "subnet1",
+          "addressPrefix": "10.28.72.0/27"
+        },
+        {
+          "name": "subnet2",
+          "addressPrefix": "10.28.72.32/27"
+        }
+      ]
+    },
     "tags": {
       "value": {
         "purpose": "windows-vm-example"
