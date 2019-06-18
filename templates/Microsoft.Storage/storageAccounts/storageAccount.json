@@ -108,7 +108,7 @@
           "name": "virtualNetworkRules",
           "count": "[if(empty(parameters('virtualNetworkRules')), 1, length(parameters('virtualNetworkRules')))]",
           "input": {
-            "id": "[if(empty(parameters('virtualNetworkRules')), 'dummyId', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetId)]",
+            "id": "[if(empty(parameters('virtualNetworkRules')), 'dummyId', resourceId(if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'virtualNetworkSubscriptionId'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkSubscriptionId, subscription().subscriptionId), if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'virtualNetworkResourceGroupName'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkResourceGroupName, resourceGroup().name), 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].virtualNetworkName, parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].subnetName))]",
             "action": "[if(empty(parameters('virtualNetworkRules')), 'dummyAction', if(contains(parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')], 'action'), parameters('virtualNetworkRules')[copyIndex('virtualNetworkRules')].action, variables('defaultaction')))]"
           }
         }
