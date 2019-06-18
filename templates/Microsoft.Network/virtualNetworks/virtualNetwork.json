@@ -61,9 +61,9 @@
             "properties": {
               "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
               "networkSecurityGroup": {
-                "id": "[parameters('subnets')[copyIndex('subnets')].networkSecurityGroup.id]"
+                "id": "[resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupSubscriptionId'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupResourceGroupName'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupName)]"
               },
-              "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', parameters('subnets')[copyIndex('subnets')].routeTableId, '\"}')), json('null'))]",
+              "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameSubscriptionId'), parameters('subnets')[copyIndex('subnets')].routeTableNameSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameResourceGroupName'), parameters('subnets')[copyIndex('subnets')].routeTableNameResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].routeTableName), '\"}')), json('null'))]",
               "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, json('null'))]"
             }
           }
