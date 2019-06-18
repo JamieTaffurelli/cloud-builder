@@ -50,5 +50,11 @@
         "accessPolicies": "[variables('accessPolicies')]"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "accessPolicies": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.KeyVault/vaults/accessPolicies', parameters('keyVaultName'), parameters('accessPoliciesName')), '2018-02-14', 'Full')]"
+    }
+  }
 }

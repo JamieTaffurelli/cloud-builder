@@ -34,7 +34,7 @@
   "outputs": {
     "ddosProtectionPlan": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Network/ddosProtectionPlans', parameters('ddosProtectionPlanName')))]"
+      "value": "[reference(resourceId('Microsoft.Network/ddosProtectionPlans', parameters('ddosProtectionPlanName')), '2018-11-01', 'Full')]"
     }
   }
 }

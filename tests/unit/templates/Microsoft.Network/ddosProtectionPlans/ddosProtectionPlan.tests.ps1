@@ -46,13 +46,37 @@ Describe "DDOS Protection Plan Parameter Validation" {
     }
 }
 
-Describe "DDOS Protection Plan Group Resource Validation" {
+Describe "DDOS Protection Plan Resource Validation" {
+
+    Context "type Validation" {
+
+        It "type value is Microsoft.Network/ddosProtectionPlans" {
+
+            $json.resources.type | should be "Microsoft.Network/ddosProtectionPlans"
+        }
+    }
 
     Context "apiVersion Validation" {
 
         It "apiVersion value is 2018-11-01" {
 
             $json.resources.apiVersion | should be "2018-11-01"
+        }
+    }
+}
+
+Describe "DDOS Protection Plan Output Validation" {
+
+    Context "DDOS Protection Plan Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.ddosProtectionPlan.type | should be "object"
+        }
+
+        It "Uses full reference for DDOS Protection Plan" {
+
+            $json.outputs.ddosProtectionPlan.value | should be "[reference(resourceId('Microsoft.Network/ddosProtectionPlans', parameters('ddosProtectionPlanName')), '2018-11-01', 'Full')]"
         }
     }
 }

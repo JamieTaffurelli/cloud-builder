@@ -52,7 +52,6 @@
       "type": "object"
     }
   },
-  "variables": {},
   "resources": [
     {
       "name": "[concat(parameters('vmName'), '/', parameters('vmExtensionName'))]",
@@ -69,5 +68,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "virtualMachineExtension": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('vmName'), parameters('vmExtensionName')), '2019-03-01', 'Full')]"
+    }
+  }
 }

@@ -74,21 +74,18 @@ Describe "Network Security Group Parameter Validation" {
     }
 }
 
-Describe "Network Security Group Resource Validation" {
+Describe "Network Security Group Output Validation" {
 
-    Context "type Validation" {
+    Context "Network Security Group Reference Validation" {
 
-        It "type value is Microsoft.Network/networkSecurityGroups" {
+        It "type value is object" {
 
-            $json.resources.type | should be "Microsoft.Network/networkSecurityGroups"
+            $json.outputs.networkSecurityGroup.type | should be "object"
         }
-    }
 
-    Context "apiVersion Validation" {
+        It "Uses full reference for Network Security Group" {
 
-        It "apiVersion value is 2018-11-01" {
-
-            $json.resources.apiVersion | should be "2018-11-01"
+            $json.outputs.networkSecurityGroup.value | should be "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')), '2018-11-01', 'Full')]"
         }
     }
 }

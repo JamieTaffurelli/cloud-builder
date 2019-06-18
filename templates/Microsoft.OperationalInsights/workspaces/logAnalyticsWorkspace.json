@@ -54,5 +54,11 @@
         "retentionInDays": "[variables('retentionInDays')]"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "logAnalytics": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2015-11-01-preview', 'Full')]"
+    }
+  }
 }

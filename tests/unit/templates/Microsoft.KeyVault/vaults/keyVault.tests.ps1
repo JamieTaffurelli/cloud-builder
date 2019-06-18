@@ -268,3 +268,19 @@ Describe "Key Vault Resource Validation" {
         }
     }
 }
+
+Describe "Key Vault Output Validation" {
+
+    Context "Key Vault Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.keyVault.type | should be "object"
+        }
+
+        It "Uses full reference for Key Vault" {
+
+            $json.outputs.keyVault.value | should be "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2018-02-14', 'Full')]"
+        }
+    }
+}
