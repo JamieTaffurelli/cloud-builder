@@ -100,3 +100,19 @@ Describe "Log Analytics Workspace Validation" {
         }
     }
 }
+
+Describe "Log Analytics Workspace Output Validation" {
+
+    Context "Log Analytics Workspace Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.logAnalytics.type | should be "object"
+        }
+
+        It "Uses full reference for Log Analytics Workspace" {
+
+            $json.outputs.logAnalytics.value | should be "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2015-11-01-preview', 'Full')]"
+        }
+    }
+}

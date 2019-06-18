@@ -316,3 +316,19 @@ Describe "Security Rule Resource Validation" {
         }
     }
 }
+
+Describe "Security Rule Output Validation" {
+
+    Context "Security Rule Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.securityRule.type | should be "object"
+        }
+
+        It "Uses full reference for Security Rule" {
+
+            $json.outputs.securityRule.value | should be "[reference(resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('nsgName'), parameters('securityRuleName')), '2018-11-01', 'Full')]"
+        }
+    }
+}

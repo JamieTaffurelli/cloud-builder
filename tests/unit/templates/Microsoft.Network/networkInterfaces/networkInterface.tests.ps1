@@ -364,3 +364,19 @@ Describe "Network Interface Resource Validation" {
         }
     }
 }
+
+Describe "Network Interface Output Validation" {
+
+    Context "Network Interface Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.networkInterface.type | should be "object"
+        }
+
+        It "Uses full reference for Network Interface" {
+
+            $json.outputs.networkInterface.value | should be "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2018-11-01', 'Full')]"
+        }
+    }
+}

@@ -77,3 +77,19 @@ Describe "Access Policies Resource Validation" {
         }
     }
 }
+
+Describe "Access Policies Output Validation" {
+
+    Context "Access Policies Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.accessPolicies.type | should be "object"
+        }
+
+        It "Uses full reference for Access Policies" {
+
+            $json.outputs.accessPolicies.value | should be "[reference(resourceId('Microsoft.KeyVault/vaults/accessPolicies', parameters('keyVaultName'), parameters('accessPoliciesName')), '2018-02-14', 'Full')]"
+        }
+    }
+}

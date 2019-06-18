@@ -35,7 +35,7 @@
   "outputs": {
     "networkSecurityGroup": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')))]"
+      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')), '2018-11-01', 'Full')]"
     }
   }
 }

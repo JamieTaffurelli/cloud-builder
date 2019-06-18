@@ -134,7 +134,7 @@
   "outputs": {
     "securityRule": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('nsgName'), parameters('securityRuleName')))]"
+      "value": "[reference(resourceId('Microsoft.Network/networkSecurityGroups/securityRules', parameters('nsgName'), parameters('securityRuleName')), '2018-11-01', 'Full')]"
     }
   }
 }

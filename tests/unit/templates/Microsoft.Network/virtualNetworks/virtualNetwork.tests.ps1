@@ -203,3 +203,19 @@ Describe "Virtual Network Resource Validation" {
         }
     }
 }
+
+Describe "Virtual Network Output Validation" {
+
+    Context "Virtual Network Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.virtualNetwork.type | should be "object"
+        }
+
+        It "Uses full reference for Virtual Network" {
+
+            $json.outputs.virtualNetwork.value | should be "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), '2018-11-01', 'Full')]"
+        }
+    }
+}

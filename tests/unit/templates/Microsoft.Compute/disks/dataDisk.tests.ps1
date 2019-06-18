@@ -149,3 +149,19 @@ Describe "Data Disk Resource Validation" {
         }
     }
 }
+
+Describe "Data Disk Output Validation" {
+
+    Context "Data Disk Reference Validation" {
+
+        It "type value is object" {
+
+            $json.outputs.dataDisk.type | should be "object"
+        }
+
+        It "Uses full reference for Data Disk" {
+
+            $json.outputs.dataDisk.value | should be "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2018-09-30', 'Full')]"
+        }
+    }
+}

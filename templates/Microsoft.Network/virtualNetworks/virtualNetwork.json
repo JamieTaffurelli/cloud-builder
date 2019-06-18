@@ -94,5 +94,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "virtualNetwork": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), '2018-11-01', 'Full')]"
+    }
+  }
 }

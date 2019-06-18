@@ -62,5 +62,11 @@
         }
       }
     }
-  ]
+  ],
+  "outputs": {
+    "dataDisk": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2018-09-30', 'Full')]"
+    }
+  }
 }

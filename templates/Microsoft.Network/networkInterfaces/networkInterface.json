@@ -162,5 +162,11 @@
         "enableIPForwarding": "[parameters('enableIPForwarding')]"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "networkInterface": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2018-11-01', 'Full')]"
+    }
+  }
 }
