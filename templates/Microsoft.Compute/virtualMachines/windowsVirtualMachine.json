@@ -132,7 +132,7 @@
     "networkInterfaces": {
       "type": "array",
       "metadata": {
-        "description": "Specify Network Interfaces to attach to the Virtual Machine. Valid properties are Id (resource ID of NIC), nicName and isPrimary (true or false)"
+        "description": "Specify Network Interfaces to attach to the Virtual Machine."
       }
     },
     "diagnosticsStorageAccountName": {
@@ -191,7 +191,7 @@
           "name": "networkInterfaces",
           "count": "[length(parameters('networkInterfaces'))]",
           "input": {
-            "id": "[parameters('networkInterfaces')[copyIndex('networkInterfaces')].Id]",
+            "id": "[resourceId(if(contains(parameters('networkInterfaces')[copyIndex('networkInterfaces')], 'networkInterfaceSubscriptionId'), parameters('networkInterfaces')[copyIndex('networkInterfaces')].networkInterfaceSubscriptionId, subscription().subscriptionId), if(contains(parameters('networkInterfaces')[copyIndex('networkInterfaces')], 'networkInterfaceResourceGroupName'), parameters('networkInterfaces')[copyIndex('networkInterfaces')].networkInterfaceResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaces')[copyIndex('networkInterfaces')].networkInterfaceName)]",
             "properties": {
               "primary": "[parameters('networkInterfaces')[copyIndex('networkInterfaces')].isPrimary]"
             }

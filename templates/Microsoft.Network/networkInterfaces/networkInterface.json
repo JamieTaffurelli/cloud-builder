@@ -39,10 +39,30 @@
         "description": "IP address to assign to IP configuration"
       }
     },
-    "subnetId": {
+    "subnetName": {
       "type": "string",
       "metadata": {
-        "description": "Resource ID of the Subnet the IP is allocated to"
+        "description": "Name of subnet to allocate Network Interface to."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Virtual Network to allocate Network Interface to."
+      }
+    },
+    "subnetResourceGroup": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of subnet to allocate Network Interface to."
+      }
+    },
+    "subnetSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID of subnet to allocate Network Interface to."
       }
     },
     "privateIpAddressVersion": {
@@ -124,7 +144,7 @@
               "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
               "privateIPAddress": "[parameters('privateIpAddress')]",
               "subnet": {
-                "id": "[parameters('subnetId')]"
+                "id": "[resourceId(parameters('subnetSubscriptionId'), parameters('subnetResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
               },
               "primary": true,
               "privateIPAddressVersion": "[parameters('privateIpAddressVersion')]"

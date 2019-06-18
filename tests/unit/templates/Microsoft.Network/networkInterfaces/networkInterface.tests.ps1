@@ -96,21 +96,62 @@ Describe "Network Interface Parameter Validation" {
         }
     }
 
-    Context "subnetId Validation" {
+    Context "subnetName Validation" {
 
-        It "Has subnetId parameter" {
+        It "Has subnetName parameter" {
 
-            $json.parameters.subnetId | should not be $null
+            $json.parameters.subnetName | should not be $null
         }
 
-        It "subnetId parameter is of type string" {
+        It "subnetName parameter is of type string" {
 
-            $json.parameters.subnetId.type | should be "string"
+            $json.parameters.subnetName.type | should be "string"
         }
 
-        It "subnetId parameter is mandatory" {
+        It "subnetName parameter is mandatory" {
 
-            ($json.parameters.subnetId.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.subnetName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "virtualNetworkName Validation" {
+
+        It "Has virtualNetworkName parameter" {
+
+            $json.parameters.virtualNetworkName | should not be $null
+        }
+
+        It "virtualNetworkName parameter is of type string" {
+
+            $json.parameters.virtualNetworkName.type | should be "string"
+        }
+
+        It "virtualNetworkName parameter is mandatory" {
+
+            ($json.parameters.virtualNetworkName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "subnetResourceGroup Validation" {
+
+        It "Has subnetResourceGroup parameter" {
+
+            $json.parameters.subnetResourceGroup | should not be $null
+        }
+
+        It "subnetResourceGroup parameter is of type string" {
+
+            $json.parameters.subnetResourceGroup.type | should be "string"
+        }
+
+        It "subnetSubscriptionId parameter is mandatory" {
+
+            ($json.parameters.subnetResourceGroup.defaultValue) | should be "[resourceGroup().name]"
+        }
+
+        It "subnetSubscriptionId parameter is mandatory" {
+
+            ($json.parameters.subnetSubscriptionId.defaultValue) | should be "[subscription().subscriptionId]"
         }
     }
 
