@@ -168,22 +168,17 @@ Describe "Virtual Network Resource Validation" {
 
         It "subnets variable must have Network Security Group" {
 
-            $json.variables.subnets.copy.input.properties.networkSecurityGroup.id | should be "[parameters('subnets')[copyIndex('subnets')].networkSecurityGroup.id]"
+            $json.variables.subnets.copy.input.properties.networkSecurityGroup.id | should not be $null
         }
 
         It "subnets variable allows route table" {
 
-            $json.variables.subnets.copy.input.properties.routeTable | should be "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{`"id`": `"', parameters('subnets')[copyIndex('subnets')].routeTableId, '`"}')), json('null'))]"
-        }
-
-        It "subnets variable must have Network Security Group" {
-
-            $json.variables.subnets.copy.input.properties.networkSecurityGroup.id | should be "[parameters('subnets')[copyIndex('subnets')].networkSecurityGroup.id]"
+            $json.variables.subnets.copy.input.properties.routeTable | should not be $null
         }
 
         It "subnets variable allows service endpoints" {
 
-            $json.variables.subnets.copy.input.properties.serviceEndpoints | should be "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, json('null'))]"
+            $json.variables.subnets.copy.input.properties.serviceEndpoints | should not be $null
         }
 
         It "subnets property uses subnets variable" {

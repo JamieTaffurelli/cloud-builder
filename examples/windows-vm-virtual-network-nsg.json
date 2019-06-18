@@ -72,9 +72,6 @@
     "ddosProtectionPlanTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/ddosProtectionPlans/ddosProtectionPlan.1.0.0.0.json', parameters('templatesSas'))]",
     "vNetTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/virtualNetworks/virtualNetwork.1.0.0.0.json', parameters('templatesSas'))]",
     "networkInterfaceTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Network/networkInterfaces/networkinterface.1.0.0.0.json', parameters('templatesSas'))]",
-    "networkSecurityGroup": {
-      "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
-    },
     "subnets": {
       "copy": [
         {
@@ -83,7 +80,7 @@
           "input": {
             "name": "[parameters('subnets')[copyIndex('subnets')].name]",
             "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
-            "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+            "networkSecurityGroupName": "[parameters('nsgName')]"
           }
         }
       ]
