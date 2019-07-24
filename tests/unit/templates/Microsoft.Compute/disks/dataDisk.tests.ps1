@@ -80,7 +80,7 @@ Describe "Data Disk Parameter Validation" {
             $json.parameters.diskSizeGB.type | should be "int"
         }
 
-        It "diskSizeGB parameter default value is 127" {
+        It "diskSizeGB parameter does not have a default value" {
 
             ($json.parameters.diskSizeGB.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
