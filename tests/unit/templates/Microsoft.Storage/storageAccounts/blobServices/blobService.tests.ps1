@@ -108,7 +108,7 @@ Describe "Blob Service Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-11-01" {
+        It "apiVersion value is 2019-04-01" {
 
             $json.resources.apiVersion | should be "2019-04-01"
         }
