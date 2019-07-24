@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24,
+      "metadata": {
+        "description": "The name of the Storage Account"
+      }
+    },
+    "corsRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Cross Origin Resource Sharing rules"
+      }
+    },
+    "retentionDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "minValue": 1,
+      "maxValue": 365,
+      "metadata": {
+        "description": "Number of days to retain deleted blobs"
+      }
+    },
+    "automaticSnapshotEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable auto snapshot of blobs"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('storageAccountName'), '/default')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2019-04-01",
+      "properties": {
+        "cors": {
+          "corsRules": "[parameters('corsRules')]"
+        },
+        "deleteRetentionPolicy": {
+          "enabled": true,
+          "days": "[parameters('retentionDays')]"
+        },
+        "automaticSnapshotPolicyEnabled": "[parameters('automaticSnapshotEnabled')]"
+      }
+    }
+  ]
+}

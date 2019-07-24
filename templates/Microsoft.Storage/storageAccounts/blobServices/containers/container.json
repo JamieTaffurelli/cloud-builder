@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 63,
+      "metadata": {
+        "description": "The name of the Storage Account Container"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24,
+      "metadata": {
+        "description": "The name of the Storage Account"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('storageAccountName'), '/', parameters('containerName'))]",
+      "type": "Microsoft.Storage/storageAccounts/containers",
+      "apiVersion": "2019-04-01",
+      "properties": {
+        "publicAccess": "None"
+      }
+    }
+  ]
+}
