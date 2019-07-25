@@ -13,7 +13,7 @@ steps:
   inputs:
     targetType: 'filePath'
     filePath: '$(System.DefaultWorkingDirectory)\install-modules.ps1'
-    arguments: '"az"'
+    arguments: '@("az", "Pester")'
     errorActionPreference: 'stop'
     failOnStderr: false
     ignoreLASTEXITCODE: false
