@@ -14,7 +14,7 @@ param
     [Parameter()]
     [ValidateNotNullOrEmpty()]
     [String]
-    $ResourceGroupPrefix = "z-uki-en1-shrd-pr-rgp",
+    $ResourceGroupPrefix = "rgtest",
 
     [Parameter()]
     [Switch]
@@ -30,7 +30,7 @@ if($resourceGroup)
 {
     if($Force)
     {
-        Set-AzResourceGroup -Name $resourceGroupName -Tag @{ OpCo = "Axa I"; Application = "Hub"; Environment = "Sandbox"; Purpose = "TemplateUnitTesting" }
+        Set-AzResourceGroup -Name $resourceGroupName -Tag @{ Purpose = "TemplateUnitTesting" }
         Write-Host "##vso[task.setvariable variable=ResourceGroupName]${resourceGroupName}"
     }
     else
@@ -40,6 +40,6 @@ if($resourceGroup)
 }
 else
 {
-    New-AzResourceGroup -Name $resourceGroupName -Location "northeurope" -Tag @{ OpCo = "Axa I"; Application = "Hub"; Environment = "Sandbox"; Purpose = "TemplateUnitTesting" } -Force
+    New-AzResourceGroup -Name $resourceGroupName -Location "northeurope" -Tag @{ Purpose = "TemplateUnitTesting" } -Force
     Write-Host "##vso[task.setvariable variable=ResourceGroupName]${resourceGroupName}"
 }
