@@ -13,20 +13,32 @@ steps:
   inputs:
     targetType: 'filePath'
     filePath: '$(System.DefaultWorkingDirectory)\install-modules.ps1'
-    arguments: '"az"'
+    arguments: '@("az", "Pester")'
     errorActionPreference: 'stop'
     failOnStderr: false
     ignoreLASTEXITCODE: false
     pwsh: false
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+- task: AzurePowerShell@4
+  displayName: 'Create Test Resource Group'
+  inputs:
+    azureSubscription: 'rg1'
+    scriptType: 'FilePath'
+    scriptPath: '$(System.DefaultWorkingDirectory)\scripts\new-test-resource-group.ps1'
+    errorActionPreference: 'stop'
+    failOnStandardError: false
+    azurePowerShellVersion: 'latestVersion'
+
+- task: AzurePowerShell@4
   displayName: 'Run Unit Tests'
   inputs:
-    resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
-    codeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
-    codeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
-    run32Bit: false
+    azureSubscription: 'rg1'
+    scriptType: 'FilePath'
+    scriptPath: '$(System.DefaultWorkingDirectory)\execute-tests.ps1'
+    errorActionPreference: 'stop'
+    failOnStandardError: false
+    azurePowerShellVersion: 'latestVersion'
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
@@ -44,6 +56,17 @@ steps:
     codeCoverageTool: 'JaCoCo'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
     failIfCoverageEmpty: true
+
+- task: AzurePowerShell@4
+  displayName: 'Delete Test Resource Group'
+  inputs:
+    azureSubscription: 'rg1'
+    scriptType: 'FilePath'
+    scriptPath: '$(System.DefaultWorkingDirectory)\scripts\remove-test-resource-group.ps1'
+    errorActionPreference: 'stop'
+    failOnStandardError: false
+    azurePowerShellVersion: 'latestVersion'
+    condition: always()
 
 - task: PowerShell@2
   displayName: 'Exclude Unscannable ARM Templates'
