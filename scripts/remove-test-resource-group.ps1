@@ -7,4 +7,4 @@ param
     $ResourceGroupName = $env:ResourceGroupName
 )
 
-Remove-AzResourceGroup -Name $ResourceGroupName
+Remove-AzResourceGroup -Name $ResourceGroupName -Force
