@@ -1,18 +1,32 @@
 [CmdletBinding()]
 param
 (
-    [Parameter()]
-    [ValidateScript( { $PSItem | Test-Path -PathType "Container" } )]
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
     [String]
-    $SearchFolder = "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\templates",
+    $StorageAccountName,
 
-    [Parameter()]
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [String]
+    $ContainerName,
+
+    [Parameter(Mandatory = $true)]
     [ValidateScript( { $PSItem | Test-Path -PathType "Container" -IsValid } )]
     [String]
-    $OutputFolder = "$env:BUILD_ARTIFACTSTAGINGDIRECTORY\templates"
+    $SearchPath
 )
 
 Import-Module "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\module\AzureBuilder.psd1" -Force
 
-Copy-AzBuildTemplateFilesWithVersion -SearchFolder $SearchFolder -OutputFolder $OutputFolder
+$templates = Get-ChildItem -Path $SearchPath -Recurse -Include "*.json"
+
+if($templates)
+{
+    $templates | Copy-AzBuildItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($PSItem.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty)  -SkipExisting
+}
+else 
+{
+    Write-Warning "No json templates found in ${SearchPath}"
+}
 
