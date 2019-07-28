@@ -1,0 +1,26 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerName": {
+      "value": "templates"
+    },
+    "storageAccountName": {
+      "value": "templatessa6546"
+    },
+    "skuName": {
+      "value": "Standard_GRS"
+    },
+    "bypass": {
+      "value": "Logging, Metrics, AzureServices"
+    },
+    "ipRules": {
+      "value": ["0.0.0.0/0"]
+    },
+    "tags": {
+      "value": {
+        "purpose": "templates-storage-account"
+      }
+    }
+  }
+}
