@@ -15,7 +15,7 @@
       "value": "Logging, Metrics, AzureServices"
     },
     "ipRules": {
-      "value": ["0.0.0.0/0"]
+      "value": [{"value":"0.0.0.0/0", "action": "Allow"}]
     },
     "tags": {
       "value": {
