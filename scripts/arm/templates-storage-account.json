@@ -218,8 +218,8 @@
         "automaticSnapshotPolicyEnabled": "[parameters('automaticSnapshotEnabled')]"
       },
       "dependsOn": ["[parameters('storageAccountName')]"]
-    },
-    {
+    }//,
+    /*{
       "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]",
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2019-04-01",
@@ -236,6 +236,6 @@
         "immutabilityPeriodSinceCreationInDays": "[parameters('immutabilityPeriodSinceCreationInDays')]"
       },
       "dependsOn": ["[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]"]
-    }
+    }*/
   ]
 }
