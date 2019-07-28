@@ -125,3 +125,23 @@ steps:
     publishLocation: 'Container'
     parallel: false
     condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+- task: CopyFiles@2
+  displayName: 'Copy Scripts to Staging Directory'
+  inputs:
+    sourceFolder: '$(System.DefaultWorkingDirectory)\scripts'
+    contents: '**\*' 
+    targetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+    cleanTargetFolder: true 
+    overWrite: true
+    flattenFolders: false
+    condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Scripts'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts' 
+    artifactName: 'scripts' 
+    publishLocation: 'Container'
+    parallel: false
+    condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
