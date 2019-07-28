@@ -12,7 +12,7 @@ steps:
   displayName: 'Install Required PowerShell Modules'
   inputs:
     targetType: 'filePath'
-    filePath: '$(System.DefaultWorkingDirectory)\install-modules.ps1'
+    filePath: '$(System.DefaultWorkingDirectory)\scriptszinstall-modules.ps1'
     arguments: '@("az", "Pester")'
     errorActionPreference: 'stop'
     failOnStderr: false
