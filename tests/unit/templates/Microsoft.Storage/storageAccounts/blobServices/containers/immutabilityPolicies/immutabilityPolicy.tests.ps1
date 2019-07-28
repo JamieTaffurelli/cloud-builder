@@ -92,9 +92,9 @@ Describe "Immutability Policy Resource Validation" {
 
     Context "type Validation" {
 
-        It "type value is Microsoft.Storage/storageAccounts/containers/immutabilityPolicies" {
+        It "type value is Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies" {
 
-            $json.resources.type | should be "Microsoft.Storage/storageAccounts/containers/immutabilityPolicies"
+            $json.resources.type | should be "Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies"
         }
     }
 

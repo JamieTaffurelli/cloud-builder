@@ -64,9 +64,9 @@ Describe "Container Resource Validation" {
 
     Context "type Validation" {
 
-        It "type value is Microsoft.Storage/storageAccounts/containers" {
+        It "type value is Microsoft.Storage/storageAccounts/blobServices/containers" {
 
-            $json.resources.type | should be "Microsoft.Storage/storageAccounts/containers"
+            $json.resources.type | should be "Microsoft.Storage/storageAccounts/blobServices/containers"
         }
     }
 

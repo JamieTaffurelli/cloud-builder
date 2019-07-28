@@ -22,8 +22,8 @@
   "variables": {},
   "resources": [
     {
-      "name": "[concat(parameters('storageAccountName'), '/', parameters('containerName'))]",
-      "type": "Microsoft.Storage/storageAccounts/containers",
+      "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2019-04-01",
       "properties": {
         "publicAccess": "None"
