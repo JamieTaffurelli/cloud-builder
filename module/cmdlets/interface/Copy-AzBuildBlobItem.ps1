@@ -1,4 +1,4 @@
-function Copy-AzBuildItem
+function Copy-AzBuildBlobItem
 {
     <#
         .DESCRIPTION
