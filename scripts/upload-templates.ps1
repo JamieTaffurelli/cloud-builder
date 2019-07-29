@@ -14,10 +14,15 @@ param
     [Parameter(Mandatory = $true)]
     [ValidateScript( { $PSItem | Test-Path -PathType "Container" -IsValid } )]
     [String]
-    $SearchPath
+    $SearchPath,
+
+    [Parameter()]
+    [ValidateScript( { ($PSItem | Test-Path -PathType Leaf) -and ([System.IO.Path]::GetExtension($PSItem) -eq ".psd1") } )]
+    [String]
+    $ModulePath = (Get-ChildItem -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -Recurse -Include "*AzureBuilder.psd1").FullName
 )
 
-Import-Module "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\module\AzureBuilder.psd1" -Force
+Import-Module $ModulePath -Force
 
 $templates = Get-ChildItem -Path $SearchPath -Recurse -Include "*.json"
 
