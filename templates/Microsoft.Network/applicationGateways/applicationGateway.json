@@ -1,0 +1,151 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appGatewayName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Application Gateway that you wish to create."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Application Gateway to"
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "WAF_Medium",
+      "allowedValues": ["WAF_Medium", "WAF_Large", "WAF_v2"],
+      "metadata": {
+        "description": "The sku of the Application Gateway"
+      }
+    },
+    "capacity": {
+      "type": "int",
+      "defaultValue": 2,
+      "minValue": 0,
+      "maxValue": 125,
+      "metadata": {
+        "description": "The number of instances of the Application Gateway"
+      }
+    },
+    "firewallMode": {
+      "type": "string",
+      "defaultValue": "Prevention",
+      "allowedValues": ["Detection", "Prevention"],
+      "metadata": {
+        "description": "Monitor or block WAF violating traffic"
+      }
+    },
+    "disabledRuleGroups": {
+      "type": "string",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Set of disabled WAF rules"
+      }
+    },
+    "maxRequestBodySizeInKb": {
+      "type": "int",
+      "defaultValue": 128,
+      "minValue": 1,
+      "maxValue": 128,
+      "metadata": {
+        "description": "Maximum size allowed for request body in KB"
+      }
+    },
+    "fileUploadLimitInMb": {
+      "type": "int",
+      "defaultValue": 100,
+      "minValue": 1,
+      "maxValue": 500,
+      "metadata": {
+        "description": "Maximum size allowed for uploaded files in MB, max value for standard sku is 100MB and large sku is 500 MB"
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Exclude request attributes from WAF, properties are 'matchVariable', 'selectorMatchOperator', 'selector'"
+      }
+    },
+    "autoScaleConfiguration": {
+      "type": "object",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Enable autoscaling for Application Gateway (only supported for V2), properties are 'minCapacity', 'maxCapacity'"
+      }
+    },
+    "customErrorConfigurations": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Custom Error Pages on Application Gateway for HttpStatus403 or HttpStatus502, properties are 'statusCode', 'customErrorPageUrl'"
+      }
+    },
+    "zones": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specify zone redundancy for the App Gateway, only support with V2"
+      }
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "skuTier": "[if(contains(createArray('WAF_Medium', 'WAF_Large'), parameters('skuName')), 'WAF', parameters('skuName'))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('appGatewayName')]",
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "2019-04-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('skuName')]",
+          "tier": "[variables('skuTier')]",
+          "capacity": "[parameters('capacity')]"
+        },
+        "sslPolicy": {
+          "disabledSslProtocols": ["TLSv1_0", "TLSv1_1"],
+          "policyType": "Predefined",
+          "policyName": "AppGwSslPolicy20170401S",
+          "minProtocolVersion": "TLSv1_2"
+        },
+        "webApplicationFirewallConfiguration": {
+          "enabled": true,
+          "firewallMode": "[parameters('firewallMode')]",
+          "ruleSetType": "OWASP",
+          "ruleSetVersion": "3.0",
+          "disabledRuleGroups": "[parameters('disabledRuleGroups')]",
+          "requestBodyCheck": true,
+          "maxRequestBodySizeInKb": "[parameters('maxRequestBodySizeInKb')]",
+          "fileUploadLimitInMb": "[parameters('fileUploadLimitInMb')]",
+          "exclusions": "[parameters('exclusions')]"
+        },
+        "enableHttp2": true,
+        "enableFips": "[if(equals(parameters('skuName'), 'WAF_v2'), json('false'), json('true'))]",
+        "autoscaleConfiguration": "[parameters('autoScaleConfiguration')]",
+        "customErrorConfigurations": "[parameters('customErrorConfigurations')]"
+      },
+      "zones": "[parameters('zones')]",
+      "identity": {
+        "type": "SystemAssigned"
+      }
+    }
+  ],
+  "outputs": {
+    "applicationGateway": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/applicationGateways', parameters('appGatewayName')), '2019-04-01', 'Full')]"
+    }
+  }
+}
