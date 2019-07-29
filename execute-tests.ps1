@@ -15,5 +15,4 @@ Invoke-Pester `
     -OutputFormat "NUnitXML" `
     -CodeCoverage $scripts `
     -CodeCoverageOutputFile "${PSScriptRoot}\code-coverage.xml" `
-    -EnableExit `
     -Show "All"
