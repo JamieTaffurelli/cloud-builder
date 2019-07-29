@@ -128,7 +128,7 @@
     },
     "automaticSnapshotEnabled": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
         "description": "Enable auto snapshot of blobs"
       }
@@ -218,15 +218,15 @@
         "automaticSnapshotPolicyEnabled": "[parameters('automaticSnapshotEnabled')]"
       },
       "dependsOn": ["[parameters('storageAccountName')]"]
-    }//,
-    /*{
+    },
+    {
       "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]",
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "apiVersion": "2019-04-01",
       "properties": {
         "publicAccess": "None"
       },
-      "dependsOn": ["[concat(parameters('storageAccountName'), '/default')]"]
+      "dependsOn": ["[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"]
     },
     {
       "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'), '/default')]",
@@ -235,7 +235,7 @@
       "properties": {
         "immutabilityPeriodSinceCreationInDays": "[parameters('immutabilityPeriodSinceCreationInDays')]"
       },
-      "dependsOn": ["[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]"]
-    }*/
+      "dependsOn": ["[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('storageAccountName'), 'default', 'templates')]"]
+    }
   ]
 }
