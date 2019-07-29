@@ -39,13 +39,7 @@ foreach($templateFilePath in $templateFilePaths)
 
     foreach($resourceType in $json.resources.type)
     {
-        $exclude = $true
-        if($inclusionTemplates -contains $resourceType)
-        {
-            $exclude = $false
-        }
-
-        if($exclude)
+        if($inclusionTemplates -notcontains $resourceType)
         {
             Write-Verbose "${templateFilePath} will be excluded from AzSK ARM template scanning"
             $excludedTemplateFileNames += Split-Path -Path $templateFilePath -Leaf
