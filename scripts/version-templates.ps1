@@ -14,7 +14,7 @@ param
     [Parameter()]
     [ValidateScript( { ($PSItem | Test-Path -PathType Leaf) -and ([System.IO.Path]::GetExtension($PSItem) -eq ".psd1") } )]
     [String]
-    $ModulePath = "${env:SYSTEM_DEFAULTWORKINGDIRECTORY}\module\AzureBuilder.psd1"
+    $ModulePath = (Get-ChildItem -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -Recurse -Include "*AzureBuilder.psd1").FullName
 )
 
 Import-Module $ModulePath -Force
