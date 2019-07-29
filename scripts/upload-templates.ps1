@@ -28,7 +28,7 @@ $templates = Get-ChildItem -Path $SearchPath -Recurse -Include "*.json"
 
 if($templates)
 {
-    $templates | Copy-AzBuildItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($PSItem.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty)  -SkipExisting
+    $templates | Copy-AzBuildBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($PSItem.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty)  -SkipExisting
 }
 else 
 {
