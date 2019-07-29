@@ -49,6 +49,7 @@ steps:
     mergeTestResults: false
     failTaskOnFailedTests: true
     publishRunAttachments: true
+  condition: always()
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish Code Coverage'
@@ -56,6 +57,7 @@ steps:
     codeCoverageTool: 'JaCoCo'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
     failIfCoverageEmpty: true
+  condition: always()
 
 - task: AzurePowerShell@4
   displayName: 'Delete Test Resource Group'
@@ -66,7 +68,7 @@ steps:
     errorActionPreference: 'stop'
     failOnStandardError: false
     azurePowerShellVersion: 'latestVersion'
-    condition: always()
+  condition: always()
 
 - task: PowerShell@2
   displayName: 'Exclude Unscannable ARM Templates'
@@ -104,7 +106,7 @@ steps:
     artifactName: 'templates' 
     publishLocation: 'Container'
     parallel: false
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
 - task: CopyFiles@2
   displayName: 'Copy Example Deployment Templates to Staging Directory'
@@ -115,7 +117,7 @@ steps:
     cleanTargetFolder: true 
     overWrite: true
     flattenFolders: false
-    condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+  condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Example Deployment Templates'
@@ -124,7 +126,7 @@ steps:
     artifactName: 'examples' 
     publishLocation: 'Container'
     parallel: false
-    condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+  condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
 
 - task: CopyFiles@2
   displayName: 'Copy Scripts to Staging Directory'
@@ -135,7 +137,7 @@ steps:
     cleanTargetFolder: true 
     overWrite: true
     flattenFolders: false
-    condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+  condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Scripts'
@@ -144,4 +146,4 @@ steps:
     artifactName: 'scripts' 
     publishLocation: 'Container'
     parallel: false
-    condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+  condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
