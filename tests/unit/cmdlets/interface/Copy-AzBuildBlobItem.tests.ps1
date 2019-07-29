@@ -21,7 +21,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
         
         It "Uses OAuth authentication if specified" {
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $AuthMethod -eq "OAuth" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -29,7 +29,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
         It "Uses OAuth authentication by default" {
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $AuthMethod -eq "OAuth" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -37,7 +37,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
         It "Uses dynamic key authentication by if specified" {
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "Key" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "Key" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $AuthMethod -eq "Key" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -45,7 +45,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
         It "Uses anonymous authentication by if specified" {
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "Anonymous" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "Anonymous" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $AuthMethod -eq "Anonymous" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -53,7 +53,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
         It "Uses static key authentication by if specified" {
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -StorageAccountKey "StorageKey" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -StorageAccountKey "StorageKey" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $StorageAccountKey -eq "StorageKey" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -61,7 +61,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
         It "Uses static sas authentication by if specified" {
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -SasToken "StorageSas" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -SasToken "StorageSas" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly -ParameterFilter { $SasToken -eq "StorageSas" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -80,7 +80,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Get-AzStorageContainer -MockWith { }
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName Get-AzStorageContainer -Times 1 -Scope It -Exactly -ParameterFilter { $Name -eq "storagecontainer" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -90,7 +90,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Get-AzStorageContainer -MockWith { Write-Error "Container not found" }
             
-            { Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" } | should throw "Container not found"
+            { Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" } | should throw "Container not found"
 
             Assert-MockCalled -CommandName Get-AzStorageContainer -Times 1 -Scope It -Exactly -ParameterFilter { $Name -eq "storagecontainer" }
             Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
@@ -110,7 +110,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Test-AzBuildBlobItem -MockWith { $true }
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" -SkipExisting | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" -SkipExisting | Out-Null
 
             Assert-MockCalled -CommandName Test-AzBuildBlobItem -Times 1 -Scope It -Exactly
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 0 -Scope It -Exactly
@@ -121,7 +121,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Test-AzBuildBlobItem -MockWith { $false }
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" -SkipExisting | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" -SkipExisting | Out-Null
 
             Assert-MockCalled -CommandName Test-AzBuildBlobItem -Times 1 -Scope It -Exactly
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly
@@ -132,7 +132,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Test-AzBuildBlobItem -MockWith { $false }
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName Test-AzBuildBlobItem -Times 1 -Scope It -Exactly
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly
@@ -143,7 +143,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Test-AzBuildBlobItem -MockWith { $true }
 
-            Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
+            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
 
             Assert-MockCalled -CommandName Test-AzBuildBlobItem -Times 1 -Scope It -Exactly
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly
@@ -154,7 +154,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Mock -CommandName Test-AzBuildBlobItem -MockWith { }
 
-            @("TestDrive:\blob1.txt", (Get-Item -Path "TestDrive:\blob2.txt")) | Copy-AzBuildItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" | Out-Null
+            @("TestDrive:\blob1.txt", (Get-Item -Path "TestDrive:\blob2.txt")) | Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" | Out-Null
 
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq "TestDrive:\blob1.txt" }
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq "${TestDrive}\blob2.txt" }
