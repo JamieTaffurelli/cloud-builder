@@ -31,8 +31,8 @@
   "variables": {},
   "resources": [
     {
-      "name": "[concat(parameters('storageAccountName'), '/', parameters('containerName'), '/default')]",
-      "type": "Microsoft.Storage/storageAccounts/containers/immutabilityPolicies",
+      "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'), '/default')]",
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies",
       "apiVersion": "2019-04-01",
       "properties": {
         "immutabilityPeriodSinceCreationInDays": "[parameters('immutabilityPeriodSinceCreationInDays')]"
