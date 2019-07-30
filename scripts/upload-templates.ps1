@@ -24,6 +24,7 @@ param
 
 Import-Module $ModulePath -Force
 
+$SearchPath = $SearchPath -replace "/", "\"
 $templates = Get-ChildItem -Path $SearchPath -Recurse -Include "*.json"
 
 if($templates)
