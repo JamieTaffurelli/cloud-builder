@@ -89,7 +89,7 @@ function Copy-AzBuildBlobItem
         }
         
         Write-Verbose "Checking container ${ContainerName} exists in ${StorageAccountName}"
-        $storageContext | Get-AzStorageContainer -Name $ContainerName -ErrorAction Stop | Out-Null
+        $context | Get-AzStorageContainer -Name $ContainerName -ErrorAction Stop | Out-Null
     }
     process
     {
