@@ -68,35 +68,6 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
         }
     }
 
-    Context "Storage Container Validation" {
-
-        Mock -CommandName New-AzBuildStorageContext -MockWith { }
-        Mock -CommandName Get-AzStorageBlob -MockWith { }
-        Mock -CommandName Test-AzBuildBlobItem -MockWith { }
-        Mock -CommandName Set-AzStorageBlobContent -MockWith { }
-        Mock -CommandName Write-Host -MockWith { }
-        
-        It "Gets Storage Account Container" {
-
-            Mock -CommandName Get-AzStorageContainer -MockWith { }
-
-            Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" | Out-Null
-
-            Assert-MockCalled -CommandName Get-AzStorageContainer -Times 1 -Scope It -Exactly -ParameterFilter { $Name -eq "storagecontainer" }
-            Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
-        }
-
-        It "Throws if Storage Account Container not found" {
-
-            Mock -CommandName Get-AzStorageContainer -MockWith { Write-Error "Container not found" }
-            
-            { Copy-AzBuildBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" -File "TestDrive:\blob1.txt" } | should throw "Container not found"
-
-            Assert-MockCalled -CommandName Get-AzStorageContainer -Times 1 -Scope It -Exactly -ParameterFilter { $Name -eq "storagecontainer" }
-            Assert-MockCalled -CommandName New-AzBuildStorageContext -Times 1 -Scope It -Exactly
-        }
-    }
-
     Context "Blob Upload Validation" {
 
         Mock -CommandName New-AzBuildStorageContext -MockWith { }
