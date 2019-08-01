@@ -1,0 +1,89 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appGatewayName": {
+      "value": "z-uki-en1-shrd-sb-agw0101-jamiet"
+    },
+    "skuName": {
+      "value": "WAF_Medium"
+    },
+    "gatewayIpConfigurations": {
+      "value": [
+        {
+          "name": "ipconfig1",
+          "virtualNetworkName": "z-uki-en1-shrd-sb-vnet0101-jamiet",
+          "subnetName": "z-uki-en1-shrd-sb-sub0101-jamiet"
+        }
+      ]
+    },
+    "frontendIPConfigurations": {
+      "value": [
+        {
+          "name": "frontconfig1",
+          "publicIPAddressName": "szcgvdsgv"
+        },
+        {
+          "name": "frontconfig2",
+          "subnetName": "z-uki-en1-shrd-sb-sub0101-jamiet",
+          "virtualNetworkName": "z-uki-en1-shrd-sb-vnet0101-jamiet",
+          "privateIPAllocationMethod": "Static",
+          "PrivateIPAddress": "10.2.0.128"
+        }
+      ]
+    },
+    "backendAddressPools": {
+      "value": [
+        {
+          "name": "backend1",
+          "properties": {
+            "backendAddresses": [
+              {
+                "fqdn": "dummypool.internal"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "backendHttpSettingsCollection": {
+      "value": [
+        {
+          "name": "backendHTTP1",
+          "properties": {
+            "port": "345"
+          }
+        }
+      ]
+    },
+    "httpListeners": {
+      "value": [
+        {
+        "name": "HTTP1",
+        "properties": {
+          "frontendIPConfiguration": {
+            "id": "resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', 'z-uki-en1-shrd-sb-agw0101-jamiet', 'frontconfig1')"
+          },
+          "frontendPort": {
+            "id": "resourceId('Microsoft.Network/applicationGateways/frontendPorts', 'z-uki-en1-shrd-sb-agw0101-jamiet', 'https')"
+          },
+          "protocol": "http"
+        }
+      }
+      ]
+    },
+    "requestRoutingRules": {
+      "value": [
+        {
+          "name": "HTTP1"
+        }
+      ]
+    },
+    "tags": {
+      "value": {
+        "OpCo": "Axa I",
+        "Application": "Hub"
+      }
+    }
+  }
+}
