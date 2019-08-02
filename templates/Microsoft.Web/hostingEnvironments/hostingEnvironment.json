@@ -1,0 +1,57 @@
+{
+    "name": "string",
+    "type": "Microsoft.Web/hostingEnvironments",
+    "apiVersion": "2018-02-01",
+    "kind": "string",
+    "location": "string",
+    "tags": {},
+    "properties": {
+      "name": "string",
+      "location": "string",
+      "vnetName": "string",
+      "vnetResourceGroupName": "string",
+      "vnetSubnetName": "string",
+      "virtualNetwork": {
+        "id": "string",
+        "subnet": "string"
+      },
+      "internalLoadBalancingMode": "string",
+      "multiSize": "string",
+      "multiRoleCount": "integer",
+      "workerPools": [
+        {
+          "workerSizeId": "integer",
+          "computeMode": "string",
+          "workerSize": "string",
+          "workerCount": "integer"
+        }
+      ],
+      "ipsslAddressCount": "integer",
+      "dnsSuffix": "string",
+      "networkAccessControlList": [
+        {
+          "action": "string",
+          "description": "string",
+          "order": "integer",
+          "remoteSubnet": "string"
+        }
+      ],
+      "frontEndScaleFactor": "integer",
+      "apiManagementAccountId": "string",
+      "suspended": "boolean",
+      "dynamicCacheEnabled": "boolean",
+      "clusterSettings": [
+        {
+          "name": "string",
+          "value": "string"
+        }
+      ],
+      "userWhitelistedIpRanges": [
+        "string"
+      ],
+      "hasLinuxWorkers": "boolean",
+      "sslCertKeyVaultId": "string",
+      "sslCertKeyVaultSecretName": "string"
+    },
+    "resources": []
+  }
