@@ -1,0 +1,153 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "aseName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service Environment"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the App Service Environment to"
+      }
+    },
+    "vnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network in which to deploy the App Service Environment"
+      }
+    },
+    "vnetResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of the Virtual Network in which to deploy the App Service Environment"
+      }
+    },
+    "vnetSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet in which to deploy the App Service Environment"
+      }
+    },
+    "internalLoadBalancingMode": {
+      "type": "string",
+      "defaultValue": "Web",
+      "allowedValues": [
+        "None",
+        "Web",
+        "Publishing"
+      ],
+      "metadata": {
+        "description": "Subnet in which to deploy the App Service Environment"
+      }
+    },
+    "multiSize": {
+      "type": "string",
+      "defaultValue": "Small",
+      "allowedValues": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
+      "metadata": {
+        "description": "The size of the front-end workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
+      }
+    },
+    "multiRoleCount": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "The number of front-end workers"
+      }
+    },
+    "ipsslAddressCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "IP addresses to assign to individual apps, only possible with External App Service Environment"
+      }
+    },
+    "dnsSuffix": {
+      "type": "string",
+      "metadata": {
+        "description": "DNS Suffix of all App Services deployed into the App Service Environment"
+      }
+    },
+    "networkAccessControlList": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "DNS Suffix of all App Services deployed into the App Service Environment"
+      }
+    },
+    "frontEndScaleFactor": {
+      "type": "int",
+      "defaultValue": 15,
+      "metadata": {
+        "description": "When to add front-end worker based on number of App Service Plan instances"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to App Service Environment"
+      }
+    }
+  },
+  "variables": {
+    "defaultAction": "Deny",
+    "networkAccessControlList": {
+      "copy": [
+        {
+          "name": "networkAccessControlList",
+          "count": "[if(empty(parameters('networkAccessControlList')), 1, length(parameters('networkAccessControlList')))]",
+          "input": {
+            "action": "[if(empty(parameters('networkAccessControlList')), 'dummyAction', if(contains(parameters('networkAccessControlList')[copyIndex('networkAccessControlList')], 'action'), parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].action, variables('defaultaction')))]",
+            "description": "[if(empty(parameters('networkAccessControlList')), 'dummyDescription', parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].description)]",
+            "order": "[if(empty(parameters('networkAccessControlList')), 'dummyOrder', parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].order)]",
+            "remoteSubnet": "[if(empty(parameters('networkAccessControlList')), 'dummySubnet', parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].remoteSubnet)]"
+          }
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('aseName')]",
+      "type": "Microsoft.Web/hostingEnvironments",
+      "apiVersion": "2018-02-01",
+      "kind": "ASEV2",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "vnetName": "[parameters('vnetName')]",
+        "vnetResourceGroupName": "[parameters('vnetResourceGroupName')]",
+        "vnetSubnetName": "[parameters('vnetSubnetName')]",
+        "internalLoadBalancingMode": "[parameters('internalLoadBalancingMode')]",
+        "multiSize": "[parameters('multiSize')]",
+        "multiRoleCount": "[parameters('multiRoleCount')]",
+        "ipsslAddressCount": "[parameters('ipsslAddressCount')]",
+        "dnsSuffix": "[parameters('dnsSuffix')]",
+        "networkAccessControlList": "[if(empty(parameters('networkAccessControlList')), parameters('networkAccessControlList'), variables('networkAccessControlList').networkAccessControlList))]",
+        "frontEndScaleFactor": "[parameters('frontEndScaleFactor')]",
+        "apiManagementAccountId": "string",
+        "userWhitelistedIpRanges": ["string"],
+        "hasLinuxWorkers": "boolean",
+        "sslCertKeyVaultId": "string",
+        "sslCertKeyVaultSecretName": "string"
+      }
+    }
+  ],
+  "outputs": {
+    "ase": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Web/hostingEnvironments', parameters('aseName')), '2018-02-01', 'Full')]"
+    }
+  }
+}

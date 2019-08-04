@@ -37,7 +37,7 @@
     "tags": {
       "type": "object",
       "metadata": {
-        "description": "Tags to apply to Storage Account"
+        "description": "Tags to apply to Application Insights"
       }
     }
   },
