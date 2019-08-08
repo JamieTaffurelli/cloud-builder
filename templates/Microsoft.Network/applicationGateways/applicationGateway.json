@@ -4,6 +4,8 @@
   "parameters": {
     "appGatewayName": {
       "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
       "metadata": {
         "description": "The name of the Application Gateway that you wish to create."
       }
@@ -33,6 +35,111 @@
         "description": "The number of instances of the Application Gateway"
       }
     },
+    "gatewayIpConfigurations": {
+      "type": "array",
+      "metadata": {
+        "description": "Subnets for the App Gateway, e.g {'name':'ipconfig', 'subnetResourceGroup':'rg', 'virtualNetwork':'vnet', 'subnetName':'subnet' }"
+      }
+    },
+    "authenticationCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "maxLength": 100,
+      "metadata": {
+        "description": "Authentication certificates for the App Gateway"
+      }
+    },
+    "trustedRootCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "maxLength": 100,
+      "metadata": {
+        "description": "Trusted root certificates for the App Gateway, format is {'name':'', 'properties': {'data':'', keyVaultName:'', 'keyVaultSecretName':''}"
+      }
+    },
+    "sslCertificates": {
+      "type": "array",
+      "defaultValue": [],
+      "maxLength": 100,
+      "metadata": {
+        "description": "SSL certificates for the App Gateway, format is {'name':'', 'properties': {'data':'', 'password':'', keyVaultName:'', 'keyVaultSecretName':''}"
+      }
+    },
+    "frontendIPConfigurations": {
+      "type": "array",
+      "minLength": 1,
+      "maxLength": 2,
+      "metadata": {
+        "description": "Frontend IP addresses for the App Gateway"
+      }
+    },
+    "frontendPorts": {
+      "type": "array",
+      "minLength": 1,
+      "maxLength": 100,
+      "metadata": {
+        "description": "Frontend ports for the App Gateway"
+      }
+    },
+    "probes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Health probes for the App Gateway"
+      }
+    },
+    "backendAddressPools": {
+      "type": "array",
+      "minLength": 1,
+      "maxLength": 100,
+      "metadata": {
+        "description": "Backend addresses for the App Gateway"
+      }
+    },
+    "backendHttpSettingsCollection": {
+      "type": "array",
+      "minLength": 1,
+      "maxLength": 100,
+      "metadata": {
+        "description": "Backend HTTP settings for the App Gateway"
+      }
+    },
+    "httpListeners": {
+      "type": "array",
+      "minLength": 1,
+      "maxLength": 100,
+      "metadata": {
+        "description": "HTTP listeners for the App Gateway"
+      }
+    },
+    "urlPathMaps": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Health probes for the App Gateway"
+      }
+    },
+    "requestRoutingRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Health probes for the App Gateway"
+      }
+    },
+    "rewriteRuleSets": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Health probes for the App Gateway"
+      }
+    },
+    "redirectConfigurations": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Health probes for the App Gateway"
+      }
+    },
     "firewallMode": {
       "type": "string",
       "defaultValue": "Prevention",
@@ -42,7 +149,7 @@
       }
     },
     "disabledRuleGroups": {
-      "type": "string",
+      "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "Set of disabled WAF rules"
@@ -75,7 +182,7 @@
     },
     "autoScaleConfiguration": {
       "type": "object",
-      "defaultValue": [],
+      "defaultValue": {},
       "metadata": {
         "description": "Enable autoscaling for Application Gateway (only supported for V2), properties are 'minCapacity', 'maxCapacity'"
       }
@@ -91,7 +198,7 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Specify zone redundancy for the App Gateway, only support with V2"
+        "description": "Specify zone redundancy for the App Gateway, only supported with V2"
       }
     },
     "tags": {
@@ -99,7 +206,165 @@
     }
   },
   "variables": {
-    "skuTier": "[if(contains(createArray('WAF_Medium', 'WAF_Large'), parameters('skuName')), 'WAF', parameters('skuName'))]"
+    "gatewayIpConfigurations": {
+      "copy": [
+        {
+          "name": "gatewayIpConfigurations",
+          "count": "[length(parameters('gatewayIpConfigurations'))]",
+          "input": {
+            "name": "[parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')].name]",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(if(contains(parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')], 'subnetSubscriptionId'), parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')].subnetSubscriptionId, subscription().subscriptionId), if(contains(parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')], 'subnetResourceGroupName'), parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')].subnetResourceGroupName, resourceGroup().name), 'Microsoft.Network/virtualNetworks/subnets', parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')].virtualNetworkName, parameters('gatewayIpConfigurations')[copyIndex('gatewayIpConfigurations')].subnetName)]"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "trustedRootCertificates": {
+      "copy": [
+        {
+          "name": "trustedRootCertificates",
+          "count": "[if(empty(parameters('trustedRootCertificates')), 1, length(parameters('trustedRootCertificates')))]",
+          "input": {
+            "name": "[if(empty(parameters('trustedRootCertificates')), 'dummyName', parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].name)]",
+            "properties": "[if(or(empty(parameters('trustedRootCertificates')), contains(parameters('trustedRootCertificates')[copyIndex('sslCertificates')], 'properties'), empty(parameters('trustedRootCertificates')[copyIndex('sslCertificates')].properties)), json('{}'), json(concat('{', if(contains(parameters('trustedRootCertificates')[copyIndex('sslCertificates')].properties, 'data'), concat('\"data\": \"', parameters('trustedRootCertificates')[copyIndex('sslCertificates')].properties.data, '\",'), ''), '\"keyVaultSecretId\": \"', resourceId(if(contains(parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultSubscriptionId'), parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultSubscriptionId, subscription().subscriptionId), if(contains(parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultResourceGroupName'), parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultResourceGroupName, resourceGroup().name), 'Microsoft.KeyVault/vaults/secrets', parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultName, parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultSecretName), '}')))]"
+          }
+        }
+      ]
+    },
+    "sslCertificates": {
+      "copy": [
+        {
+          "name": "sslCertificates",
+          "count": "[if(empty(parameters('sslCertificates')), 1, length(parameters('sslCertificates')))]",
+          "input": {
+            "name": "[if(empty(parameters('sslCertificates')), 'dummyName', parameters('sslCertificates')[copyIndex('sslCertificates')].name)]",
+            "properties": "[if(or(empty(parameters('sslCertificates')), not(contains(parameters('sslCertificates')[copyIndex('sslCertificates')], 'properties')), empty(parameters('sslCertificates')[copyIndex('sslCertificates')].properties)), json('{}'), json(concat('{', if(contains(parameters('sslCertificates')[copyIndex('sslCertificates')].properties, 'data'), concat('\"data\": \"', parameters('sslCertificates')[copyIndex('sslCertificates')].properties.data, '\",'), ''), if(contains(parameters('sslCertificates')[copyIndex('sslCertificates')].properties, 'password'), concat('\"password\": \"', parameters('sslCertificates')[copyIndex('sslCertificates')].properties.password, '\",'), ''), '\"keyVaultSecretId\": \"', resourceId(if(contains(parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultSubscriptionId'), parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultSubscriptionId, subscription().subscriptionId), if(contains(parameters('sslCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultResourceGroupName'), parameters('sslCertificates')[copyIndex('sslCertificates')].properties.keyVaultResourceGroupName, resourceGroup().name), 'Microsoft.KeyVault/vaults/secrets', parameters('sslCertificates')[copyIndex('sslCertificates')].properties.keyVaultName, parameters('sslCertificates')[copyIndex('sslCertificates')].properties.keyVaultSecretName), '}')))]"
+          }
+        }
+      ]
+    },
+    "frontendIPConfigurations": {
+      "copy": [
+        {
+          "name": "frontendIPConfigurations",
+          "count": "[length(parameters('frontendIPConfigurations'))]",
+          "input": {
+            "name": "[parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].name]",
+            "properties": "[if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'publicIPAddressName'), json(concat('{ \"publicIPAddress\": {\"id\": \"', resourceId(if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'publicIPAddressSubscriptionId'), parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].publicIPAddressSubscriptionId, subscription().subscriptionId), if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'publicIPAddressResourceGroupName'), parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].publicIPAddressResourceGroupName, resourceGroup().name), 'Microsoft.Network/publicIPAddresses', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].publicIPAddressName), '\"}}')), json(concat('{', if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'privateIPAllocationMethod'), concat('\"privateIPAllocationMethod\": \"', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].privateIPAllocationMethod, '\",'), ''), if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'privateIPAddress'), concat('\"privateIPAddress\": \"', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].privateIPAddress, '\",'), ''),'\"subnet\": {\"id\": \"', resourceId(if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'subnetSubscriptionId'), parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].subnetSubscriptionId, subscription().subscriptionId), if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')], 'subnetResourceGroupName'), parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].subnetResourceGroupName, resourceGroup().name), 'Microsoft.Network/virtualNetworks/subnets', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].virtualNetworkName, parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurations')].subnetName), '\"}}')))]"
+          }
+        }
+      ]
+    },
+    "connectionDraining": {
+      "enabled": true,
+      "drainTimeoutInSec": 300
+    },
+    "backendHttpSettingsCollectionWithoutHostName": {
+      "copy": [
+        {
+          "name": "backendHttpSettingsCollectionWithoutHostName",
+          "count": "[length(parameters('backendHttpSettingsCollection'))]",
+          "input": {
+            "name": "[parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].name]",
+            "properties": {
+              "port": "[parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.port]",
+              "protocol": "[parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.protocol]",
+              "cookieBasedAffinity": "[if(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'cookieBasedAffinity'), parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.cookieBasedAffinity, 'Disabled')]",
+              "requestTimeout": "[if(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'requestTimeout'), parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.requestTimeout, 30)]",
+              "probe": "[if(or(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'probe')), empty(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.probe)), json('{}'), json(concat('{ \"id\": \"', resourceId('Microsoft.Network/applicationGateways/probes', parameters('appGatewayName'), parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.probe.name), '\" }')))]",
+              "authenticationCertificates": "[if(or(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'authenticationCertificates')), empty(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.authenticationCertificates)), json('[]'),  parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.authenticationCertificates)]",
+              "trustedRootCertificates": "[if(or(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'trustedRootCertificates')), empty(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.trustedRootCertificates)), json('[]'),  parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.trustedRootCertificates)]",
+              "connectionDraining": "[if(or(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'connectionDraining')), empty(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.connectionDraining)), variables('connectionDraining'),  parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.connectionDraining)]",
+              "pickHostNameFromBackendAddress": "[if(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'pickHostNameFromBackendAddress')), json('false'),  parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.pickHostNameFromBackendAddress)]",
+              "affinityCookieName": "[if(or(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'affinityCookieName')), empty(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.affinityCookieName)), json('null'),  parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.affinityCookieName)]",
+              "path": "[if(or(not(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties, 'path')), empty(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.path)), json('null'),  parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollectionWithoutHostName')].properties.path)]"
+            }
+          }
+        }
+      ]
+    },
+    "backendHttpSettingsCollection": {
+      "copy": [
+        {
+          "name": "backendHttpSettingsCollection",
+          "count": "[length(parameters('backendHttpSettingsCollection'))]",
+          "input": {
+            "name": "[parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollection')].name]",
+            "properties": "[if(contains(parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollection')].properties, 'hostName'), union(variables('backendHttpSettingsCollectionWithoutHostName')[copyIndex('backendHttpSettingsCollection')].properties, json(concat('{\"hostname\": \"', parameters('backendHttpSettingsCollection')[copyIndex('backendHttpSettingsCollection')].properties.hostname, '\"}'))), variables('backendHttpSettingsCollectionWithoutHostName').backendHttpSettingsCollectionWithoutHostName[copyIndex('backendHttpSettingsCollection')].properties)]"
+          }
+        }
+      ]
+    },
+    "httpListeners": {
+      "copy": [
+        {
+          "name": "httpListeners",
+          "count": "[length(parameters('httpListeners'))]",
+          "input": {
+            "name": "[parameters('httpListeners')[copyIndex('httpListeners')].name]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), parameters('httpListeners')[copyIndex('httpListeners')].properties.frontendIPConfiguration.name)]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), parameters('httpListeners')[copyIndex('httpListeners')].properties.frontendPort.name)]"
+              },
+              "protocol": "[parameters('httpListeners')[copyIndex('httpListeners')].properties.protocol]",
+              "hostName": "[parameters('httpListeners')[copyIndex('httpListeners')].properties.hostName]",
+              "sslCertificate": "[if(not(contains(parameters('httpListeners')[copyIndex('httpListeners')].properties, 'sslCertificate')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/sslCertificates', parameters('appGatewayName'), parameters('httpListeners')[copyIndex('httpListeners')].properties.sslCertificates.name), '\" }')))]",
+              "requireServerNameIndication": "[if(equals(parameters('httpListeners')[copyIndex('httpListeners')].properties.protocol, 'https'), json('true'), json('null'))]",
+              "customErrorConfigurations": "[if(not(contains(parameters('httpListeners')[copyIndex('httpListeners')].properties, 'customErrorConfigurations')), json('[]'), parameters('httpListeners')[copyIndex('httpListeners')].properties.customErrorConfigurations)]"
+            }
+          }
+        }
+      ]
+    },
+    "urlPathMaps": {
+      "copy": [
+        {
+          "name": "urlPathMaps",
+          "count": "[if(empty(parameters('urlPathMaps')), 1, length(parameters('urlPathMaps')))]",
+          "input": {
+            "name": "[if(empty(parameters('urlPathMaps')), 'dummyName', parameters('urlPathMaps')[copyIndex('urlPathMaps')].name)]",
+            "properties": {
+              "defaultBackendAddressPool": "[if(empty(parameters('urlPathMaps')), 'dummyBackendAddressPool', if(not(contains(parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties, 'defaultBackendAddressPool')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties.defaultBackendAddressPool.name), '\" }'))))]",
+              "defaultBackendHttpSettings": "[if(empty(parameters('urlPathMaps')), 'dummyBackendHttpSettings', if(not(contains(parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties, 'defaultBackendHttpSettings')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('appGatewayName'), parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties.defaultBackendHttpSettings.name), '\" }'))))]",
+              "defaultRewriteRuleSet": "[if(empty(parameters('urlPathMaps')), 'dummyRewriteRuleSet', if(not(contains(parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties, 'defaultRewriteRuleSet')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/rewriteRuleSets', parameters('appGatewayName'), parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties.defaultRewriteRuleSet.name), '\" }'))))]",
+              "defaultRedirectConfiguration": "[if(empty(parameters('urlPathMaps')), 'dummyRedirectConfiguration', if(not(contains(parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties, 'defaultRedirectConfiguration')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', parameters('appGatewayName'), parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties.defaultRedirectConfiguration.name), '\" }'))))]",
+              "pathRules": "[if(empty(parameters('urlPathMaps')), 'dummyRedirectConfiguration', if(not(contains(parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties, 'pathRules')), json('[]'), parameters('urlPathMaps')[copyIndex('urlPathMaps')].properties.pathRules))]"
+            }
+          }
+        }
+      ]
+    },
+    "requestRoutingRules": {
+      "copy": [
+        {
+          "name": "requestRoutingRules",
+          "count": "[length(parameters('requestRoutingRules'))]",
+          "input": {
+            "name": "[parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].name]",
+            "properties": {
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('appGatewayName'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties.httpListener.name)]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties.backendAddressPool.name)]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('appGatewayName'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties.backendHttpSettings.name)]"
+              },
+              "urlPathMap": "[if(not(contains(parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties, 'urlPathMap')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/urlPathMaps', parameters('appGatewayName'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties.urlPathMap.name), '\" }')))]",
+              "rewriteRuleSet": "[if(not(contains(parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties, 'rewriteRuleSet')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/rewriteRuleSets', parameters('appGatewayName'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties.rewriteRuleSet.name), '\" }')))]",
+              "redirectConfiguration": "[if(not(contains(parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties, 'redirectConfiguration')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/redirectConfigurations', parameters('appGatewayName'), parameters('requestRoutingRules')[copyIndex('requestRoutingRules')].properties.redirectConfiguration.name), '\" }')))]"
+            }
+          }
+        }
+      ]
+    }
   },
   "resources": [
     {
@@ -111,15 +376,27 @@
       "properties": {
         "sku": {
           "name": "[parameters('skuName')]",
-          "tier": "[variables('skuTier')]",
+          "tier": "[if(contains(createArray('WAF_Medium', 'WAF_Large'), parameters('skuName')), 'WAF', parameters('skuName'))]",
           "capacity": "[parameters('capacity')]"
         },
         "sslPolicy": {
-          "disabledSslProtocols": ["TLSv1_0", "TLSv1_1"],
           "policyType": "Predefined",
-          "policyName": "AppGwSslPolicy20170401S",
-          "minProtocolVersion": "TLSv1_2"
+          "policyName": "AppGwSslPolicy20170401S"
         },
+        "gatewayIPConfigurations": "[variables('gatewayIpConfigurations').gatewayIpConfigurations]",
+        "authenticationCertificates": "[parameters('authenticationCertificates')]",
+        "trustedRootCertificates": "[if(empty(parameters('trustedRootCertificates')), json('[]'), variables('trustedRootCertificates').trustedRootCertificates)]",
+        "sslCertificates": "[if(empty(parameters('sslCertificates')), json('[]'), variables('sslCertificates').sslCertificates)]",
+        "frontendIPConfigurations": "[variables('frontendIPConfigurations').frontendIPConfigurations]",
+        "frontendPorts": "[parameters('frontendPorts')]",
+        "probes": "[parameters('probes')]",
+        "backendAddressPools": "[parameters('backendAddressPools')]",
+        "backendHttpSettingsCollection": "[variables('backendHttpSettingsCollection').backendHttpSettingsCollection]",
+        "httpListeners": "[variables('httpListeners').httpListeners]",
+        "urlPathMaps": "[if(empty(parameters('urlPathMaps')), json('[]'), variables('urlPathMaps').urlPathMaps)]",
+        "requestRoutingRules": "[variables('requestRoutingRules').requestRoutingRules]",
+        "rewriteRuleSets": "[parameters('rewriteRuleSets')]",
+        "redirectConfigurations": "[parameters('redirectConfigurations')]",
         "webApplicationFirewallConfiguration": {
           "enabled": true,
           "firewallMode": "[parameters('firewallMode')]",
@@ -132,14 +409,10 @@
           "exclusions": "[parameters('exclusions')]"
         },
         "enableHttp2": true,
-        "enableFips": "[if(equals(parameters('skuName'), 'WAF_v2'), json('false'), json('true'))]",
-        "autoscaleConfiguration": "[parameters('autoScaleConfiguration')]",
+        "autoscaleConfiguration": "[if(empty(parameters('autoScaleConfiguration')), json('null'), parameters('autoScaleConfiguration'))]",
         "customErrorConfigurations": "[parameters('customErrorConfigurations')]"
       },
-      "zones": "[parameters('zones')]",
-      "identity": {
-        "type": "SystemAssigned"
-      }
+      "zones": "[parameters('zones')]"
     }
   ],
   "outputs": {
