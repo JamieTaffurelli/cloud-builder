@@ -187,7 +187,7 @@
         "internalLoadBalancingMode": "[parameters('internalLoadBalancingMode')]",
         "multiSize": "[parameters('multiSize')]",
         "multiRoleCount": "[parameters('multiRoleCount')]",
-        "ipsslAddressCount": "[parameters('ipsslAddressCount')]",
+        "ipsslAddressCount": 0,
         "dnsSuffix": "[parameters('dnsSuffix')]",
         "networkAccessControlList": "[if(empty(parameters('networkAccessControlList')), parameters('networkAccessControlList'), variables('networkAccessControlList').networkAccessControlList))]",
         "frontEndScaleFactor": "[parameters('frontEndScaleFactor')]",
