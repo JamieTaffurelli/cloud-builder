@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "routeTableName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Route Table"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Route Table to"
+      }
+    },
+    "disableBgpRoutePropagation": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Disable routes advertised from Virtual Network Gateway via BGP, this can affect ExpressRoute connectivity"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Route Table"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('routeTableName')]",
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2019-04-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]"
+      }
+    }
+  ],
+  "outputs": {
+    "routeTable": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/routeTables', parameters('routeTableName')), '2019-04-01', 'Full')]"
+    }
+  }
+}

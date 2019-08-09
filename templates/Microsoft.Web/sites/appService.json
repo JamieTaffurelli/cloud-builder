@@ -93,9 +93,7 @@
       }
     }
   },
-  "variables": {
-    "sku": "[if(equals(parameters('skuSize'), 'Small'), 'I1', if(equals(parameters('skuSize'), 'Medium'), 'I2', 'I3'))]"
-  },
+  "variables": {},
   "resources": [
     {
       "name": "[parameters('aspName')]",
@@ -112,7 +110,7 @@
         "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
         "clientCertEnabled": "[parameters('clientCertEnabled')]",
         "clientCertExclusionPaths": "[parameters('clientCertExclusionPaths')]",
-        "hostNamesDisabled": "[parameters('hostNamesDisabled')]",,
+        "hostNamesDisabled": "[parameters('hostNamesDisabled')]",
         "httpsOnly": "[parameters('httpsOnly')]"
       },
       "identity": {

@@ -312,7 +312,7 @@ Describe "App Service Plan Output Validation" {
             $json.outputs.asp.type | should be "object"
         }
 
-        It "Uses full reference for App Service Environment" {
+        It "Uses full reference for App Service Plan" {
 
             $json.outputs.asp.value | should be "[reference(resourceId('Microsoft.Web/serverFarms', parameters('aspName')), '2018-02-01', 'Full')]"
         }

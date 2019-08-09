@@ -301,7 +301,7 @@ Describe "App Service Output Validation" {
             $json.outputs.app.type | should be "object"
         }
 
-        It "Uses full reference for App Service Environment" {
+        It "Uses full reference for App Service" {
 
             $json.outputs.app.value | should be "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-02-01', 'Full')]"
         }
