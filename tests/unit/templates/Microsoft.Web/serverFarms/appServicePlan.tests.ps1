@@ -98,7 +98,7 @@ Describe "Application Service Plan Parameter Validation" {
             $json.parameters.appServiceEnvrionmentResourceGroupName.type | should be "string"
         }
 
-        It "vnetResourceGroupName parameter default value is [resourceGroup().name]" {
+        It "appServiceEnvrionmentResourceGroupName parameter default value is [resourceGroup().name]" {
 
             $json.parameters.appServiceEnvrionmentResourceGroupName.defaultValue | should be "[resourceGroup().name]"
         }
@@ -303,7 +303,7 @@ Describe "Application Service Plan Resource Validation" {
         }
     }
 }
-Describe "App Service Environment Output Validation" {
+Describe "App Service Plan Output Validation" {
 
     Context "App Service Plan Reference Validation" {
 
