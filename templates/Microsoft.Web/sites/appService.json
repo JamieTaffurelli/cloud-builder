@@ -86,42 +86,6 @@
         "description": "App Service will only accept https requests if true"
       }
     },
-    "skuSize": {
-      "type": "string",
-      "defaultValue": "Small",
-      "allowedValues": ["Small", "Medium", "Large"],
-      "metadata": {
-        "description": "The size of the workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
-      }
-    },
-    "minimumCapacity": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "The minimum number of workers in the Application Service Plan"
-      }
-    },
-    "maximumCapacity": {
-      "type": "int",
-      "defaultValue": 5,
-      "metadata": {
-        "description": "The maximum number of workers in the Application Service Plan"
-      }
-    },
-    "defaultCapacity": {
-      "type": "int",
-      "defaultValue": 2,
-      "metadata": {
-        "description": "The default number of workers in the Application Service Plan"
-      }
-    },
-    "capabilities": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The capabilities of the App Service Plan"
-      }
-    },
     "tags": {
       "type": "object",
       "metadata": {
