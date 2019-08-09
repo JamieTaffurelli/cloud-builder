@@ -4,7 +4,7 @@ $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
 Describe "Application Service Environment Parameter Validation" {
 
-    Context "appGatewayName Validation" {
+    Context "aseName Validation" {
 
         It "Has aseName parameter" {
 
