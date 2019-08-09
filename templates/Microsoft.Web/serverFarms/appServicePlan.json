@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "aspName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service Plan"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the App Service Plan to"
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "Windows",
+      "allowedValues": ["Windows", "Linux", "FunctionApp", "Elastic"],
+      "metadata": {
+        "description": "Kind of App Service Plan workers"
+      }
+    },
+    "appServiceEnvrionmentSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID of App Service Environment to link Application Service Plan to"
+      }
+    },
+    "appServiceEnvrionmentResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of App Service Environment to link Application Service Plan to"
+      }
+    },
+    "appServiceEnvrionmentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of App Service Environment to link Application Service Plan to"
+      }
+    },
+    "perSiteScaling": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable independent scaling of apps in the App Service Plan"
+      }
+    },
+    "maximumElasticWorkerCount": {
+      "type": "int",
+      "defaultValue": 5,
+      "metadata": {
+        "description": "Maximum number of workers, only valid if kind is 'Elastic'"
+      }
+    },
+    "skuSize": {
+      "type": "string",
+      "defaultValue": "Small",
+      "allowedValues": ["Small", "Medium", "Large"],
+      "metadata": {
+        "description": "The size of the workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
+      }
+    },
+    "minimumCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The minimum number of workers in the Application Service Plan"
+      }
+    },
+    "maximumCapacity": {
+      "type": "int",
+      "defaultValue": 5,
+      "metadata": {
+        "description": "The maximum number of workers in the Application Service Plan"
+      }
+    },
+    "defaultCapacity": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "The default number of workers in the Application Service Plan"
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The capabilities of the App Service Plan"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to App Service Environment"
+      }
+    }
+  },
+  "variables": {
+    "sku": "[if(equals(parameters('skuSize'), 'Small'), 'I1', if(equals(parameters('skuSize'), 'Medium'), 'I2', 'I3'))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('aspName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "kind": "[parameters('kind')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "hostingEnvironmentProfile": {
+          "id": "[resourceId(parameters('appServiceEnvrionmentSubscriptionId'), parameters('appServiceEnvrionmentResourceGroupName'), 'Microsoft.Web/hostingEnvironments', parameters('appServiceEnvrionmentName'))]"
+        },
+        "perSiteScaling": "[parameters('perSiteScaling')]",
+        "maximumElasticWorkerCount": "[parameters('maximumElasticWorkerCount')]",
+        "isSpot": false,
+        "reserved": "[if(equals(parameters('kind'), 'Linux'), json('true'), json('false'))]"
+      },
+      "sku": {
+        "name": "[variables('sku')]",
+        "tier": "Isolated",
+        "size": "[variables('sku')]",
+        "family": "I",
+        "skuCapacity": {
+          "minimum": "[parameters('minimumCapacity')]",
+          "maximum": "[parameters('maximumCapacity')]",
+          "default": "[parameters('defaultCapacity')]"
+        },
+        "capabilities": "[parameters('capabilities')]"
+      }
+    }
+  ],
+  "outputs": {
+    "asp": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Web/serverFarms', parameters('aspName')), '2018-02-01', 'Full')]"
+    }
+  }
+}
