@@ -660,7 +660,7 @@ Describe "Application Gateway Output Validation" {
             $json.outputs.applicationGateway.type | should be "object"
         }
 
-        It "Uses full reference for Virtual Machine Extension" {
+        It "Uses full reference for Application Gateway" {
 
             $json.outputs.applicationGateway.value | should be "[reference(resourceId('Microsoft.Network/applicationGateways', parameters('appGatewayName')), '2019-04-01', 'Full')]"
         }
