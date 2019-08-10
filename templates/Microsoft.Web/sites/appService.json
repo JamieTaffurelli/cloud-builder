@@ -24,13 +24,6 @@
         "description": "Kind of App Service Plan"
       }
     },
-    "hostNameSslStates": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "SSL bindings for App Service"
-      }
-    },
     "appServicePlanSubscriptionId": {
       "type": "string",
       "defaultValue": "[subscription().subscriptionId]",
@@ -79,20 +72,6 @@
         "description": "Version of Node framework for runtime"
       }
     },
-    "requestTracingEnabled": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Enable request tracing"
-      }
-    },
-    "requestTracingExpirationTime": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Request tracing expiration time"
-      }
-    },
     "appSettings": {
       "type": "array",
       "defaultValue": [],
@@ -111,14 +90,105 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Application settings (key-value pairs)"
+        "description": "Connection string for app config"
       }
     },
     "handlerMappings": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Application settings (key-value pairs)"
+        "description": "Handler mappings for the app"
+      }
+    },
+    "use32BitWorkerProcess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Run app in 32 bit mode"
+      }
+    },
+    "javaVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of Java for runtime"
+      }
+    },
+    "javaContainer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "What to run Java in, e.g tomcat"
+      }
+    },
+    "javaContainerVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of Java container for runtime"
+      }
+    },
+    "virtualApplications": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "virtualPath": "/",
+          "physicalPath": "site\\wwwroot",
+          "preloadEnabled": true,
+          "virtualDirectories": null
+        }
+      ],
+      "metadata": {
+        "description": "Directories for hosting more than one app"
+      }
+    },
+    "loadBalancing": {
+      "type": "string",
+      "defaultValue": "LeastRequests",
+      "allowedValues": [
+        "WeightedRoundRobin",
+        "LeastRequests",
+        "LeastResponseTime",
+        "WeightedTotalTraffic",
+        "RequestHash"
+      ],
+      "metadata": {
+        "description": "Load Balancing rules for multiple app instances and slots"
+      }
+    },
+    "experiments": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Defines routing behaviour for slots"
+      }
+    },
+    "cors": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Cross Origin Resource Sharing Settings"
+      }
+    },
+    "localMySQLEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable local MySQL"
+      }
+    },
+    "ipSecurityRestrictions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Network ACLs for main app"
+      }
+    },
+    "scmIpSecurityRestrictions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Network ACLs for associated scm app"
       }
     },
     "clientAffinityEnabled": {
@@ -174,7 +244,6 @@
       "tags": "[parameters('tags')]",
       "properties": {
         "enabled": true,
-        "hostNameSslStates": "[parameters('hostNameSslStates')]",
         "serverFarmId": "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]",
         "siteConfig": {
           "netFrameworkVersion": "[parameters('netFrameworkVersion')]",
@@ -191,134 +260,26 @@
           "azureStorageAccounts": "[parameters('azureStorageAccounts')]",
           "connectionStrings": "[parameters('connectionStrings')]",
           "handlerMappings": "[parameters('handlerMappings')]",
-          "documentRoot": "string",
-          "scmType": "string",
-          "use32BitWorkerProcess": "boolean",
-          "webSocketsEnabled": "boolean",
-          "alwaysOn": "boolean",
-          "javaVersion": "string",
-          "javaContainer": "string",
-          "javaContainerVersion": "string",
-          "appCommandLine": "string",
-          "managedPipelineMode": "string",
-          "virtualApplications": [
-            {
-              "virtualPath": "string",
-              "physicalPath": "string",
-              "preloadEnabled": "boolean",
-              "virtualDirectories": [
-                {
-                  "virtualPath": "string",
-                  "physicalPath": "string"
-                }
-              ]
-            }
-          ],
-          "loadBalancing": "string",
-          "experiments": {
-            "rampUpRules": [
-              {
-                "actionHostName": "string",
-                "reroutePercentage": "number",
-                "changeStep": "number",
-                "changeIntervalInMinutes": "integer",
-                "minReroutePercentage": "number",
-                "maxReroutePercentage": "number",
-                "changeDecisionCallbackUrl": "string",
-                "name": "string"
-              }
-            ]
-          },
-          "limits": {
-            "maxPercentageCpu": "number",
-            "maxMemoryInMb": "integer",
-            "maxDiskSizeInMb": "integer"
-          },
-          "autoHealEnabled": "boolean",
-          "autoHealRules": {
-            "triggers": {
-              "requests": {
-                "count": "integer",
-                "timeInterval": "string"
-              },
-              "privateBytesInKB": "integer",
-              "statusCodes": [
-                {
-                  "status": "integer",
-                  "subStatus": "integer",
-                  "win32Status": "integer",
-                  "count": "integer",
-                  "timeInterval": "string"
-                }
-              ],
-              "slowRequests": {
-                "timeTaken": "string",
-                "count": "integer",
-                "timeInterval": "string"
-              }
-            },
-            "actions": {
-              "actionType": "string",
-              "customAction": {
-                "exe": "string",
-                "parameters": "string"
-              },
-              "minProcessExecutionTime": "string"
-            }
-          },
-          "tracingOptions": "string",
-          "vnetName": "string",
-          "cors": {
-            "allowedOrigins": [
-              "string"
-            ],
-            "supportCredentials": "boolean"
-          },
-          "push": {
-            "kind": "string",
-            "properties": {
-              "isPushEnabled": "boolean",
-              "tagWhitelistJson": "string",
-              "tagsRequiringAuth": "string",
-              "dynamicTagsJson": "string"
-            }
-          },
-          "apiDefinition": {
-            "url": "string"
-          },
-          "autoSwapSlotName": "string",
-          "localMySqlEnabled": "boolean",
-          "managedServiceIdentityId": "integer",
-          "xManagedServiceIdentityId": "integer",
-          "ipSecurityRestrictions": [
-            {
-              "ipAddress": "string",
-              "subnetMask": "string",
-              "vnetSubnetResourceId": "string",
-              "action": "string",
-              "tag": "string",
-              "priority": "integer",
-              "name": "string",
-              "description": "string"
-            }
-          ],
-          "scmIpSecurityRestrictions": [
-            {
-              "ipAddress": "string",
-              "subnetMask": "string",
-              "vnetSubnetResourceId": "string",
-              "action": "string",
-              "tag": "string",
-              "priority": "integer",
-              "name": "string",
-              "description": "string"
-            }
-          ],
-          "scmIpSecurityRestrictionsUseMain": "boolean",
-          "http20Enabled": "boolean",
-          "minTlsVersion": "string",
-          "ftpsState": "string",
-          "reservedInstanceCount": "integer"
+          "scmType": "VSTSRM",
+          "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
+          "webSocketsEnabled": false,
+          "alwaysOn": true,
+          "javaVersion": "[parameters('javaVersion')]",
+          "javaContainer": "[parameters('javaContainer')]",
+          "javaContainerVersion": "[parameters('javaContainerVersion')]",
+          "managedPipelineMode": "Integrated",
+          "virtualApplications": "[parameters('virtualApplications')]",
+          "loadBalancing": "[parameters('loadBalancing')]",
+          "experiments": "[parameters('experiments')]",
+          "autoHealEnabled": false,
+          "cors": "[parameters('cors')]",
+          "localMySqlEnabled": "[parameters('localMySqlEnabled')]",
+          "ipSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",
+          "scmIpSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",
+          "scmIpSecurityRestrictionsUseMain": false,
+          "http20Enabled": true,
+          "minTlsVersion": "1.2",
+          "ftpsState": "FtpsOnly"
         },
         "scmSiteAlsoStopped": false,
         "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
