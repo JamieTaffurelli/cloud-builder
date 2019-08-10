@@ -68,57 +68,57 @@ Describe "Application Service Plan Parameter Validation" {
         }
     }
 
-    Context "appServiceEnvrionmentSubscriptionId Validation" {
+    Context "appServiceenvironmentSubscriptionId Validation" {
 
-        It "Has appServiceEnvrionmentSubscriptionId parameter" {
+        It "Has appServiceenvironmentSubscriptionId parameter" {
 
-            $json.parameters.appServiceEnvrionmentSubscriptionId | should not be $null
+            $json.parameters.appServiceenvironmentSubscriptionId | should not be $null
         }
 
-        It "appServiceEnvrionmentSubscriptionId parameter is of type string" {
+        It "appServiceenvironmentSubscriptionId parameter is of type string" {
 
-            $json.parameters.appServiceEnvrionmentSubscriptionId.type | should be "string"
+            $json.parameters.appServiceenvironmentSubscriptionId.type | should be "string"
         }
 
-        It "appServiceEnvrionmentSubscriptionId parameter default value is [subscription().subscriptionId]" {
+        It "appServiceenvironmentSubscriptionId parameter default value is [subscription().subscriptionId]" {
 
-            $json.parameters.appServiceEnvrionmentSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
-        }
-    }
-
-    Context "appServiceEnvrionmentResourceGroupName Validation" {
-
-        It "Has appServiceEnvrionmentResourceGroupName parameter" {
-
-            $json.parameters.appServiceEnvrionmentResourceGroupName | should not be $null
-        }
-
-        It "appServiceEnvrionmentResourceGroupName parameter is of type string" {
-
-            $json.parameters.appServiceEnvrionmentResourceGroupName.type | should be "string"
-        }
-
-        It "appServiceEnvrionmentResourceGroupName parameter default value is [resourceGroup().name]" {
-
-            $json.parameters.appServiceEnvrionmentResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+            $json.parameters.appServiceenvironmentSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
         }
     }
 
-    Context "appServiceEnvrionmentName Validation" {
+    Context "appServiceenvironmentResourceGroupName Validation" {
 
-        It "Has appServiceEnvrionmentName parameter" {
+        It "Has appServiceenvironmentResourceGroupName parameter" {
 
-            $json.parameters.appServiceEnvrionmentName | should not be $null
+            $json.parameters.appServiceenvironmentResourceGroupName | should not be $null
         }
 
-        It "appServiceEnvrionmentName parameter is of type string" {
+        It "appServiceenvironmentResourceGroupName parameter is of type string" {
 
-            $json.parameters.appServiceEnvrionmentName.type | should be "string"
+            $json.parameters.appServiceenvironmentResourceGroupName.type | should be "string"
         }
 
-        It "appServiceEnvrionmentName parameter is mandatory" {
+        It "appServiceenvironmentResourceGroupName parameter default value is [resourceGroup().name]" {
 
-            ($json.parameters.appServiceEnvrionmentName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            $json.parameters.appServiceenvironmentResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "appServiceenvironmentName Validation" {
+
+        It "Has appServiceenvironmentName parameter" {
+
+            $json.parameters.appServiceenvironmentName | should not be $null
+        }
+
+        It "appServiceenvironmentName parameter is of type string" {
+
+            $json.parameters.appServiceenvironmentName.type | should be "string"
+        }
+
+        It "appServiceenvironmentName parameter is mandatory" {
+
+            ($json.parameters.appServiceenvironmentName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 

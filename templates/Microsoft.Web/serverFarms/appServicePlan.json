@@ -24,21 +24,21 @@
         "description": "Kind of App Service Plan workers"
       }
     },
-    "appServiceEnvrionmentSubscriptionId": {
+    "appServiceenvironmentSubscriptionId": {
       "type": "string",
       "defaultValue": "[subscription().subscriptionId]",
       "metadata": {
         "description": "Subscription ID of App Service Environment to link Application Service Plan to"
       }
     },
-    "appServiceEnvrionmentResourceGroupName": {
+    "appServiceenvironmentResourceGroupName": {
       "type": "string",
       "defaultValue": "[resourceGroup().name]",
       "metadata": {
         "description": "Resource Group of App Service Environment to link Application Service Plan to"
       }
     },
-    "appServiceEnvrionmentName": {
+    "appServiceenvironmentName": {
       "type": "string",
       "metadata": {
         "description": "Name of App Service Environment to link Application Service Plan to"
@@ -114,7 +114,7 @@
       "tags": "[parameters('tags')]",
       "properties": {
         "hostingEnvironmentProfile": {
-          "id": "[resourceId(parameters('appServiceEnvrionmentSubscriptionId'), parameters('appServiceEnvrionmentResourceGroupName'), 'Microsoft.Web/hostingEnvironments', parameters('appServiceEnvrionmentName'))]"
+          "id": "[resourceId(parameters('appServiceenvironmentSubscriptionId'), parameters('appServiceenvironmentResourceGroupName'), 'Microsoft.Web/hostingEnvironments', parameters('appServiceenvironmentName'))]"
         },
         "perSiteScaling": "[parameters('perSiteScaling')]",
         "maximumElasticWorkerCount": "[parameters('maximumElasticWorkerCount')]",

@@ -262,9 +262,9 @@ Describe "App Service Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-02-01" {
+        It "apiVersion value is 2018-11-01" {
 
-            $json.resources.apiVersion | should be "2018-02-01"
+            $json.resources.apiVersion | should be "2018-11-01"
         }
     }
 
@@ -303,7 +303,7 @@ Describe "App Service Output Validation" {
 
         It "Uses full reference for App Service" {
 
-            $json.outputs.app.value | should be "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-02-01', 'Full')]"
+            $json.outputs.app.value | should be "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-11-01', 'Full')]"
         }
     }
 }
