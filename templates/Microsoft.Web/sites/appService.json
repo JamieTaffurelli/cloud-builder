@@ -1,0 +1,449 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the App Service to"
+      }
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "app",
+      "allowedValues": ["app", "functionapp", "app,linux"],
+      "metadata": {
+        "description": "Kind of App Service Plan"
+      }
+    },
+    "appServicePlanSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID of App Service Plan to link App Service to"
+      }
+    },
+    "appServicePlanResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of App Service Plan to link App Service to"
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of App Service Plan to link Application Service to"
+      }
+    },
+    "netFrameworkVersion": {
+      "type": "string",
+      "defaultValue": "v4.7",
+      "metadata": {
+        "description": "Version of .NET framework for runtime"
+      }
+    },
+    "phpVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of PHP framework for runtime"
+      }
+    },
+    "pythonVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of Python framework for runtime"
+      }
+    },
+    "nodeVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of Node framework for runtime"
+      }
+    },
+    "appSettings": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Application settings (key-value pairs)"
+      }
+    },
+    "azureStorageAccounts": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Linked Storage Accounts"
+      }
+    },
+    "connectionStrings": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Connection string for app config"
+      }
+    },
+    "handlerMappings": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Handler mappings for the app"
+      }
+    },
+    "use32BitWorkerProcess": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Run app in 32 bit mode"
+      }
+    },
+    "javaVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of Java for runtime"
+      }
+    },
+    "javaContainer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "What to run Java in, e.g tomcat"
+      }
+    },
+    "javaContainerVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Version of Java container for runtime"
+      }
+    },
+    "virtualApplications": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "virtualPath": "/",
+          "physicalPath": "site\\wwwroot",
+          "preloadEnabled": true,
+          "virtualDirectories": null
+        }
+      ],
+      "metadata": {
+        "description": "Directories for hosting more than one app"
+      }
+    },
+    "loadBalancing": {
+      "type": "string",
+      "defaultValue": "LeastRequests",
+      "allowedValues": [
+        "WeightedRoundRobin",
+        "LeastRequests",
+        "LeastResponseTime",
+        "WeightedTotalTraffic",
+        "RequestHash"
+      ],
+      "metadata": {
+        "description": "Load Balancing rules for multiple app instances and slots"
+      }
+    },
+    "experiments": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Defines routing behaviour for slots"
+      }
+    },
+    "siteAuthEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable app authentication"
+      }
+    },
+    "tokenStoreEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Durably store platform security tokens in auth flows"
+      }
+    },
+    "allowedExternalRedirectUrls": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "External redirect urls for logging in or out"
+      }
+    },
+    "defaultProvider": {
+      "type": "string",
+      "defaultValue": "AzureActiveDirectory",
+      "allowedValues": [
+        "AzureActiveDirectory",
+        "Facebook",
+        "Google",
+        "MicrosoftAccount",
+        "Twitter"
+      ],
+      "metadata": {
+        "description": "Default provider fo authentication"
+      }
+    },
+    "tokenRefreshExtensionHours": {
+      "type": "int",
+      "defaultValue": 72,
+      "metadata": {
+        "description": "Number of hours after token expiration that token refresh API can be called"
+      }
+    },
+    "clientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Client ID of application"
+      }
+    },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]",
+      "metadata": {
+        "description": "Tenant ID of Azure tenant"
+      }
+    },
+    "allowedAudiences": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Allowed IDs when validating JWTs issued by AAD"
+      }
+    },
+    "additionalLoginParams": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Additional params to send to OpenID (key-value pairs)"
+      }
+    },
+    "googleClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client ID of Google App"
+      }
+    },
+    "googleClientSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client secret of Google App"
+      }
+    },
+    "facebookAppId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client ID of Facebook App"
+      }
+    },
+    "facebookAppSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client secret of Facebook App"
+      }
+    },
+    "twitterConsumerKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 1.0a consumer key of the Twitter application used for sign-in"
+      }
+    },
+    "twitterConsumerSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 1.0a consumer secret of the Twitter application used for sign-in"
+      }
+    },
+    "microsoftAccountClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 2.0 client ID that was created for the app used for authentication"
+      }
+    },
+    "microsoftAccountClientSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 2.0 client secret that was created for the app used for authentication"
+      }
+    },
+    "cors": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Cross Origin Resource Sharing Settings"
+      }
+    },
+    "localMySQLEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable local MySQL"
+      }
+    },
+    "ipSecurityRestrictions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Network ACLs for main app"
+      }
+    },
+    "scmIpSecurityRestrictions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Network ACLs for associated scm app"
+      }
+    },
+    "clientAffinityEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable session cookies to route client requests in the same session to the smae instance"
+      }
+    },
+    "clientCertEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable client certificate authentication"
+      }
+    },
+    "clientCertExclusionPaths": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Comma separated list of paths to exclude for client authentication"
+      }
+    },
+    "hostNamesDisabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Disable public hostnames, only accessible by APIM if disabled"
+      }
+    },
+    "httpsOnly": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "App Service will only accept https requests if true"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to App Service Environment"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('aspName')]",
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "kind": "[parameters('kind')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "enabled": true,
+        "serverFarmId": "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]",
+        "siteConfig": {
+          "netFrameworkVersion": "[parameters('netFrameworkVersion')]",
+          "phpVersion": "[parameters('phpVersion')]",
+          "pythonVersion": "[parameters('pythonVersion')]",
+          "nodeVersion": "[parameters('nodeVersion')]",
+          "requestTracingEnabled": true,
+          "requestTracingExpirationTime": "9999-12-31T23:59:00Z",
+          "remoteDebuggingEnabled": false,
+          "httpLoggingEnabled": true,
+          "logsDirectorySizeLimit": 128,
+          "detailedErrorLoggingEnabled": true,
+          "appSettings": "[parameters('appSettings')]",
+          "azureStorageAccounts": "[parameters('azureStorageAccounts')]",
+          "connectionStrings": "[parameters('connectionStrings')]",
+          "handlerMappings": "[parameters('handlerMappings')]",
+          "scmType": "VSTSRM",
+          "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
+          "webSocketsEnabled": false,
+          "alwaysOn": true,
+          "javaVersion": "[parameters('javaVersion')]",
+          "javaContainer": "[parameters('javaContainer')]",
+          "javaContainerVersion": "[parameters('javaContainerVersion')]",
+          "managedPipelineMode": "Integrated",
+          "virtualApplications": "[parameters('virtualApplications')]",
+          "loadBalancing": "[parameters('loadBalancing')]",
+          "experiments": "[parameters('experiments')]",
+          "autoHealEnabled": false,
+          "siteAuthSettings": {
+            "enabled": "[parameters('siteAuthEnabled')]",
+            "unauthenticatedClientAction": "RedirectToLoginPage",
+            "tokenStoreEnabled": "[parameters('tokenStoreEnabled')]",
+            "allowedExternalRedirectUrls": "[parameters('allowedExternalRedirectUrls')]",
+            "defaultProvider": "[parameters('defaultProvider')]",
+            "tokenRefreshExtensionHours": "[parameters('tokenRefreshExtensionHours')]",
+            "clientId": "[parameters('clientId')]",
+            "issuer": "[concat('https://sts.windows.net/', parameters('tenantId'), '/')]",
+            "validateIssuer": true,
+            "allowedAudiences": "[parameters('allowedAudiences')]",
+            "additionalLoginParams": "[parameters('additionalLoginParams')]",
+            "googleClientId": "[parameters('googleClientId')]",
+            "googleClientSecret": "[parameters('googleClientSecret')]",
+            "facebookAppId": "[parameters('facebookAppId')]",
+            "facebookAppSecret": "[parameters('facebookAppSecret')]",
+            "twitterConsumerKey": "[parameters('twitterConsumerKey')]",
+            "twitterConsumerSecret": "[parameters('twitterConsumerSecret')]",
+            "microsoftAccountClientId": "[parameters('microsoftAccountClientId')]",
+            "microsoftAccountClientSecret": "[parameters('microsoftAccountClientSecret')]"
+          },
+          "cors": "[parameters('cors')]",
+          "localMySqlEnabled": "[parameters('localMySqlEnabled')]",
+          "ipSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",
+          "scmIpSecurityRestrictions": "[parameters('scmIpSecurityRestrictions')]",
+          "scmIpSecurityRestrictionsUseMain": false,
+          "http20Enabled": true,
+          "minTlsVersion": "1.2",
+          "ftpsState": "FtpsOnly"
+        },
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
+        "clientCertEnabled": "[parameters('clientCertEnabled')]",
+        "clientCertExclusionPaths": "[parameters('clientCertExclusionPaths')]",
+        "hostNamesDisabled": "[parameters('hostNamesDisabled')]",
+        "httpsOnly": "[parameters('httpsOnly')]"
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      }
+    }
+  ],
+  "outputs": {
+    "app": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-11-01', 'Full')]"
+    }
+  }
+}
