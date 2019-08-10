@@ -275,7 +275,7 @@
           "cors": "[parameters('cors')]",
           "localMySqlEnabled": "[parameters('localMySqlEnabled')]",
           "ipSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",
-          "scmIpSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",
+          "scmIpSecurityRestrictions": "[parameters('scmIpSecurityRestrictions')]",
           "scmIpSecurityRestrictionsUseMain": false,
           "http20Enabled": true,
           "minTlsVersion": "1.2",
@@ -296,7 +296,7 @@
   "outputs": {
     "app": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-02-01', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-11-01', 'Full')]"
     }
   }
 }
