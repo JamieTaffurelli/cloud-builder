@@ -46,7 +46,7 @@
     },
     "netFrameworkVersion": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "v4.7",
       "metadata": {
         "description": "Version of .NET framework for runtime"
       }

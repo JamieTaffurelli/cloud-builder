@@ -135,9 +135,9 @@ Describe "App Service Parameter Validation" {
             $json.parameters.netFrameworkVersion.type | should be "string"
         }
 
-        It "netFrameworkVersion parameter default value is an empty string" {
+        It "netFrameworkVersion parameter default value is v4.7" {
 
-            $json.parameters.netFrameworkVersion.defaultValue | should be ([String]::Empty)
+            $json.parameters.netFrameworkVersion.defaultValue | should be "v4.7"
         }
     }
 
