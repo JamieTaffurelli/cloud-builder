@@ -163,6 +163,132 @@
         "description": "Defines routing behaviour for slots"
       }
     },
+    "siteAuthEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable app authentication"
+      }
+    },
+    "tokenStoreEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Durably store platform security tokens in auth flows"
+      }
+    },
+    "allowedExternalRedirectUrls": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "External redirect urls for logging in or out"
+      }
+    },
+    "defaultProvider": {
+      "type": "string",
+      "defaultValue": "AzureActiveDirectory",
+      "allowedValues": [
+        "AzureActiveDirectory",
+        "Facebook",
+        "Google",
+        "MicrosoftAccount",
+        "Twitter"
+      ],
+      "metadata": {
+        "description": "Default provider fo authentication"
+      }
+    },
+    "tokenRefreshExtensionHours": {
+      "type": "int",
+      "defaultValue": 72,
+      "metadata": {
+        "description": "Number of hours after token expiration that token refresh API can be called"
+      }
+    },
+    "clientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Client ID of application"
+      }
+    },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]",
+      "metadata": {
+        "description": "Tenant ID of Azure tenant"
+      }
+    },
+    "allowedAudiences": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Allowed IDs when validating JWTs issued by AAD"
+      }
+    },
+    "additionalLoginParams": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Additional params to send to OpenID (key-value pairs)"
+      }
+    },
+    "googleClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client ID of Google App"
+      }
+    },
+    "googleClientSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client secret of Google App"
+      }
+    },
+    "facebookAppId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client ID of Facebook App"
+      }
+    },
+    "facebookAppSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "OpenID Connect client secret of Facebook App"
+      }
+    },
+    "twitterConsumerKey": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 1.0a consumer key of the Twitter application used for sign-in"
+      }
+    },
+    "twitterConsumerSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 1.0a consumer secret of the Twitter application used for sign-in"
+      }
+    },
+    "microsoftAccountClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 2.0 client ID that was created for the app used for authentication"
+      }
+    },
+    "microsoftAccountClientSecret": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The OAuth 2.0 client secret that was created for the app used for authentication"
+      }
+    },
     "cors": {
       "type": "object",
       "defaultValue": {},
@@ -272,6 +398,27 @@
           "loadBalancing": "[parameters('loadBalancing')]",
           "experiments": "[parameters('experiments')]",
           "autoHealEnabled": false,
+          "siteAuthSettings": {
+            "enabled": "[parameters('siteAuthEnabled')]",
+            "unauthenticatedClientAction": "RedirectToLoginPage",
+            "tokenStoreEnabled": "[parameters('tokenStoreEnabled')]",
+            "allowedExternalRedirectUrls": "[parameters('allowedExternalRedirectUrls')]",
+            "defaultProvider": "[parameters('defaultProvider')]",
+            "tokenRefreshExtensionHours": "[parameters('tokenRefreshExtensionHours')]",
+            "clientId": "[parameters('clientId')]",
+            "issuer": "[concat('https://sts.windows.net/', parameters('tenantId'), '/')]",
+            "validateIssuer": true,
+            "allowedAudiences": "[parameters('allowedAudiences')]",
+            "additionalLoginParams": "[parameters('additionalLoginParams')]",
+            "googleClientId": "[parameters('googleClientId')]",
+            "googleClientSecret": "[parameters('googleClientSecret')]",
+            "facebookAppId": "[parameters('facebookAppId')]",
+            "facebookAppSecret": "[parameters('facebookAppSecret')]",
+            "twitterConsumerKey": "[parameters('twitterConsumerKey')]",
+            "twitterConsumerSecret": "[parameters('twitterConsumerSecret')]",
+            "microsoftAccountClientId": "[parameters('microsoftAccountClientId')]",
+            "microsoftAccountClientSecret": "[parameters('microsoftAccountClientSecret')]"
+          },
           "cors": "[parameters('cors')]",
           "localMySqlEnabled": "[parameters('localMySqlEnabled')]",
           "ipSecurityRestrictions": "[parameters('ipSecurityRestrictions')]",

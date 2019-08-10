@@ -418,6 +418,299 @@ Describe "App Service Parameter Validation" {
         }
     }
 
+    Context "siteAuthEnabled Validation" {
+
+        It "Has siteAuthEnabled parameter" {
+
+            $json.parameters.siteAuthEnabled | should not be $null
+        }
+
+        It "siteAuthEnabled parameter is of type bool" {
+
+            $json.parameters.siteAuthEnabled.type | should be "bool"
+        }
+
+        It "siteAuthEnabled parameter default value is true" {
+
+            $json.parameters.siteAuthEnabled.defaultValue | should be $true
+        }
+    }
+
+    Context "allowedExternalRedirectUrls Validation" {
+
+        It "Has allowedExternalRedirectUrls parameter" {
+
+            $json.parameters.allowedExternalRedirectUrls | should not be $null
+        }
+
+        It "allowedExternalRedirectUrls parameter is of type array" {
+
+            $json.parameters.allowedExternalRedirectUrls.type | should be "array"
+        }
+
+        It "allowedExternalRedirectUrls parameter default value is an empty array" {
+
+            $json.parameters.allowedExternalRedirectUrls.defaultValue | should be @()
+        }
+    }
+
+    Context "defaultProvider Validation" {
+
+        It "Has defaultProvider parameter" {
+
+            $json.parameters.defaultProvider | should not be $null
+        }
+
+        It "defaultProvider parameter is of type string" {
+
+            $json.parameters.defaultProvider.type | should be "string"
+        }
+
+        It "defaultProvider parameter default value is AzureActiveDirectory" {
+
+            $json.parameters.defaultProvider.defaultValue | should be "AzureActiveDirectory"
+        }
+
+        It "defaultProvider parameter allowed values are 'AzureActiveDirectory', 'Facebook', 'Google', 'MicrosoftAccount', 'Twitter'" {
+
+            (Compare-Object -ReferenceObject $json.parameters.defaultProvider.allowedValues -DifferenceObject @("AzureActiveDirectory", "Facebook", "Google", "MicrosoftAccount", "Twitter")).Length | should be 0
+        }
+    }
+
+    Context "tokenRefreshExtensionHours Validation" {
+
+        It "Has tokenRefreshExtensionHours parameter" {
+
+            $json.parameters.tokenRefreshExtensionHours | should not be $null
+        }
+
+        It "tokenRefreshExtensionHours parameter is of type int" {
+
+            $json.parameters.tokenRefreshExtensionHours.type | should be "int"
+        }
+
+        It "tokenRefreshExtensionHours parameter default value is an 72" {
+
+            $json.parameters.tokenRefreshExtensionHours.defaultValue | should be 72
+        }
+    }
+
+    Context "clientId Validation" {
+
+        It "Has clientId parameter" {
+
+            $json.parameters.clientId | should not be $null
+        }
+
+        It "clientId parameter is of type string" {
+
+            $json.parameters.clientId.type | should be "string"
+        }
+
+        It "clientId parameter default value is an empty string" {
+
+            $json.parameters.clientId.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "tenantId Validation" {
+
+        It "Has tenantId parameter" {
+
+            $json.parameters.tenantId | should not be $null
+        }
+
+        It "tenantId parameter is of type string" {
+
+            $json.parameters.tenantId.type | should be "string"
+        }
+
+        It "tenantId parameter default value is [subscription().tenantId]" {
+
+            $json.parameters.tenantId.defaultValue | should be "[subscription().tenantId]"
+        }
+    }
+
+    Context "allowedAudiences Validation" {
+
+        It "Has allowedAudiences parameter" {
+
+            $json.parameters.allowedAudiences | should not be $null
+        }
+
+        It "allowedAudiences parameter is of type array" {
+
+            $json.parameters.allowedAudiences.type | should be "array"
+        }
+
+        It "allowedAudiences parameter default value is an empty array" {
+
+            $json.parameters.allowedAudiences.defaultValue | should be @()
+        }
+    }
+
+    Context "additionalLoginParams Validation" {
+
+        It "Has additionalLoginParams parameter" {
+
+            $json.parameters.additionalLoginParams | should not be $null
+        }
+
+        It "additionalLoginParams parameter is of type array" {
+
+            $json.parameters.additionalLoginParams.type | should be "array"
+        }
+
+        It "additionalLoginParams parameter default value is an empty array" {
+
+            $json.parameters.additionalLoginParams.defaultValue | should be @()
+        }
+    }
+
+    Context "googleClientId Validation" {
+
+        It "Has googleClientId parameter" {
+
+            $json.parameters.googleClientId | should not be $null
+        }
+
+        It "googleClientId parameter is of type string" {
+
+            $json.parameters.googleClientId.type | should be "string"
+        }
+
+        It "googleClientId parameter default value is an empty string" {
+
+            $json.parameters.googleClientId.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "googleClientSecret Validation" {
+
+        It "Has googleClientSecret parameter" {
+
+            $json.parameters.googleClientSecret | should not be $null
+        }
+
+        It "googleClientSecret parameter is of type string" {
+
+            $json.parameters.googleClientSecret.type | should be "string"
+        }
+
+        It "googleClientSecret parameter default value is an empty string" {
+
+            $json.parameters.googleClientSecret.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "facebookAppId Validation" {
+
+        It "Has facebookAppId parameter" {
+
+            $json.parameters.facebookAppId | should not be $null
+        }
+
+        It "facebookAppId parameter is of type string" {
+
+            $json.parameters.facebookAppId.type | should be "string"
+        }
+
+        It "facebookAppId parameter default value is an empty string" {
+
+            $json.parameters.facebookAppId.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "facebookAppSecret Validation" {
+
+        It "Has facebookAppSecret parameter" {
+
+            $json.parameters.facebookAppSecret | should not be $null
+        }
+
+        It "facebookAppSecret parameter is of type string" {
+
+            $json.parameters.facebookAppSecret.type | should be "string"
+        }
+
+        It "facebookAppSecret parameter default value is an empty string" {
+
+            $json.parameters.facebookAppSecret.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "twitterConsumerKey Validation" {
+
+        It "Has twitterConsumerKey parameter" {
+
+            $json.parameters.twitterConsumerKey | should not be $null
+        }
+
+        It "twitterConsumerKey parameter is of type string" {
+
+            $json.parameters.twitterConsumerKey.type | should be "string"
+        }
+
+        It "twitterConsumerKey parameter default value is an empty string" {
+
+            $json.parameters.twitterConsumerKey.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "twitterConsumerSecret Validation" {
+
+        It "Has twitterConsumerSecret parameter" {
+
+            $json.parameters.twitterConsumerSecret | should not be $null
+        }
+
+        It "twitterConsumerSecret parameter is of type string" {
+
+            $json.parameters.twitterConsumerSecret.type | should be "string"
+        }
+
+        It "twitterConsumerSecret parameter default value is an empty string" {
+
+            $json.parameters.twitterConsumerSecret.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "microsoftAccountClientId Validation" {
+
+        It "Has microsoftAccountClientId parameter" {
+
+            $json.parameters.microsoftAccountClientId | should not be $null
+        }
+
+        It "microsoftAccountClientId parameter is of type string" {
+
+            $json.parameters.microsoftAccountClientId.type | should be "string"
+        }
+
+        It "microsoftAccountClientId parameter default value is an empty string" {
+
+            $json.parameters.microsoftAccountClientId.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "microsoftAccountClientSecret Validation" {
+
+        It "Has microsoftAccountClientSecret parameter" {
+
+            $json.parameters.microsoftAccountClientSecret | should not be $null
+        }
+
+        It "microsoftAccountClientSecret parameter is of type string" {
+
+            $json.parameters.microsoftAccountClientSecret.type | should be "string"
+        }
+
+        It "microsoftAccountClientSecret parameter default value is an empty string" {
+
+            $json.parameters.microsoftAccountClientSecret.defaultValue | should be ([String]::Empty)
+        }
+    }
+
     Context "cors Validation" {
 
         It "Has cors parameter" {
@@ -448,7 +741,7 @@ Describe "App Service Parameter Validation" {
             $json.parameters.localMySQLEnabled.type | should be "bool"
         }
 
-        It "localMySQLEnabled parameter default value is true" {
+        It "localMySQLEnabled parameter default value is false" {
 
             $json.parameters.localMySQLEnabled.defaultValue | should be $false
         }
@@ -693,6 +986,19 @@ Describe "App Service Resource Validation" {
         It "autoHealEnabled is false" {
 
             $json.resources.properties.siteconfig.autoHealEnabled | should be $false
+        }
+    }
+
+    Context "Site Authentication Validation" {
+
+        It "unauthenticatedClientAction is RedirectToLoginPage" {
+
+            $json.resources.properties.siteconfig.siteAuthSettings.unauthenticatedClientAction | should be "RedirectToLoginPage"
+        }
+
+        It "validateIssuer is true" {
+
+            $json.resources.properties.siteconfig.siteAuthSettings.validateIssuer | should be $true
         }
     }
 
