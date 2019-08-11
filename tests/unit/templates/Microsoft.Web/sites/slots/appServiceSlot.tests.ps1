@@ -914,9 +914,9 @@ Describe "App Service Slot Resource Validation" {
 
     Context "type Validation" {
 
-        It "type value is Microsoft.Web/sites" {
+        It "type value is Microsoft.Web/sites/slots" {
 
-            $json.resources.type | should be "Microsoft.Web/sites"
+            $json.resources.type | should be "Microsoft.Web/sites/slots"
         }
     }
 

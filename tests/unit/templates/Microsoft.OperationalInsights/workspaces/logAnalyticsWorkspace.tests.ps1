@@ -76,11 +76,13 @@ Describe "Log Analytics Workspace Parameter Validation" {
 
 Describe "Log Analytics Workspace Validation" {
 
+    $workspace = $json.resources | Where-Object { $PSItem.Type -eq "Microsoft.OperationalInsights/workspaces" }
+    
     Context "type Validation" {
 
         It "type value is Microsoft.OperationalInsights/workspaces" {
 
-            $json.resources.type | should be "Microsoft.OperationalInsights/workspaces"
+            $workspace.type | should be "Microsoft.OperationalInsights/workspaces"
         }
     }
 
@@ -88,7 +90,7 @@ Describe "Log Analytics Workspace Validation" {
 
         It "apiVersion value is 2015-11-01-preview" {
 
-            $json.resources.apiVersion | should be "2015-11-01-preview"
+            $workspace.apiVersion | should be "2015-11-01-preview"
         }
     }
 
@@ -96,7 +98,7 @@ Describe "Log Analytics Workspace Validation" {
 
         It "location is westeurope" {
 
-            $json.resources.location -eq "westeurope" | should be $true
+            $workspace.location -eq "westeurope" | should be $true
         }
     }
 }
