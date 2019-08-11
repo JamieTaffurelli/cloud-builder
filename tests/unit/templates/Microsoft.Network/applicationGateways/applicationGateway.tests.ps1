@@ -569,6 +569,73 @@ Describe "Application Gateway Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 400" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 400
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -590,11 +657,14 @@ Describe "Application Gateway Parameter Validation" {
 
 Describe "Application Gateway Resource Validation" {
 
+    $appGateway = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Network/applicationGateways" }
+    $diagnostics = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Insights/diagnosticSettings" }
+
     Context "type Validation" {
 
         It "type value is Microsoft.Network/applicationGateways" {
 
-            $json.resources.type | should be "Microsoft.Network/applicationGateways"
+            $appGateway.type | should be "Microsoft.Network/applicationGateways"
         }
     }
 
@@ -602,7 +672,7 @@ Describe "Application Gateway Resource Validation" {
 
         It "apiVersion value is 2019-04-01" {
 
-            $json.resources.apiVersion | should be "2019-04-01"
+            $appGateway.apiVersion | should be "2019-04-01"
         }
     }
 
@@ -610,12 +680,12 @@ Describe "Application Gateway Resource Validation" {
 
         It "policyType is predefined" {
 
-            $json.resources.properties.sslpolicy.policyType | should be "Predefined"
+            $appGateway.properties.sslpolicy.policyType | should be "Predefined"
         }
 
         It "policyName is AppGwSslPolicy20170401S" {
 
-            $json.resources.properties.sslpolicy.policyName | should be "AppGwSslPolicy20170401S"
+            $appGateway.properties.sslpolicy.policyName | should be "AppGwSslPolicy20170401S"
         }
     }
 
@@ -623,22 +693,22 @@ Describe "Application Gateway Resource Validation" {
 
         It "WAF is enabled" {
 
-            $json.resources.properties.webApplicationFirewallConfiguration.enabled | should be $true
+            $appGateway.properties.webApplicationFirewallConfiguration.enabled | should be $true
         }
 
         It "WAF rule set is OWASP" {
 
-            $json.resources.properties.webApplicationFirewallConfiguration.ruleSetType | should be "OWASP"
+            $appGateway.properties.webApplicationFirewallConfiguration.ruleSetType | should be "OWASP"
         }
 
         It "WAF rule set version is 3.0" {
 
-            $json.resources.properties.webApplicationFirewallConfiguration.ruleSetVersion | should be "3.0"
+            $appGateway.properties.webApplicationFirewallConfiguration.ruleSetVersion | should be "3.0"
         }
 
         It "WAF request body check is enabled" {
 
-            $json.resources.properties.webApplicationFirewallConfiguration.requestBodyCheck | should be $true
+            $appGateway.properties.webApplicationFirewallConfiguration.requestBodyCheck | should be $true
         }
     }
 
@@ -646,7 +716,30 @@ Describe "Application Gateway Resource Validation" {
 
         It "HTTP2 is enabled" {
 
-            $json.resources.properties.enableHttp2 | should be $true
+            $appGateway.properties.enableHttp2 | should be $true
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is Microsoft.Insights/diagnosticSettings" {
+
+            $diagnostics.type | should be "Microsoft.Insights/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2017-05-01-preview" {
+
+            $diagnostics.apiVersion | should be "2017-05-01-preview"
+        }
+
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("ApplicationGatewayAccessLog", "ApplicationGatewayPerformanceLog", "ApplicationGatewayFirewallLog")).Length | should be 0
         }
     }
 }

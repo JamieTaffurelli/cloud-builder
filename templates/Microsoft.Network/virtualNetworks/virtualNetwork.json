@@ -43,6 +43,26 @@
         "description": "The resource ID of the DDOS protection plan to associated with the Virtual Network"
       }
     },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -69,7 +89,9 @@
           }
         }
       ]
-    }
+    },
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 400
   },
   "resources": [
     {
@@ -92,6 +114,35 @@
           "id": "[parameters('ddosProtectionPlanId')]"
         }
       }
+    },
+    {
+      "name": "[concat(parameters('virtualNetworkName'), '-diagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          }
+        ],
+        "logs": [
+          {
+            "category": "VMProtectionAlerts",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          }
+        ],
+        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+      },
+      "dependsOn": ["[parameters('virtualNetworkName')]"]
     }
   ],
   "outputs": {

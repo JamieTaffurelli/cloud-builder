@@ -201,6 +201,26 @@
         "description": "Specify zone redundancy for the App Gateway, only supported with V2"
       }
     },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
     "tags": {
       "type": "object"
     }
@@ -364,7 +384,9 @@
           }
         }
       ]
-    }
+    },
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 400
   },
   "resources": [
     {
@@ -413,6 +435,51 @@
         "customErrorConfigurations": "[parameters('customErrorConfigurations')]"
       },
       "zones": "[parameters('zones')]"
+    },
+    {
+      "name": "[concat(parameters('appGatewayName'), '-diagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          }
+        ],
+        "logs": [
+          {
+            "category": "ApplicationGatewayAccessLog",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          },
+          {
+            "category": "ApplicationGatewayPerformanceLog",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          },
+          {
+            "category": "ApplicationGatewayFirewallLog",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          }
+        ],
+        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+      },
+      "dependsOn": ["[parameters('appGatewayName')]"]
     }
   ],
   "outputs": {

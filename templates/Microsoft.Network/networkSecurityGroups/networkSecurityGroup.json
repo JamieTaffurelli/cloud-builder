@@ -18,11 +18,34 @@
         "description": "The location to deploy the Network Security Group to"
       }
     },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
     "tags": {
       "type": "object"
     }
   },
-  "variables": {},
+  "variables": {
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 400
+  },
   "resources": [
     {
       "name": "[parameters('nsgName')]",
@@ -30,6 +53,33 @@
       "apiVersion": "2018-11-01",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]"
+    },
+    {
+      "name": "[concat(parameters('nsgName'), '-diagnostics')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2017-05-01-preview",
+      "properties": {
+        "logs": [
+          {
+            "category": "NetworkSecurityGroupEvent",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          },
+          {
+            "category": "NetworkSecurityGroupRuleCounter",
+            "enabled": "[variables('diagnosticsEnabled')]",
+            "retentionPolicy": {
+              "enabled": "[variables('diagnosticsEnabled')]",
+              "days": "[variables('diagnosticsRetentionInDays')]"
+            }
+          }
+        ],
+        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+      },
+      "dependsOn": ["[parameters('nsgName')]"]
     }
   ],
   "outputs": {

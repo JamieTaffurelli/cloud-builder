@@ -55,6 +55,73 @@ Describe "Network Security Group Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 400" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 400
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -74,6 +141,45 @@ Describe "Network Security Group Parameter Validation" {
     }
 }
 
+Describe "Network Security Group Resource Validation" {
+
+    $nsg = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Network/networkSecurityGroups" }
+    $diagnostics = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Insights/diagnosticSettings" }
+
+    Context "type Validation" {
+
+        It "type value is Microsoft.Network/networkSecurityGroups" {
+
+            $nsg.type | should be "Microsoft.Network/networkSecurityGroups"
+        }
+    }
+
+    Context "apiVersion Validation" {
+
+        It "apiVersion value is 2018-11-01" {
+
+            $nsg.apiVersion | should be "2018-11-01"
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is Microsoft.Insights/diagnosticSettings" {
+
+            $diagnostics.type | should be "Microsoft.Insights/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2017-05-01-preview" {
+
+            $diagnostics.apiVersion | should be "2017-05-01-preview"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("NetworkSecurityGroupEvent", "NetworkSecurityGroupRuleCounter")).Length | should be 0
+        }
+    }
+}
 Describe "Network Security Group Output Validation" {
 
     Context "Network Security Group Reference Validation" {

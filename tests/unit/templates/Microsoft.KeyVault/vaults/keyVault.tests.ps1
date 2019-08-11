@@ -199,6 +199,73 @@ Describe "Key Vault Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 400" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 400
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -220,11 +287,14 @@ Describe "Key Vault Parameter Validation" {
 
 Describe "Key Vault Resource Validation" {
 
+    $vault = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.KeyVault/vaults" }
+    $diagnostics = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Insights/diagnosticSettings" }
+
     Context "type Validation" {
 
         It "type value is Microsoft.KeyVault/vaults" {
 
-            $json.resources.type | should be "Microsoft.KeyVault/vaults"
+            $vault.type | should be "Microsoft.KeyVault/vaults"
         }
     }
 
@@ -232,7 +302,7 @@ Describe "Key Vault Resource Validation" {
 
         It "apiVersion value is 2018-02-14" {
 
-            $json.resources.apiVersion | should be "2018-02-14"
+            $vault.apiVersion | should be "2018-02-14"
         }
     }
 
@@ -240,7 +310,7 @@ Describe "Key Vault Resource Validation" {
 
         It "enableSoftDelete value is true" {
 
-            $json.resources.properties.enableSoftDelete | should be $true
+            $vault.properties.enableSoftDelete | should be $true
         }
     }
 
@@ -248,7 +318,7 @@ Describe "Key Vault Resource Validation" {
 
         It "createMode value is recover" {
 
-            $json.resources.properties.createMode | should be "recover"
+            $vault.properties.createMode | should be "recover"
         }
     }
 
@@ -256,7 +326,7 @@ Describe "Key Vault Resource Validation" {
 
         It "enablePurgeProtection value is true" {
 
-            $json.resources.properties.enablePurgeProtection | should be $true
+            $vault.properties.enablePurgeProtection | should be $true
         }
     }
 
@@ -264,7 +334,30 @@ Describe "Key Vault Resource Validation" {
 
         It "defaultAction value is deny" {
 
-            $json.resources.properties.networkAcls.defaultAction | should be "Deny"
+            $vault.properties.networkAcls.defaultAction | should be "Deny"
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is Microsoft.Insights/diagnosticSettings" {
+
+            $diagnostics.type | should be "Microsoft.Insights/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2017-05-01-preview" {
+
+            $diagnostics.apiVersion | should be "2017-05-01-preview"
+        }
+
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("AuditEvent")).Length | should be 0
         }
     }
 }
@@ -275,12 +368,12 @@ Describe "Key Vault Output Validation" {
 
         It "type value is object" {
 
-            $json.outputs.keyVault.type | should be "object"
+            $json.outputs.KeyVault.type | should be "object"
         }
 
         It "Uses full reference for Key Vault" {
 
-            $json.outputs.keyVault.value | should be "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2018-02-14', 'Full')]"
+            $json.outputs.KeyVault.value | should be "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')), '2018-02-14', 'Full')]"
         }
     }
 }
