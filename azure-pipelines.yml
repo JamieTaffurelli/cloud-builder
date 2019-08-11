@@ -20,25 +20,13 @@ steps:
     pwsh: false
     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-- task: AzurePowerShell@4
-  displayName: 'Create Test Resource Group'
-  inputs:
-    azureSubscription: 'rg1'
-    scriptType: 'FilePath'
-    scriptPath: '$(System.DefaultWorkingDirectory)\scripts\new-test-resource-group.ps1'
-    errorActionPreference: 'stop'
-    failOnStandardError: false
-    azurePowerShellVersion: 'latestVersion'
-
-- task: AzurePowerShell@4
+- task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
   displayName: 'Run Unit Tests'
   inputs:
-    azureSubscription: 'rg1'
-    scriptType: 'FilePath'
-    scriptPath: '$(System.DefaultWorkingDirectory)\execute-tests.ps1'
-    errorActionPreference: 'stop'
-    failOnStandardError: false
-    azurePowerShellVersion: 'latestVersion'
+    resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
+    codeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+    codeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
+    run32Bit: false
 
 - task: PublishTestResults@2
   displayName: 'Publish Test Results'
@@ -57,17 +45,6 @@ steps:
     codeCoverageTool: 'JaCoCo'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
     failIfCoverageEmpty: true
-  condition: always()
-
-- task: AzurePowerShell@4
-  displayName: 'Delete Test Resource Group'
-  inputs:
-    azureSubscription: 'rg1'
-    scriptType: 'FilePath'
-    scriptPath: '$(System.DefaultWorkingDirectory)\scripts\remove-test-resource-group.ps1'
-    errorActionPreference: 'stop'
-    failOnStandardError: false
-    azurePowerShellVersion: 'latestVersion'
   condition: always()
 
 - task: PowerShell@2
@@ -107,26 +84,6 @@ steps:
     publishLocation: 'Container'
     parallel: false
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-- task: CopyFiles@2
-  displayName: 'Copy Example Deployment Templates to Staging Directory'
-  inputs:
-    sourceFolder: '$(System.DefaultWorkingDirectory)\examples'
-    contents: '**\*' 
-    targetFolder: '$(Build.ArtifactStagingDirectory)\examples'
-    cleanTargetFolder: true 
-    overWrite: true
-    flattenFolders: false
-  condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Example Deployment Templates'
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)\examples' 
-    artifactName: 'examples' 
-    publishLocation: 'Container'
-    parallel: false
-  condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
 
 - task: CopyFiles@2
   displayName: 'Copy Scripts to Staging Directory'
