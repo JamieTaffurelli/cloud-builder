@@ -362,7 +362,7 @@
   "variables": {},
   "resources": [
     {
-      "name": "[parameters('aspName')]",
+      "name": "[parameters('appName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "kind": "[parameters('kind')]",

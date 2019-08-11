@@ -17,9 +17,15 @@
     "ipRules": {
       "value": [{ "value": "104.56.78.90", "action": "Allow" }]
     },
+    "logAnalyticsName": {
+      "value": "templatesLogAnalytics"
+    },
+    "sku": {
+      "value": "PerGB2018"
+    },
     "tags": {
       "value": {
-        "purpose": "templates-storage-account"
+        "purpose": "templates"
       }
     }
   }

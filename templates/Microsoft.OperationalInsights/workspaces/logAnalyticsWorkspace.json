@@ -38,7 +38,54 @@
     }
   },
   "variables": {
-    "retentionInDays": "[if(equals(parameters('sku'), 'Unlimited'), -1, parameters('retentionInDays'))]"
+    "retentionInDays": "[if(equals(parameters('sku'), 'Unlimited'), -1, parameters('retentionInDays'))]",
+    "solutions": [
+      "CapacityPerformance",
+      "AzureWebAppsAnalytics",
+      "Security",
+      "Updates",
+      "AntiMalware",
+      "ChangeTracking",
+      "SQLAssessment",
+      "SCOMAssessment",
+      "ADAssessment",
+      "SiteRecovery",
+      "Backup",
+      "SurfaceHub",
+      "NetworkMonitoring",
+      "Containers",
+      "ContainerInsights",
+      "ServiceMap",
+      "AzureNetworking",
+      "ADReplication",
+      "KeyVault",
+      "ServiceFabric",
+      "DnsAnalytics",
+      "ApplicationInsights",
+      "WaaSUpdateInsights",
+      "AgentHealthAssessment",
+      "SecurityCenterFree",
+      "LogicAppsManagement",
+      "LogicAppB2B",
+      "AzureSQLAnalytics",
+      "KeyVaultAnalytics",
+      "AzureNSGAnalytics",
+      "AzureAppGatewayAnalytics",
+      "WindowsDefenderATPStable",
+      "SecurityInsights",
+      "SecurityCenterNetworkTraffic",
+      "WireData2",
+      "WindowsFirewall",
+      "WindowsEventForwarding",
+      "InternalWindowsEvent",
+      "DHCPActivity",
+      "AzureDataFactoryAnalytics",
+      "SQLThreatDetection",
+      "AzureSecurityOfThings",
+      "SQLVulnerabilityAssessment",
+      "SQLAdvancedThreatProtection",
+      "WinLog"
+    ]
   },
   "resources": [
     {
@@ -53,6 +100,29 @@
         },
         "retentionInDays": "[variables('retentionInDays')]"
       }
+    },
+    {
+      "name": "[concat(variables('solutions')[copyIndex()], '(', parameters('logAnalyticsName'), ')')]",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "location": "westeurope",
+      "tags": "[parameters('tags')]",
+      "plan": {
+        "name": "[concat(variables('solutions')[copyIndex()], '(', parameters('logAnalyticsName'), ')')]",
+        "publisher": "Microsoft",
+        "product": "[concat('OMSGallery/', variables('solutions')[copyIndex()])]",
+        "promotionCode": ""
+      },
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+      },
+      "copy": {
+        "name": "solutions",
+        "count": "[length(variables('solutions'))]"
+      },
+      "dependsOn": [
+        "[parameters('logAnalyticsName')]"
+      ]
     }
   ],
   "outputs": {

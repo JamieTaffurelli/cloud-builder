@@ -2,7 +2,7 @@ $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Nam
 $armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
-Describe "App Service Parameter Validation" {
+Describe "App Service Slot Parameter Validation" {
 
     Context "appName Validation" {
 
@@ -17,6 +17,24 @@ Describe "App Service Parameter Validation" {
         }
 
         It "appName parameter is mandatory" {
+
+            ($json.parameters.appName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "slotName Validation" {
+
+        It "Has slotName parameter" {
+
+            $json.parameters.slotName | should not be $null
+        }
+
+        It "slotName parameter is of type string" {
+
+            $json.parameters.slotName.type | should be "string"
+        }
+
+        It "slotName parameter is mandatory" {
 
             ($json.parameters.appName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
@@ -892,13 +910,13 @@ Describe "App Service Parameter Validation" {
     }
 }
 
-Describe "App Service Resource Validation" {
+Describe "App Service Slot Resource Validation" {
 
     Context "type Validation" {
 
-        It "type value is Microsoft.Web/sites" {
+        It "type value is Microsoft.Web/sites/slots" {
 
-            $json.resources.type | should be "Microsoft.Web/sites"
+            $json.resources.type | should be "Microsoft.Web/sites/slots"
         }
     }
 
@@ -1052,18 +1070,18 @@ Describe "App Service Resource Validation" {
         }
     }
 }
-Describe "App Service Output Validation" {
+Describe "App Service Slot Output Validation" {
 
-    Context "App Service Reference Validation" {
+    Context "App Service Slot Reference Validation" {
 
         It "type value is object" {
 
-            $json.outputs.app.type | should be "object"
+            $json.outputs.slot.type | should be "object"
         }
 
         It "Uses full reference for App Service" {
 
-            $json.outputs.app.value | should be "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2018-11-01', 'Full')]"
+            $json.outputs.slot.value | should be "[reference(resourceId('Microsoft.Web/sites/slots', parameters('appName'), parameters('slotName')), '2018-11-01', 'Full')]"
         }
     }
 }
