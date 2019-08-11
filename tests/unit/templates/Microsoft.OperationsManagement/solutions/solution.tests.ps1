@@ -93,6 +93,42 @@ Describe "Solution Parameter Validation" {
             $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
         }
     }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "tags Validation" {
+
+        It "Has tags parameter" {
+
+            $json.parameters.tags | should not be $null
+        }
+
+        It "tags parameter is of type object" {
+
+            $json.parameters.tags.type | should be "object"
+        }
+
+        It "tags parameter is mandatory" {
+
+            ($json.parameters.tags.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
 }
 
 Describe "Solution Validation" {

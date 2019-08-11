@@ -127,6 +127,73 @@ Describe "Virtual Network Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 400" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 400
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -148,11 +215,14 @@ Describe "Virtual Network Parameter Validation" {
 
 Describe "Virtual Network Resource Validation" {
 
+    $vnet = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Network/virtualNetworks" }
+    $diagnostics = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Insights/diagnosticSettings" }
+
     Context "type Validation" {
 
         It "type value is Microsoft.Network/virtualNetworks" {
 
-            $json.resources.type | should be "Microsoft.Network/virtualNetworks"
+            $vnet.type | should be "Microsoft.Network/virtualNetworks"
         }
     }
 
@@ -160,7 +230,7 @@ Describe "Virtual Network Resource Validation" {
 
         It "apiVersion value is 2018-11-01" {
 
-            $json.resources.apiVersion | should be "2018-11-01"
+            $vnet.apiVersion | should be "2018-11-01"
         }
     }
 
@@ -183,7 +253,7 @@ Describe "Virtual Network Resource Validation" {
 
         It "subnets property uses subnets variable" {
 
-            $json.resources.properties.subnets | should be "[variables('subnets').subnets]"
+            $vnet.properties.subnets | should be "[variables('subnets').subnets]"
         }
     }
 
@@ -191,7 +261,7 @@ Describe "Virtual Network Resource Validation" {
 
         It "enableVmProtection is true" {
 
-            $json.resources.properties.enableVmProtection | should be $true
+            $vnet.properties.enableVmProtection | should be $true
         }
     }
 
@@ -199,7 +269,30 @@ Describe "Virtual Network Resource Validation" {
 
         It "ddosProtectionPlan id is required" {
 
-            $json.resources.properties.ddosProtectionPlan.id | should be "[parameters('ddosProtectionPlanId')]"
+            $vnet.properties.ddosProtectionPlan.id | should be "[parameters('ddosProtectionPlanId')]"
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is Microsoft.Insights/diagnosticSettings" {
+
+            $diagnostics.type | should be "Microsoft.Insights/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2017-05-01-preview" {
+
+            $diagnostics.apiVersion | should be "2017-05-01-preview"
+        }
+
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("VMProtectionAlerts")).Length | should be 0
         }
     }
 }
