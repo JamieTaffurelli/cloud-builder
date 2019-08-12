@@ -2,33 +2,23 @@ $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Nam
 $armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
-Describe "Network Security Group Parameter Validation" {
+Describe "Automation Account Parameter Validation" {
 
-    Context "nsgName Validation" {
+    Context "automationAccountName Validation" {
 
-        It "Has nsgName parameter" {
+        It "Has automationAccountName parameter" {
 
-            $json.parameters.nsgName | should not be $null
+            $json.parameters.automationAccountName | should not be $null
         }
 
-        It "nsgName parameter is of type string" {
+        It "automationAccountName parameter is of type string" {
 
-            $json.parameters.nsgName.type | should be "string"
+            $json.parameters.automationAccountName.type | should be "string"
         }
 
-        It "nsgName parameter is mandatory" {
+        It "automationAccountName parameter is mandatory" {
 
-            ($json.parameters.nsgName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-
-        It "nsgName parameter is minimum length is 1" {
-
-            $json.parameters.nsgName.minLength | should be 1
-        }
-
-        It "nsgName parameter is maximum length is 80" {
-
-            $json.parameters.nsgName.maxLength | should be 80
+            ($json.parameters.automationAccountName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -141,28 +131,33 @@ Describe "Network Security Group Parameter Validation" {
     }
 }
 
-Describe "Network Security Group Resource Validation" {
+Describe "Automation Account Resource Validation" {
 
-    $nsg = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Network/networkSecurityGroups" }
+    $automationAccount = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Automation/automationAccounts" }
     $diagnostics = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
 
     Context "type Validation" {
 
-        It "type value is Microsoft.Network/networkSecurityGroups" {
+        It "type value is Microsoft.Automation/automationAccounts" {
 
-            $nsg.type | should be "Microsoft.Network/networkSecurityGroups"
+            $automationAccount.type | should be "Microsoft.Automation/automationAccounts"
         }
     }
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-11-01" {
+        It "apiVersion value is 2015-10-31" {
 
-            $nsg.apiVersion | should be "2018-11-01"
+            $automationAccount.apiVersion | should be "2015-10-31"
         }
     }
 
     Context "Diagnostic Settings Validation" {
+
+        It "name value is Microsoft.Insights/service" {
+
+            $diagnostics.name | should be "Microsoft.Insights/service"
+        }
 
         It "type value is /providers/diagnosticSettings" {
 
@@ -174,24 +169,30 @@ Describe "Network Security Group Resource Validation" {
             $diagnostics.apiVersion | should be "2015-07-01"
         }
 
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
         It "All logs are enabled" {
 
-            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("NetworkSecurityGroupEvent", "NetworkSecurityGroupRuleCounter")).Length | should be 0
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("JobLogs", "JobStreams", "DscNodeStatus")).Length | should be 0
         }
     }
 }
-Describe "Network Security Group Output Validation" {
 
-    Context "Network Security Group Reference Validation" {
+Describe "Automation Account Output Validation" {
+
+    Context "Automation Account Reference Validation" {
 
         It "type value is object" {
 
-            $json.outputs.networkSecurityGroup.type | should be "object"
+            $json.outputs.automationAccount.type | should be "object"
         }
 
-        It "Uses full reference for Network Security Group" {
+        It "Uses full reference for Automation Account" {
 
-            $json.outputs.networkSecurityGroup.value | should be "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')), '2018-11-01', 'Full')]"
+            $json.outputs.automationAccount.value | should be "[reference(resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName')), '2015-10-31', 'Full')]"
         }
     }
 }

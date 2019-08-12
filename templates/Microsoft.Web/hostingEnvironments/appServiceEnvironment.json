@@ -189,7 +189,7 @@
         "multiRoleCount": "[parameters('multiRoleCount')]",
         "ipsslAddressCount": 0,
         "dnsSuffix": "[parameters('dnsSuffix')]",
-        "networkAccessControlList": "[if(empty(parameters('networkAccessControlList')), parameters('networkAccessControlList'), variables('networkAccessControlList').networkAccessControlList))]",
+        "networkAccessControlList": "[if(empty(parameters('networkAccessControlList')), parameters('networkAccessControlList'), variables('networkAccessControlList').networkAccessControlList)]",
         "frontEndScaleFactor": "[parameters('frontEndScaleFactor')]",
         "apiManagementAccountId": "[if(empty(parameters('apiManagementAccountName')), json('null'), resourceId(parameters('apiManagementAccountSubscriptionId'), parameters('apiManagementAccountResourceGroupName'), 'Microsoft.ApiManagement/service', parameters('apiManagementAccountName')))]",
         "userWhitelistedIpRanges": "[parameters('userWhitelistedIpRanges')]",

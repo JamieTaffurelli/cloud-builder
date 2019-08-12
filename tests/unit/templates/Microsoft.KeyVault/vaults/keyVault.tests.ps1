@@ -260,9 +260,9 @@ Describe "Key Vault Parameter Validation" {
             $json.variables.diagnosticsEnabled | should be $true
         }
 
-        It "diagnosticsRetentionInDays is 400" {
+        It "diagnosticsRetentionInDays is 365" {
 
-            $json.variables.diagnosticsRetentionInDays | should be 400
+            $json.variables.diagnosticsRetentionInDays | should be 365
         }
     }
 
@@ -288,7 +288,7 @@ Describe "Key Vault Parameter Validation" {
 Describe "Key Vault Resource Validation" {
 
     $vault = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.KeyVault/vaults" }
-    $diagnostics = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Insights/diagnosticSettings" }
+    $diagnostics = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
 
     Context "type Validation" {
 
@@ -340,14 +340,14 @@ Describe "Key Vault Resource Validation" {
 
     Context "Diagnostic Settings Validation" {
 
-        It "type value is Microsoft.Insights/diagnosticSettings" {
+        It "type value is /providers/diagnosticSettings" {
 
-            $diagnostics.type | should be "Microsoft.Insights/diagnosticSettings"
+            $diagnostics.type | should be "/providers/diagnosticSettings"
         }
 
-        It "apiVersion value is 2017-05-01-preview" {
+        It "apiVersion value is 2015-07-01" {
 
-            $diagnostics.apiVersion | should be "2017-05-01-preview"
+            $diagnostics.apiVersion | should be "2015-07-01"
         }
 
         It "Metrics category is set to AllMetrics" {

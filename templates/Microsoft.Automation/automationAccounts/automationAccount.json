@@ -2,10 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "eventHubNamespaceName": {
+    "automationAccountName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the Event Hub Namespace"
+        "description": "Name of the Automation Account"
       }
     },
     "location": {
@@ -13,47 +13,7 @@
       "defaultValue": "[resourceGroup().location]",
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
-        "description": "Location of the Event Hub Namespace"
-      }
-    },
-    "sku": {
-      "type": "string",
-      "defaultValue": "Standard",
-      "allowedValues": ["Basic", "Standard"],
-      "metadata": {
-        "description": "The messaging tier for Event Hub Namespace"
-      }
-    },
-    "capacity": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "maxValue": 20,
-      "metadata": {
-        "description": "Throughput units for Event Hub Namespace"
-      }
-    },
-    "isAutoInflateEnabled": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "Enable Auto Inflation for the Event Hub Namespace"
-      }
-    },
-    "maximumThroughputUnits": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 0,
-      "maxValue": 20,
-      "metadata": {
-        "description": "Maximum throughput units for Event Hub Namespace when Auto Inflate is enabled"
-      }
-    },
-    "kafkaEnabled": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Enable Kafka for the Event Hub Namespace"
+        "description": "Location of the Automation Account"
       }
     },
     "logAnalyticsSubscriptionId": {
@@ -79,7 +39,7 @@
     "tags": {
       "type": "object",
       "metadata": {
-        "description": "Tags to apply to Event Hub Namespace"
+        "description": "Tags to apply to Automation Account"
       }
     }
   },
@@ -89,21 +49,11 @@
   },
   "resources": [
     {
-      "name": "[parameters('eventHubNamespaceName')]",
-      "type": "Microsoft.EventHub/namespaces",
-      "apiVersion": "2018-11-01",
+      "name": "[parameters('automationAccountName')]",
+      "type": "Microsoft.Automation/automationAccounts",
+      "apiVersion": "2015-10-31",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
-      "sku": {
-        "name": "[parameters('sku')]",
-        "tier": "[parameters('sku')]",
-        "capacity": "[parameters('capacity')]"
-      },
-      "properties": {
-        "isAutoInflateEnabled": "[parameters('isAutoInflateEnabled')]",
-        "maximumThroughputUnits": "[parameters('maximumThroughputUnits')]",
-        "kafkaEnabled": "[parameters('kafkaEnabled')]"
-      },
       "resources": [
         {
           "apiVersion": "2015-07-01",
@@ -122,7 +72,7 @@
             ],
             "logs": [
               {
-                "category": "ArchiveLogs",
+                "category": "JobLogs",
                 "enabled": "[variables('diagnosticsEnabled')]",
                 "retentionPolicy": {
                   "enabled": "[variables('diagnosticsEnabled')]",
@@ -130,7 +80,7 @@
                 }
               },
               {
-                "category": "OperationLogs",
+                "category": "JobStreams",
                 "enabled": "[variables('diagnosticsEnabled')]",
                 "retentionPolicy": {
                   "enabled": "[variables('diagnosticsEnabled')]",
@@ -138,23 +88,7 @@
                 }
               },
               {
-                "category": "AutoscaleLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              },
-              {
-                "category": "KafkaCoordinatorLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              },
-              {
-                "category": "EventHubVNetConnectionEvent",
+                "category": "DscNodeStatus",
                 "enabled": "[variables('diagnosticsEnabled')]",
                 "retentionPolicy": {
                   "enabled": "[variables('diagnosticsEnabled')]",
@@ -165,11 +99,16 @@
             "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
           },
           "dependsOn": [
-            "[concat('Microsoft.EventHub/namespaces/', parameters('eventHubNamespaceName'))]"
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
           ]
         }
       ]
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "automationAccount": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName')), '2015-10-31', 'Full')]"
+    }
+  }
 }
