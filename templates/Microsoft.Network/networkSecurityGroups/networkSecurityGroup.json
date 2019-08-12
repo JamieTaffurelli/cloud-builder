@@ -44,7 +44,7 @@
   },
   "variables": {
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 400
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
@@ -52,34 +52,39 @@
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2018-11-01",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]"
-    },
-    {
-      "name": "[concat(parameters('nsgName'), '-diagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "properties": {
-        "logs": [
-          {
-            "category": "NetworkSecurityGroupEvent",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
+      "tags": "[parameters('tags')]",
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [],
+            "logs": [
+              {
+                "category": "NetworkSecurityGroupEvent",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "NetworkSecurityGroupRuleCounter",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
           },
-          {
-            "category": "NetworkSecurityGroupRuleCounter",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
-      },
-      "dependsOn": ["[parameters('nsgName')]"]
+          "dependsOn": [
+            "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {

@@ -122,7 +122,7 @@
       ]
     },
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 400
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
@@ -149,36 +149,40 @@
           "ipRules": "[variables('ipRules').ipRules]",
           "virtualNetworkRules": "[variables('virtualNetworkRules').virtualNetworkRules]"
         }
-      }
-    },
-    {
-      "name": "[concat(parameters('keyVaultName'), '-diagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "properties": {
-        "metrics": [
-          {
-            "category": "AllMetrics",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "logs": [
-          {
-            "category": "AuditEvent",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
       },
-      "dependsOn": ["[parameters('keyVaultName')]"]
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "AuditEvent",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {

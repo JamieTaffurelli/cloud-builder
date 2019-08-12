@@ -386,7 +386,7 @@
       ]
     },
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 400
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
@@ -434,52 +434,56 @@
         "autoscaleConfiguration": "[if(empty(parameters('autoScaleConfiguration')), json('null'), parameters('autoScaleConfiguration'))]",
         "customErrorConfigurations": "[parameters('customErrorConfigurations')]"
       },
-      "zones": "[parameters('zones')]"
-    },
-    {
-      "name": "[concat(parameters('appGatewayName'), '-diagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "properties": {
-        "metrics": [
-          {
-            "category": "AllMetrics",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "logs": [
-          {
-            "category": "ApplicationGatewayAccessLog",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
+      "zones": "[parameters('zones')]",
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "ApplicationGatewayAccessLog",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "ApplicationGatewayPerformanceLog",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "ApplicationGatewayFirewallLog",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
           },
-          {
-            "category": "ApplicationGatewayPerformanceLog",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          },
-          {
-            "category": "ApplicationGatewayFirewallLog",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
-      },
-      "dependsOn": ["[parameters('appGatewayName')]"]
+          "dependsOn": [
+            "[concat('Microsoft.Network/applicationGateways/', parameters('appGatewayName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {

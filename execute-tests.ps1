@@ -11,9 +11,5 @@ $scripts = (Get-ChildItem "${PSScriptRoot}\module\cmdlets" -Include "*.ps1" -Rec
 
 Invoke-Pester `
     -Script @{ Path = "${PSScriptRoot}\tests\*"; Parameters = @{ ResourceGroupName = $ResourceGroupName } } `
-    -OutputFile "${PSScriptRoot}\test-results.xml" `
-    -OutputFormat "NUnitXML" `
-    -CodeCoverage $scripts `
-    -CodeCoverageOutputFile "${PSScriptRoot}\code-coverage.xml" `
     -EnableExit `
     -Show "All"

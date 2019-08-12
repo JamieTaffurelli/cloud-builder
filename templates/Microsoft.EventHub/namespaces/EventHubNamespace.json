@@ -85,7 +85,7 @@
   },
   "variables": {
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 400
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
@@ -103,68 +103,72 @@
         "isAutoInflateEnabled": "[parameters('isAutoInflateEnabled')]",
         "maximumThroughputUnits": "[parameters('maximumThroughputUnits')]",
         "kafkaEnabled": "[parameters('kafkaEnabled')]"
-      }
-    },
-    {
-      "name": "[concat(parameters('eventHubNamespaceName'), '-diagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "properties": {
-        "metrics": [
-          {
-            "category": "AllMetrics",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "logs": [
-          {
-            "category": "ArchiveLogs",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          },
-          {
-            "category": "OperationLogs",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          },
-          {
-            "category": "AutoscaleLogs",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          },
-          {
-            "category": "KafkaCoordinatorLogs",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          },
-          {
-            "category": "EventHubVNetConnectionEvent",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
       },
-      "dependsOn": ["[parameters('eventHubNamespaceName')]"]
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "ArchiveLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "OperationLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "AutoscaleLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "KafkaCoordinatorLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "EventHubVNetConnectionEvent",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.EventHub/namespaces/', parameters('eventHubNamespaceName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {}

@@ -45,7 +45,7 @@
   },
   "variables": {
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 400
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
@@ -53,52 +53,56 @@
       "type": "Microsoft.Automation/automationAccounts",
       "apiVersion": "2015-10-31",
       "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]"
-    },
-    {
-      "name": "[concat(parameters('automationAccountName'), '-diagnostics')]",
-      "type": "Microsoft.Insights/diagnosticSettings",
-      "apiVersion": "2017-05-01-preview",
-      "properties": {
-        "metrics": [
-          {
-            "category": "AllMetrics",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "logs": [
-          {
-            "category": "JobLogs",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
+      "tags": "[parameters('tags')]",
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "JobLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "JobStreams",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "DscNodeStatus",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
           },
-          {
-            "category": "JobStreams",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          },
-          {
-            "category": "DscNodeStatus",
-            "enabled": "[variables('diagnosticsEnabled')]",
-            "retentionPolicy": {
-              "enabled": "[variables('diagnosticsEnabled')]",
-              "days": "[variables('diagnosticsRetentionInDays')]"
-            }
-          }
-        ],
-        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
-      },
-      "dependsOn": ["[parameters('automationAccountName')]"]
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {
