@@ -1,5 +1,12 @@
 function Get-AzBuildResource
 {
+    <#
+        .DESCRIPTION
+        Gets an Azure resource by type and name or by name
+
+        .EXAMPLE
+        Get-AzBuildResource -Type 'Storage Account' -Name 'mystorage'
+    #>
     [CmdletBinding()]
     param
     (

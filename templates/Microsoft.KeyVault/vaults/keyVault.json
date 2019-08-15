@@ -23,6 +23,12 @@
         "description": "Specifies the Azure Active Directory tenant ID that should be used for authenticating requests to the Key Vault."
       }
     },
+    "accessPolicies": {
+      "type": "array",
+      "metadata": {
+        "description": "Access Policies for accounts to access Key Vault objects"
+      }
+    },
     "skuName": {
       "type": "string",
       "defaultValue": "Standard",
@@ -50,6 +56,14 @@
       "defaultValue": false,
       "metadata": {
         "description": "Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
+      }
+    },
+    "createMode": {
+      "type": "string",
+      "defaultValue": "default",
+      "allowedValues": ["default", "recover"],
+      "metadata": {
+        "description": "Specifies whether its a new Key Vault or one that is being recovered"
       }
     },
     "bypass": {
@@ -99,6 +113,18 @@
     }
   },
   "variables": {
+    "tenantIdObject": {
+      "tenantId": "[parameters('tenantId')]"
+    },
+    "accessPolicies": {
+      "copy": [
+        {
+          "name": "accessPolicies",
+          "count": "[length(parameters('accessPolicies'))]",
+          "input": "[union(parameters('accessPolicies')[copyIndex('accessPolicies')], variables('tenantIdObject'))]"
+        }
+      ]
+    },
     "ipRules": {
       "copy": [
         {
@@ -137,17 +163,18 @@
           "family": "A",
           "name": "[parameters('skuName')]"
         },
+        "accessPolicies": "[variables('accessPolicies').accessPolicies]",
         "enabledForDeployment": "[parameters('enabledForDeployment')]",
         "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
         "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
         "enableSoftDelete": true,
-        "createMode": "recover",
+        "createMode": "[parameters('createMode')]",
         "enablePurgeProtection": true,
         "networkAcls": {
           "bypass": "[parameters('bypass')]",
           "defaultAction": "Deny",
-          "ipRules": "[variables('ipRules').ipRules]",
-          "virtualNetworkRules": "[variables('virtualNetworkRules').virtualNetworkRules]"
+          "ipRules": "[if(empty(parameters('ipRules')), json('[]'), variables('ipRules').ipRules)]",
+          "virtualNetworkRules": "[if(empty(parameters('virtualNetworkRules')), json('[]'), variables('virtualNetworkRules').virtualNetworkRules)]"
         }
       },
       "resources": [

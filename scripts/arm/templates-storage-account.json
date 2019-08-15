@@ -242,8 +242,7 @@
       "SQLThreatDetection",
       "AzureSecurityOfThings",
       "SQLVulnerabilityAssessment",
-      "SQLAdvancedThreatProtection",
-      "WinLog"
+      "SQLAdvancedThreatProtection"
     ]
   },
   "resources": [
@@ -305,7 +304,9 @@
       "properties": {
         "publicAccess": "None"
       },
-      "dependsOn": ["[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"]
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"
+      ]
     },
     {
       "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'), '/default')]",
@@ -314,7 +315,9 @@
       "properties": {
         "immutabilityPeriodSinceCreationInDays": "[parameters('immutabilityPeriodSinceCreationInDays')]"
       },
-      "dependsOn": ["[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('storageAccountName'), 'default', 'templates')]"]
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices/containers', parameters('storageAccountName'), 'default', 'templates')]"
+      ]
     },
     {
       "name": "[parameters('logAnalyticsName')]",
@@ -348,9 +351,7 @@
         "name": "solutions",
         "count": "[length(variables('solutions'))]"
       },
-      "dependsOn": [
-        "[parameters('logAnalyticsName')]"
-      ]
+      "dependsOn": ["[parameters('logAnalyticsName')]"]
     }
   ]
 }

@@ -45,8 +45,8 @@
     },
     "multiSize": {
       "type": "string",
-      "defaultValue": "Small",
-      "allowedValues": ["Small", "Medium", "Large"],
+      "defaultValue": "Standard_D1_V2",
+      "allowedValues": ["Standard_D1_V2", "Standard_D2_V2", "Standard_D3_V2"],
       "metadata": {
         "description": "The size of the front-end workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
       }
@@ -181,13 +181,14 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
-        "vnetName": "[parameters('vnetName')]",
-        "vnetResourceGroupName": "[parameters('vnetResourceGroupName')]",
-        "vnetSubnetName": "[parameters('vnetSubnetName')]",
+        "virtualNetwork": {
+          "id": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+          "subnet": "[parameters('vnetSubnetName')]"
+        },
         "internalLoadBalancingMode": "[parameters('internalLoadBalancingMode')]",
         "multiSize": "[parameters('multiSize')]",
         "multiRoleCount": "[parameters('multiRoleCount')]",
-        "ipsslAddressCount": 0,
+        "ipsslAddressCount": "[parameters('ipsslAddressCount')]",
         "dnsSuffix": "[parameters('dnsSuffix')]",
         "networkAccessControlList": "[if(empty(parameters('networkAccessControlList')), parameters('networkAccessControlList'), variables('networkAccessControlList').networkAccessControlList)]",
         "frontEndScaleFactor": "[parameters('frontEndScaleFactor')]",
