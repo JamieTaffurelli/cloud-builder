@@ -134,14 +134,14 @@ Describe "Application Service Environment Parameter Validation" {
             $json.parameters.multiSize.type | should be "string"
         }
 
-        It "multiSize parameter default value is Small" {
+        It "multiSize parameter default value is Standard_D1_V2" {
 
-            $json.parameters.multiSize.defaultValue | should be "Small"
+            $json.parameters.multiSize.defaultValue | should be "Standard_D1_V2"
         }
 
-        It "multiSize parameter allowed values are 'Small', 'Medium', 'Large'" {
+        It "multiSize parameter allowed values are 'Standard_D1_V2', 'Standard_D2_V2', 'Standard_D3_V2'" {
 
-            (Compare-Object -ReferenceObject $json.parameters.multiSize.allowedValues -DifferenceObject @("Small", "Medium", "Large")).Length | should be 0
+            (Compare-Object -ReferenceObject $json.parameters.multiSize.allowedValues -DifferenceObject @("Standard_D1_V2", "Standard_D2_V2", "Standard_D3_V2")).Length | should be 0
         }
     }
 
@@ -199,78 +199,6 @@ Describe "Application Service Environment Parameter Validation" {
         }
     }
 
-    Context "apiManagementAccountSubscriptionId Validation" {
-
-        It "Has apiManagementAccountSubscriptionId parameter" {
-
-            $json.parameters.apiManagementAccountSubscriptionId | should not be $null
-        }
-
-        It "apiManagementAccountSubscriptionId parameter is of type string" {
-
-            $json.parameters.apiManagementAccountSubscriptionId.type | should be "string"
-        }
-
-        It "apiManagementAccountSubscriptionId parameter default value is [subscription().subscriptionId]" {
-
-            $json.parameters.apiManagementAccountSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
-        }
-    }
-
-    Context "apiManagementAccountResourceGroupName Validation" {
-
-        It "Has apiManagementAccountResourceGroupName parameter" {
-
-            $json.parameters.apiManagementAccountResourceGroupName | should not be $null
-        }
-
-        It "apiManagementAccountResourceGroupName parameter is of type string" {
-
-            $json.parameters.apiManagementAccountResourceGroupName.type | should be "string"
-        }
-
-        It "apiManagementAccountResourceGroupName parameter default value is [resourceGroup().name]" {
-
-            $json.parameters.apiManagementAccountResourceGroupName.defaultValue | should be "[resourceGroup().name]"
-        }
-    }
-
-    Context "apiManagementAccountName Validation" {
-
-        It "Has apiManagementAccountName parameter" {
-
-            $json.parameters.apiManagementAccountName | should not be $null
-        }
-
-        It "apiManagementAccountName parameter is of type string" {
-
-            $json.parameters.apiManagementAccountName.type | should be "string"
-        }
-
-        It "apiManagementAccountName parameter default value is an empty string" {
-
-            $json.parameters.apiManagementAccountName.defaultValue | should be ([String]::Empty)
-        }
-    }
-
-    Context "userWhitelistedIpRanges Validation" {
-
-        It "Has userWhitelistedIpRanges parameter" {
-
-            $json.parameters.userWhitelistedIpRanges | should not be $null
-        }
-
-        It "userWhitelistedIpRanges parameter is of type array" {
-
-            $json.parameters.userWhitelistedIpRanges.type | should be "array"
-        }
-
-        It "userWhitelistedIpRanges parameter default value is an empty array" {
-
-            $json.parameters.userWhitelistedIpRanges.defaultValue | should be @()
-        }
-    }
-
     Context "hasLinuxWorkers Validation" {
 
         It "Has hasLinuxWorkers parameter" {
@@ -286,78 +214,6 @@ Describe "Application Service Environment Parameter Validation" {
         It "hasLinuxWorkers parameter default value is false" {
 
             $json.parameters.hasLinuxWorkers.defaultValue | should be $false
-        }
-    }
-
-    Context "sslKeyVaultSubscriptionId Validation" {
-
-        It "Has sslKeyVaultSubscriptionId parameter" {
-
-            $json.parameters.sslKeyVaultSubscriptionId | should not be $null
-        }
-
-        It "sslKeyVaultSubscriptionId parameter is of type string" {
-
-            $json.parameters.sslKeyVaultSubscriptionId.type | should be "string"
-        }
-
-        It "sslKeyVaultSubscriptionId parameter default value is [subscription().subscriptionId]" {
-
-            $json.parameters.sslKeyVaultSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
-        }
-    }
-
-    Context "sslKeyVaultResourceGroupName Validation" {
-
-        It "Has sslKeyVaultResourceGroupName parameter" {
-
-            $json.parameters.sslKeyVaultResourceGroupName | should not be $null
-        }
-
-        It "sslKeyVaultResourceGroupName parameter is of type string" {
-
-            $json.parameters.sslKeyVaultResourceGroupName.type | should be "string"
-        }
-
-        It "sslKeyVaultResourceGroupName parameter default value is [resourceGroup().name]" {
-
-            $json.parameters.sslKeyVaultResourceGroupName.defaultValue | should be "[resourceGroup().name]"
-        }
-    }
-
-    Context "sslKeyVaultName Validation" {
-
-        It "Has sslKeyVaultName parameter" {
-
-            $json.parameters.sslKeyVaultName | should not be $null
-        }
-
-        It "sslKeyVaultName parameter is of type string" {
-
-            $json.parameters.sslKeyVaultName.type | should be "string"
-        }
-
-        It "sslKeyVaultName parameter default value is an empty string" {
-
-            $json.parameters.sslKeyVaultName.defaultValue | should be ([String]::Empty)
-        }
-    }
-
-    Context "sslKeyVaultSecretName Validation" {
-
-        It "Has sslKeyVaultSecretName parameter" {
-
-            $json.parameters.sslKeyVaultSecretName | should not be $null
-        }
-
-        It "sslKeyVaultSecretName parameter is of type string" {
-
-            $json.parameters.sslKeyVaultSecretName.type | should be "string"
-        }
-
-        It "sslKeyVaultSecretName parameter default value is an empty string" {
-
-            $json.parameters.sslKeyVaultSecretName.defaultValue | should be ([String]::Empty)
         }
     }
 
@@ -406,11 +262,11 @@ Describe "Application Service Environment Resource Validation" {
         }
     }
 
-    Context "Network ACL Validation" {
+    Context "IP Address Validation" {
 
-        It "defaultAction is Deny" {
+        It "ipSslAddressCount is 0" {
 
-            $json.variables.defaultAction | should be "Deny"
+            $json.resources.properties.ipSslAddressCount | should be 0
         }
     }
 }

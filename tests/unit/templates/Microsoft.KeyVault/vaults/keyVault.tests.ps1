@@ -63,6 +63,24 @@ Describe "Key Vault Parameter Validation" {
         }
     }
 
+    Context "accessPolicies Validation" {
+
+        It "Has accessPolicies parameter" {
+
+            $json.parameters.accessPolicies | should not be $null
+        }
+
+        It "accessPolicies parameter is of type array" {
+
+            $json.parameters.accessPolicies.type | should be "array"
+        }
+
+        It "accessPolicies parameter is mandatory" {
+
+            ($json.parameters.accessPolicies.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "skuName Validation" {
 
         It "Has skuName parameter" {
@@ -137,6 +155,29 @@ Describe "Key Vault Parameter Validation" {
         It "enabledForTemplateDeployment parameter default value is false" {
 
             $json.parameters.enabledForTemplateDeployment.defaultValue | should be $false
+        }
+    }
+
+    Context "createMode Validation" {
+
+        It "Has bypass parameter" {
+
+            $json.parameters.createMode | should not be $null
+        }
+
+        It "createMode parameter is of type string" {
+
+            $json.parameters.createMode.type | should be "string"
+        }
+
+        It "createMode parameter default value is default" {
+
+            $json.parameters.createMode.defaultValue | should be "default"
+        }
+
+        It "createMode parameter allowed values are default, recover" {
+
+            (Compare-Object -ReferenceObject $json.parameters.createMode.allowedValues -DifferenceObject @("default", "recover")).Length | should be 0
         }
     }
 
@@ -311,14 +352,6 @@ Describe "Key Vault Resource Validation" {
         It "enableSoftDelete value is true" {
 
             $vault.properties.enableSoftDelete | should be $true
-        }
-    }
-
-    Context "createMode Validation" {
-
-        It "createMode value is recover" {
-
-            $vault.properties.createMode | should be "recover"
         }
     }
 
