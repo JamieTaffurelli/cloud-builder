@@ -2,10 +2,10 @@ function Test-AzBuildBlobItem
 {
     <#
         .DESCRIPTION
-        
+        Returns true if a blob exists in a storage account and false if it does not
 
         .EXAMPLE
-        
+        Test-AzBuildBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt'
     #>
     [CmdletBinding(DefaultParameterSetName = 'DynamicAuth')]
     param

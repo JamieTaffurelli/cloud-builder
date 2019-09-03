@@ -45,8 +45,8 @@
     },
     "multiSize": {
       "type": "string",
-      "defaultValue": "Small",
-      "allowedValues": ["Small", "Medium", "Large"],
+      "defaultValue": "Standard_D1_V2",
+      "allowedValues": ["Standard_D1_V2", "Standard_D2_V2", "Standard_D3_V2"],
       "metadata": {
         "description": "The size of the front-end workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
       }
@@ -58,22 +58,8 @@
         "description": "The number of front-end workers"
       }
     },
-    "ipsslAddressCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "metadata": {
-        "description": "IP addresses to assign to individual apps, only possible with External App Service Environment"
-      }
-    },
     "dnsSuffix": {
       "type": "string",
-      "metadata": {
-        "description": "DNS Suffix of all App Services deployed into the App Service Environment"
-      }
-    },
-    "networkAccessControlList": {
-      "type": "array",
-      "defaultValue": [],
       "metadata": {
         "description": "DNS Suffix of all App Services deployed into the App Service Environment"
       }
@@ -85,67 +71,11 @@
         "description": "When to add front-end worker based on number of App Service Plan instances"
       }
     },
-    "apiManagementAccountSubscriptionId": {
-      "type": "string",
-      "defaultValue": "[subscription().subscriptionId]",
-      "metadata": {
-        "description": "Subscription ID of API Management Account to link Application Service Environment to"
-      }
-    },
-    "apiManagementAccountResourceGroupName": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().name]",
-      "metadata": {
-        "description": "Resource Group of API Management Account to link Application Service Environment to"
-      }
-    },
-    "apiManagementAccountName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Name of API Management Account to link Application Service Environment to"
-      }
-    },
-    "userWhitelistedIpRanges": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "IP ranged to whitelist on App Service Environment"
-      }
-    },
     "hasLinuxWorkers": {
       "type": "bool",
       "defaultValue": false,
       "metadata": {
         "description": "False for Windows, true for Linux"
-      }
-    },
-    "sslKeyVaultSubscriptionId": {
-      "type": "string",
-      "defaultValue": "[subscription().subscriptionId]",
-      "metadata": {
-        "description": "Subscription ID of the Key Vault to get ILB SSL certificate from"
-      }
-    },
-    "sslKeyVaultResourceGroupName": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().name]",
-      "metadata": {
-        "description": "Resource Group of the Key Vault to get ILB SSL certificate from"
-      }
-    },
-    "sslKeyVaultName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Key Vault to get ILB SSL certificate from"
-      }
-    },
-    "sslKeyVaultSecretName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Key Vault Secret containing ILB SSL certificate data"
       }
     },
     "tags": {
@@ -155,23 +85,7 @@
       }
     }
   },
-  "variables": {
-    "defaultAction": "Deny",
-    "networkAccessControlList": {
-      "copy": [
-        {
-          "name": "networkAccessControlList",
-          "count": "[if(empty(parameters('networkAccessControlList')), 1, length(parameters('networkAccessControlList')))]",
-          "input": {
-            "action": "[if(empty(parameters('networkAccessControlList')), 'dummyAction', if(contains(parameters('networkAccessControlList')[copyIndex('networkAccessControlList')], 'action'), parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].action, variables('defaultaction')))]",
-            "description": "[if(empty(parameters('networkAccessControlList')), 'dummyDescription', parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].description)]",
-            "order": "[if(empty(parameters('networkAccessControlList')), 'dummyOrder', parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].order)]",
-            "remoteSubnet": "[if(empty(parameters('networkAccessControlList')), 'dummySubnet', parameters('networkAccessControlList')[copyIndex('networkAccessControlList')].remoteSubnet)]"
-          }
-        }
-      ]
-    }
-  },
+  "variables": {},
   "resources": [
     {
       "name": "[parameters('aseName')]",
@@ -181,21 +95,17 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
-        "vnetName": "[parameters('vnetName')]",
-        "vnetResourceGroupName": "[parameters('vnetResourceGroupName')]",
-        "vnetSubnetName": "[parameters('vnetSubnetName')]",
+        "virtualNetwork": {
+          "id": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+          "subnet": "[parameters('vnetSubnetName')]"
+        },
         "internalLoadBalancingMode": "[parameters('internalLoadBalancingMode')]",
         "multiSize": "[parameters('multiSize')]",
         "multiRoleCount": "[parameters('multiRoleCount')]",
-        "ipsslAddressCount": 0,
+        "ipSslAddressCount": 0,
         "dnsSuffix": "[parameters('dnsSuffix')]",
-        "networkAccessControlList": "[if(empty(parameters('networkAccessControlList')), parameters('networkAccessControlList'), variables('networkAccessControlList').networkAccessControlList)]",
         "frontEndScaleFactor": "[parameters('frontEndScaleFactor')]",
-        "apiManagementAccountId": "[if(empty(parameters('apiManagementAccountName')), json('null'), resourceId(parameters('apiManagementAccountSubscriptionId'), parameters('apiManagementAccountResourceGroupName'), 'Microsoft.ApiManagement/service', parameters('apiManagementAccountName')))]",
-        "userWhitelistedIpRanges": "[parameters('userWhitelistedIpRanges')]",
-        "hasLinuxWorkers": "[parameters('hasLinuxWorkers')]",
-        "sslCertKeyVaultId": "[if(empty(parameters('sslKeyVaultName')), json('null'), resourceId(parameters('sslKeyVaultSubscriptionId'), parameters('sslKeyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('sslKeyVaultName')))]",
-        "sslCertKeyVaultSecretName": "[if(empty(parameters('sslKeyVaultSecretName')), json('null'), parameters('sslKeyVaultSecretName'))]"
+        "hasLinuxWorkers": "[parameters('hasLinuxWorkers')]"
       }
     }
   ],

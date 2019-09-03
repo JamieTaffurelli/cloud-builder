@@ -2,10 +2,10 @@ function Copy-AzBuildBlobItem
 {
     <#
         .DESCRIPTION
-        
+        Copies an item to blob storage with option to skip existing blobs
 
         .EXAMPLE
-        
+        Copy-AzBuildBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt' -File 'C:\myFile.txt' -SkipExisting
     #>
     [CmdletBinding(DefaultParameterSetName = 'DynamicAuth')]
     param

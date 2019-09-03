@@ -34,9 +34,9 @@ Describe "Log Analytics Workspace Parameter Validation" {
             $json.parameters.sku.type | should be "string"
         }
 
-        It "sku parameter default value is Free" {
+        It "sku parameter default value is PerGB2018" {
 
-            $json.parameters.sku.defaultValue | should be "Free"
+            $json.parameters.sku.defaultValue | should be "PerGB2018"
         }
 
         It "sku parameter allowed values are Free, Standard, Premium, Unlimited, PerNode, PerGB2018, Standalone" {
