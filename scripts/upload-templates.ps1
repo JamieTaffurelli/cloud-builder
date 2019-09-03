@@ -31,7 +31,7 @@ if($templates)
 {
     foreach($template in $templates)
     {
-        Copy-AzBuildBlobItem -File $template.FullName -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($template.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty)
+        Copy-AzBuildBlobItem -File $template.FullName -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($template.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty) -SkipExisting
     }
 }
 else 
