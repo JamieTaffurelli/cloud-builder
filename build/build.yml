@@ -139,18 +139,3 @@ jobs:
           overWrite: true
           flattenFolders: false
         condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
-
-      - task: PublishPipelineArtifact@1
-        displayName: "Publish Template Tests (Pipeline)"
-        inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)\tests'
-          artifact: "tests"
-        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish Template Tests (Build)"
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\tests'
-          artifactName: "tests-build"
-          publishLocation: "Container"
-        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
