@@ -1,10 +1,10 @@
 parameters:
-  environment: "Production"
+  environment: ""
   poolName: ""
-  azureSubscription: "templatesrg"
-  resourceGroupName: "templatesrg"
-  storageAccountName: "templatessa6546"
-  armParametersFile: "$(Pipeline.Workspace)/scripts/arm/templates-storageaccount.parameters.json"
+  azureSubscription: ""
+  resourceGroupName: ""
+  storageAccountName: ""
+  armParametersFile: ""
 
 jobs:
   - deployment: Deploy_Resources_Upload_Templates

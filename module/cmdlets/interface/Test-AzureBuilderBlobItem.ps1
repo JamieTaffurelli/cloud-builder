@@ -1,11 +1,11 @@
-function Test-AzBuildBlobItem
+function Test-AzureBuilderBlobItem
 {
     <#
         .DESCRIPTION
         Returns true if a blob exists in a storage account and false if it does not
 
         .EXAMPLE
-        Test-AzBuildBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt'
+        Test-AzureBuilderBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt'
     #>
     [CmdletBinding(DefaultParameterSetName = 'DynamicAuth')]
     param
@@ -53,17 +53,17 @@ function Test-AzBuildBlobItem
         {
             "DynamicAuth"
             {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -AuthMethod $AuthMethod
+                $context = New-AzureBuilderStorageContext -StorageAccountName $StorageAccountName -AuthMethod $AuthMethod
                 break
             }
             "StaticKeyAuth"
             {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
+                $context = New-AzureBuilderStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
                 break
             }
             "StaticSasAuth"
             {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -SasToken $SasToken
+                $context = New-AzureBuilderStorageContext -StorageAccountName $StorageAccountName -SasToken $SasToken
                 break
             }
             "StorageContext"
