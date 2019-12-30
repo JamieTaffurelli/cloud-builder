@@ -17,6 +17,7 @@ jobs:
           ignoreLASTEXITCODE: false	
           pwsh: false	
           workingDirectory: '$(System.DefaultWorkingDirectory)'
+          
       - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
         displayName: "Run Unit Tests"
         inputs:
