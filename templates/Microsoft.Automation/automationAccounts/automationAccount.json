@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "automationAccountName": {
       "type": "string",
@@ -11,7 +11,10 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": ["northeurope", "westeurope"],
+      "allowedValues": [
+        "northeurope",
+        "westeurope"
+      ],
       "metadata": {
         "description": "Location of the Automation Account"
       }
@@ -54,6 +57,11 @@
       "apiVersion": "2015-10-31",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
+      "properties": {
+        "sku": {
+          "name": "Basic"
+        }
+      },
       "resources": [
         {
           "apiVersion": "2015-07-01",

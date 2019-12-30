@@ -278,6 +278,24 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
+    Context "dataDisks Validation" {
+
+        It "Has dataDisks parameter" {
+
+            $json.parameters.dataDisks | should not be $null
+        }
+
+        It "dataDisks parameter is of type array" {
+
+            $json.parameters.dataDisks.type | should be "array"
+        }
+
+        It "dataDisks parameter default value is an empty array" {
+
+            $json.parameters.dataDisks.defaultValue | should be @()
+        }
+    }
+
     Context "adminUsername Validation" {
 
         It "Has adminUsername parameter" {
@@ -386,42 +404,6 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
-    Context "diagnosticsStorageAccountResourceGroup Validation" {
-
-        It "Has diagnosticsStorageAccountResourceGroup parameter" {
-
-            $json.parameters.diagnosticsStorageAccountResourceGroup | should not be $null
-        }
-
-        It "diagnosticsStorageAccountResourceGroup parameter is of type string" {
-
-            $json.parameters.diagnosticsStorageAccountResourceGroup.type | should be "string"
-        }
-
-        It "diagnosticsStorageAccountResourceGroup parameter default value is [resourceGroup().name]" {
-
-            $json.parameters.diagnosticsStorageAccountResourceGroup.defaultValue | should be "[resourceGroup().name]"
-        }
-    }
-
-    Context "diagnosticsStorageAccountSubscriptionId Validation" {
-
-        It "Has diagnosticsStorageAccountSubscriptionId parameter" {
-
-            $json.parameters.diagnosticsStorageAccountSubscriptionId | should not be $null
-        }
-
-        It "diagnosticsStorageAccountSubscriptionId parameter is of type string" {
-
-            $json.parameters.diagnosticsStorageAccountSubscriptionId.type | should be "string"
-        }
-
-        It "diagnosticsStorageAccountSubscriptionId parameter default value is [subscription().subscriptionId]" {
-
-            $json.parameters.diagnosticsStorageAccountSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
-        }
-    }
-
     Context "availabilitySetId Validation" {
 
         It "Has availabilitySetId parameter" {
@@ -475,13 +457,66 @@ Describe "Windows Virtual Machine Parameter Validation" {
             ($json.parameters.templateSas.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
+
+    Context "bgVersion Validation" {
+
+        It "Has bgVersion parameter" {
+
+            $json.parameters.bgVersion | should not be $null
+        }
+
+        It "bgVersion parameter is of type string" {
+
+            $json.parameters.availabilitySetId.type | should be "string"
+        }
+
+        It "bgVersion parameter default value is an empty string" {
+
+            $json.parameters.bgVersion.defaultValue | should be "2.1"
+        }
+    }
+
+    Context "dependencyAgentVersion Validation" {
+
+        It "Has dependencyAgentVersion parameter" {
+
+            $json.parameters.dependencyAgentVersion | should not be $null
+        }
+
+        It "dependencyAgentVersion parameter is of type string" {
+
+            $json.parameters.dependencyAgentVersion.type | should be "string"
+        }
+
+        It "dependencyAgentVersion parameter default value is an empty string" {
+
+            $json.parameters.dependencyAgentVersion.defaultValue | should be "9.9"
+        }
+    }
+
+    Context "tags Validation" {
+
+        It "Has tags parameter" {
+
+            $json.parameters.tags | should not be $null
+        }
+
+        It "tags parameter is of type object" {
+
+            $json.parameters.tags.type | should be "object"
+        }
+
+        It "tags parameter is mandatory" {
+
+            ($json.parameters.tags.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
 }
 
 Describe "Windows Virtual Machine Resource Validation" {
 
     $vmResource = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Compute/virtualMachines" }
     $bgInfoResource = $json.resources | Where-Object { $PSItem.name -eq "BGInfo" }
-    $vmDiagnosticsResource = $json.resources | Where-Object { $PSItem.name -eq "Microsoft.Insights.VMDiagnosticsSettings" }
     $dependencyAgentResource = $json.resources | Where-Object { $PSItem.name -eq "DependencyAgentWindows" }
     
     Context "type Validation" {
@@ -571,9 +606,9 @@ Describe "Windows Virtual Machine Resource Validation" {
             $bgInfoResource.properties.mode | should be "Incremental"
         }
 
-        It "contentVersion is 1.0.0.0" {
+        It "contentVersion is 1.0.4.0" {
 
-            $bgInfoResource.properties.templateLink.contentVersion | should be "1.0.0.0"
+            $bgInfoResource.properties.templateLink.contentVersion | should be "1.0.4.0"
         }
 
         It "vmExtensionName is BGInfo" {
@@ -598,80 +633,7 @@ Describe "Windows Virtual Machine Resource Validation" {
 
         It "depends on VM creation" {
 
-            $bgInfoResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines', parameters('vmName'))]")
-        }
-    }
-
-    Context "Microsoft.Insights.VMDiagnosticsSettings Validation" {
-
-        It "type is Microsoft.Resources/deployments" {
-
-            $vmDiagnosticsResource.type | should be "Microsoft.Resources/deployments"
-        }
-
-        It "apiVersion is 2018-05-01" {
-
-            $vmDiagnosticsResource.apiVersion | should be "2018-05-01"
-        }
-
-        It "mode is Incremental" {
-
-            $vmDiagnosticsResource.properties.mode | should be "Incremental"
-        }
-
-        It "contentVersion is 1.0.0.0" {
-
-            $vmDiagnosticsResource.properties.templateLink.contentVersion | should be "1.0.0.0"
-        }
-
-        It "vmExtensionName is Microsoft.Insights.VMDiagnosticsSettings" {
-
-            $vmDiagnosticsResource.properties.parameters.vmExtensionName.value | should be "Microsoft.Insights.VMDiagnosticsSettings"
-        }
-
-        It "vmName is [parameters('vmName')]" {
-
-            $vmDiagnosticsResource.properties.parameters.vmName.value | should be "[parameters('vmName')]"
-        }
-
-        It "publisher is Microsoft.Azure.Diagnostics.IaaSDiagnostics" {
-
-            $vmDiagnosticsResource.properties.parameters.publisher.value | should be "Microsoft.Azure.Diagnostics.IaaSDiagnostics"
-        }
-        
-        It "type is Microsoft.Insights.VMDiagnosticsSettings" {
-
-            $vmDiagnosticsResource.properties.parameters.type.value | should be "Microsoft.Insights.VMDiagnosticsSettings"
-        }
-
-        It "settings has xml config" {
-
-            $vmDiagnosticsResource.properties.parameters.settings.value.xmlcfg | should be "[base64(concat(variables('vmDiagnosticsWadConfigStart'), variables('vmDiagnosticsWadMetricsResourceId'), parameters('vmName'), variables('vmDiagnosticsWadConfigEnd')))]"
-        }
-
-        It "settings uses diagnostic storage account" {
-
-            $vmDiagnosticsResource.properties.parameters.settings.value.storageAccountName | should be "[parameters('diagnosticsStorageAccountName')]"
-        }
-
-        It "protected settings uses diagnostic storage account" {
-
-            $vmDiagnosticsResource.properties.parameters.protectedSettings.value.storageAccountName | should be "[parameters('diagnosticsStorageAccountName')]"
-        }
-
-        It "protected settings uses diagnostic storage account key" {
-
-            $vmDiagnosticsResource.properties.parameters.protectedSettings.value.storageAccountKey | should be "[listkeys(variables('diagnosticStorageAccountResourceId'), '2015-06-15').key1]"
-        }
-
-        It "protected settings uses diagnostic storage account endpoint" {
-
-            $vmDiagnosticsResource.properties.parameters.protectedSettings.value.storageAccountEndpoint | should be "https://core.windows.net"
-        }
-
-        It "depends on VM creation" {
-
-            $vmDiagnosticsResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines', parameters('vmName'))]")
+            $bgInfoResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
         }
     }
 
@@ -692,9 +654,9 @@ Describe "Windows Virtual Machine Resource Validation" {
             $dependencyAgentResource.properties.mode | should be "Incremental"
         }
 
-        It "contentVersion is 1.0.0.0" {
+        It "contentVersion is 1.0.4.0" {
 
-            $dependencyAgentResource.properties.templateLink.contentVersion | should be "1.0.0.0"
+            $dependencyAgentResource.properties.templateLink.contentVersion | should be "1.0.4.0"
         }
 
         It "vmExtensionName is DependencyAgentWindows" {
@@ -719,7 +681,7 @@ Describe "Windows Virtual Machine Resource Validation" {
 
         It "depends on VM creation" {
 
-            $dependencyAgentResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines', parameters('vmName'))]")
+            $dependencyAgentResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
         }
     }
 }

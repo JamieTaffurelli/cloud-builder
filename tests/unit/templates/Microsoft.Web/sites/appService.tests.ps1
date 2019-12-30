@@ -69,6 +69,24 @@ Describe "App Service Parameter Validation" {
         }
     }
 
+    Context "hostNameSslStates Validation" {
+
+        It "Has hostNameSslStates parameter" {
+
+            $json.parameters.hostNameSslStates | should not be $null
+        }
+
+        It "hostNameSslStates parameter is of type array" {
+
+            $json.parameters.hostNameSslStates.type | should be "array"
+        }
+
+        It "hostNameSslStates parameter default value is an empty array" {
+
+            $json.parameters.hostNameSslStates.defaultValue | should be @()
+        }
+    }
+
     Context "appServicePlanSubscriptionId Validation" {
 
         It "Has appServicePlanSubscriptionId parameter" {
@@ -801,6 +819,83 @@ Describe "App Service Parameter Validation" {
         }
     }
 
+    Context "diagnosticsLogsLevel Validation" {
+
+        It "Has diagnosticsLogsLevel parameter" {
+
+            $json.parameters.diagnosticsLogsLevel | should not be $null
+        }
+
+        It "diagnosticsLogsLevel parameter is of type string" {
+
+            $json.parameters.diagnosticsLogsLevel.type | should be "string"
+        }
+
+        It "diagnosticsLogsLevel parameter default value is Verbose" {
+
+            $json.parameters.diagnosticsLogsLevel.defaultValue | should be "Verbose"
+        }
+
+        It "diagnosticsLogsLevel parameter allowed values are 'Verbose', 'Information', 'Warning', 'Error'" {
+
+            (Compare-Object -ReferenceObject $json.parameters.diagnosticsLogsLevel.allowedValues -DifferenceObject @("Verbose", "Information", "Warning", "Error")).Length | should be 0
+        }
+    }
+
+    Context "diagnosticsStorageAccountName Validation" {
+
+        It "Has diagnosticsStorageAccountName parameter" {
+
+            $json.parameters.diagnosticsStorageAccountName | should not be $null
+        }
+
+        It "diagnosticsStorageAccountName parameter is of type string" {
+
+            $json.parameters.diagnosticsStorageAccountName.type | should be "string"
+        }
+
+        It "diagnosticsStorageAccountName parameter is mandatory" {
+
+            ($json.parameters.diagnosticsStorageAccountName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "diagnosticsContainerName Validation" {
+
+        It "Has diagnosticsContainerName parameter" {
+
+            $json.parameters.diagnosticsContainerName | should not be $null
+        }
+
+        It "diagnosticsContainerName parameter is of type string" {
+
+            $json.parameters.diagnosticsContainerName.type | should be "string"
+        }
+
+        It "diagnosticsContainerName parameter is mandatory" {
+
+            ($json.parameters.diagnosticsContainerName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "diagnosticsStorageAccountSasToken Validation" {
+
+        It "Has diagnosticsStorageAccountSasToken parameter" {
+
+            $json.parameters.diagnosticsStorageAccountSasToken | should not be $null
+        }
+
+        It "diagnosticsStorageAccountSasToken parameter is of type securestring" {
+
+            $json.parameters.diagnosticsStorageAccountSasToken.type | should be "securestring"
+        }
+
+        It "diagnosticsStorageAccountSasToken parameter is mandatory" {
+
+            ($json.parameters.diagnosticsStorageAccountSasToken.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "clientCertEnabled Validation" {
 
         It "Has clientCertEnabled parameter" {
@@ -873,6 +968,73 @@ Describe "App Service Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 365" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 365
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -893,6 +1055,8 @@ Describe "App Service Parameter Validation" {
 }
 
 Describe "App Service Resource Validation" {
+
+    $diagnostics = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
 
     Context "type Validation" {
 
@@ -1049,6 +1213,29 @@ Describe "App Service Resource Validation" {
         It "type is SystemAssigned" {
 
             $json.resources.identity.type | should be "SystemAssigned"
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is /providers/diagnosticSettings" {
+
+            $diagnostics.type | should be "/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $diagnostics.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceFileAuditLogs", "AppServiceAuditLogs")).Length | should be 0
         }
     }
 }

@@ -130,7 +130,7 @@ Describe "Route Output Validation" {
 
         It "Uses full reference for Route" {
 
-            $json.outputs.route.value | should be "[reference(resourceId('Microsoft.Network/routeTables/routes', parameters('routeName')), '2019-04-01', 'Full')]"
+            $json.outputs.route.value | should be "[reference(resourceId('Microsoft.Network/routeTables/routes', parameters('routeTableName'), parameters('routeName')), '2019-04-01', 'Full')]"
         }
     }
 }

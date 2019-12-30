@@ -4,21 +4,21 @@ $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
 Describe "Application Service Plan Parameter Validation" {
 
-    Context "aspName Validation" {
+    Context "appServicePlanName Validation" {
 
-        It "Has aspName parameter" {
+        It "Has appServicePlanName parameter" {
 
-            $json.parameters.aspName | should not be $null
+            $json.parameters.appServicePlanName | should not be $null
         }
 
-        It "aspName parameter is of type string" {
+        It "appServicePlanName parameter is of type string" {
 
-            $json.parameters.aspName.type | should be "string"
+            $json.parameters.appServicePlanName.type | should be "string"
         }
 
-        It "aspName parameter is mandatory" {
+        It "appServicePlanName parameter is mandatory" {
 
-            ($json.parameters.aspName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.appServicePlanName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -68,57 +68,57 @@ Describe "Application Service Plan Parameter Validation" {
         }
     }
 
-    Context "appServiceenvironmentSubscriptionId Validation" {
+    Context "appServiceEnvironmentSubscriptionId Validation" {
 
-        It "Has appServiceenvironmentSubscriptionId parameter" {
+        It "Has appServiceEnvironmentSubscriptionId parameter" {
 
-            $json.parameters.appServiceenvironmentSubscriptionId | should not be $null
+            $json.parameters.appServiceEnvironmentSubscriptionId | should not be $null
         }
 
-        It "appServiceenvironmentSubscriptionId parameter is of type string" {
+        It "appServiceEnvironmentSubscriptionId parameter is of type string" {
 
-            $json.parameters.appServiceenvironmentSubscriptionId.type | should be "string"
+            $json.parameters.appServiceEnvironmentSubscriptionId.type | should be "string"
         }
 
-        It "appServiceenvironmentSubscriptionId parameter default value is [subscription().subscriptionId]" {
+        It "appServiceEnvironmentSubscriptionId parameter default value is [subscription().subscriptionId]" {
 
-            $json.parameters.appServiceenvironmentSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
-        }
-    }
-
-    Context "appServiceenvironmentResourceGroupName Validation" {
-
-        It "Has appServiceenvironmentResourceGroupName parameter" {
-
-            $json.parameters.appServiceenvironmentResourceGroupName | should not be $null
-        }
-
-        It "appServiceenvironmentResourceGroupName parameter is of type string" {
-
-            $json.parameters.appServiceenvironmentResourceGroupName.type | should be "string"
-        }
-
-        It "appServiceenvironmentResourceGroupName parameter default value is [resourceGroup().name]" {
-
-            $json.parameters.appServiceenvironmentResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+            $json.parameters.appServiceEnvironmentSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
         }
     }
 
-    Context "appServiceenvironmentName Validation" {
+    Context "appServiceEnvironmentResourceGroupName Validation" {
 
-        It "Has appServiceenvironmentName parameter" {
+        It "Has appServiceEnvironmentResourceGroupName parameter" {
 
-            $json.parameters.appServiceenvironmentName | should not be $null
+            $json.parameters.appServiceEnvironmentResourceGroupName | should not be $null
         }
 
-        It "appServiceenvironmentName parameter is of type string" {
+        It "appServiceEnvironmentResourceGroupName parameter is of type string" {
 
-            $json.parameters.appServiceenvironmentName.type | should be "string"
+            $json.parameters.appServiceEnvironmentResourceGroupName.type | should be "string"
         }
 
-        It "appServiceenvironmentName parameter is mandatory" {
+        It "appServiceEnvironmentResourceGroupName parameter default value is [resourceGroup().name]" {
 
-            ($json.parameters.appServiceenvironmentName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            $json.parameters.appServiceEnvironmentResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "appServiceEnvironmentName Validation" {
+
+        It "Has appServiceEnvironmentName parameter" {
+
+            $json.parameters.appServiceEnvironmentName | should not be $null
+        }
+
+        It "appServiceEnvironmentName parameter is of type string" {
+
+            $json.parameters.appServiceEnvironmentName.type | should be "string"
+        }
+
+        It "appServiceEnvironmentName parameter is mandatory" {
+
+            ($json.parameters.appServiceEnvironmentName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -181,75 +181,21 @@ Describe "Application Service Plan Parameter Validation" {
         }
     }
 
-    Context "minimumCapacity Validation" {
+    Context "capacity Validation" {
 
-        It "Has minimumCapacity parameter" {
+        It "Has capacity parameter" {
 
-            $json.parameters.minimumCapacity | should not be $null
+            $json.parameters.capacity | should not be $null
         }
 
-        It "minimumCapacity parameter is of type int" {
+        It "capacity parameter is of type int" {
 
-            $json.parameters.minimumCapacity.type | should be "int"
+            $json.parameters.capacity.type | should be "int"
         }
 
-        It "minimumCapacity parameter default value is 1" {
+        It "capacity parameter default value is 2" {
 
-            $json.parameters.minimumCapacity.defaultValue | should be 1
-        }
-    }
-
-    Context "maximumCapacity Validation" {
-
-        It "Has maximumCapacity parameter" {
-
-            $json.parameters.maximumCapacity | should not be $null
-        }
-
-        It "maximumCapacity parameter is of type int" {
-
-            $json.parameters.maximumCapacity.type | should be "int"
-        }
-
-        It "maximumCapacity parameter default value is 5" {
-
-            $json.parameters.maximumCapacity.defaultValue | should be 5
-        }
-    }
-
-    Context "defaultCapacity Validation" {
-
-        It "Has defaultCapacity parameter" {
-
-            $json.parameters.defaultCapacity | should not be $null
-        }
-
-        It "defaultCapacity parameter is of type int" {
-
-            $json.parameters.defaultCapacity.type | should be "int"
-        }
-
-        It "defaultCapacity parameter default value is 2" {
-
-            $json.parameters.defaultCapacity.defaultValue | should be 2
-        }
-    }
-
-    Context "capabilities Validation" {
-
-        It "Has capabilities parameter" {
-
-            $json.parameters.capabilities | should not be $null
-        }
-
-        It "capabilities parameter is of type array" {
-
-            $json.parameters.capabilities.type | should be "array"
-        }
-
-        It "capabilities parameter default value is an empty array" {
-
-            $json.parameters.capabilities.defaultValue | should be @()
+            $json.parameters.capacity.defaultValue | should be 2
         }
     }
 
@@ -309,12 +255,12 @@ Describe "App Service Plan Output Validation" {
 
         It "type value is object" {
 
-            $json.outputs.asp.type | should be "object"
+            $json.outputs.appServicePlan.type | should be "object"
         }
 
         It "Uses full reference for App Service Plan" {
 
-            $json.outputs.asp.value | should be "[reference(resourceId('Microsoft.Web/serverFarms', parameters('aspName')), '2018-02-01', 'Full')]"
+            $json.outputs.appServicePlan.value | should be "[reference(resourceId('Microsoft.Web/serverFarms', parameters('appServicePlanName')), '2018-02-01', 'Full')]"
         }
     }
 }

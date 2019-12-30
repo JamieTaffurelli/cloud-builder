@@ -109,24 +109,6 @@ Describe "Virtual Network Parameter Validation" {
         }
     }
 
-    Context "ddosProtectionPlanId Validation" {
-
-        It "Has ddosProtectionPlanId parameter" {
-
-            $json.parameters.ddosProtectionPlanId | should not be $null
-        }
-
-        It "ddosProtectionPlanId parameter is of type string" {
-
-            $json.parameters.ddosProtectionPlanId.type | should be "string"
-        }
-
-        It "ddosProtectionPlanId parameter is mandatory" {
-
-            ($json.parameters.ddosProtectionPlanId.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
     Context "logAnalyticsSubscriptionId Validation" {
 
         It "Has logAnalyticsSubscriptionId parameter" {
@@ -177,7 +159,7 @@ Describe "Virtual Network Parameter Validation" {
 
         It "logAnalyticsName parameter is mandatory" {
 
-            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -262,14 +244,6 @@ Describe "Virtual Network Resource Validation" {
         It "enableVmProtection is true" {
 
             $vnet.properties.enableVmProtection | should be $true
-        }
-    }
-
-    Context "ddosProtectionPlan Validation" {
-
-        It "ddosProtectionPlan id is required" {
-
-            $vnet.properties.ddosProtectionPlan.id | should be "[parameters('ddosProtectionPlanId')]"
         }
     }
 

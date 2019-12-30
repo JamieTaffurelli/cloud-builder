@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "routeTableName": {
       "type": "string",
@@ -57,7 +57,7 @@
   "outputs": {
     "route": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Network/routeTables/routes', parameters('routeName')), '2019-04-01', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Network/routeTables/routes', parameters('routeTableName'), parameters('routeName')), '2019-04-01', 'Full')]"
     }
   }
 }

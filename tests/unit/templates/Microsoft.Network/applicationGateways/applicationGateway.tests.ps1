@@ -131,14 +131,14 @@ Describe "Application Gateway Parameter Validation" {
             $json.parameters.authenticationCertificates | should not be $null
         }
 
-        It "authenticationCertificates parameter is of type array" {
+        It "authenticationCertificates parameter is of type secureObject" {
 
-            $json.parameters.authenticationCertificates.type | should be "array"
+            $json.parameters.authenticationCertificates.type | should be "secureObject"
         }
 
-        It "authenticationCertificates parameter default value is an empty array" {
+        It "authenticationCertificates parameter default value has an empty array parameter" {
 
-            $json.parameters.authenticationCertificates.defaultValue | should be @()
+            $json.parameters.authenticationCertificates.defaultValue.array | should be @()
         }
     }
 
@@ -149,19 +149,14 @@ Describe "Application Gateway Parameter Validation" {
             $json.parameters.trustedRootCertificates | should not be $null
         }
 
-        It "trustedRootCertificates parameter is of type array" {
+        It "trustedRootCertificates parameter is of type secureObject" {
 
-            $json.parameters.trustedRootCertificates.type | should be "array"
+            $json.parameters.trustedRootCertificates.type | should be "secureObject"
         }
 
-        It "trustedRootCertificates parameter default value is an empty array" {
+        It "trustedRootCertificates parameter default value has an empty array parameter" {
 
-            $json.parameters.trustedRootCertificates.defaultValue | should be @()
-        }
-
-        It "trustedRootCertificates parameter maximum value is 100" {
-
-            $json.parameters.trustedRootCertificates.maxLength | should be 100
+            $json.parameters.trustedRootCertificates.defaultValue.array | should be @()
         }
     }
 
@@ -172,19 +167,14 @@ Describe "Application Gateway Parameter Validation" {
             $json.parameters.sslCertificates | should not be $null
         }
 
-        It "sslCertificates parameter is of type array" {
+        It "sslCertificates parameter is of type secureObject" {
 
-            $json.parameters.sslCertificates.type | should be "array"
+            $json.parameters.sslCertificates.type | should be "secureObject"
         }
 
-        It "sslCertificates parameter default value is an empty array" {
+        It "sslCertificates parameter default value has an empty array parameter" {
 
-            $json.parameters.sslCertificates.defaultValue | should be @()
-        }
-
-        It "sslCertificates parameter maximum value is 100" {
-
-            $json.parameters.sslCertificates.maxLength | should be 100
+            $json.parameters.sslCertificates.defaultValue.array | should be @()
         }
     }
 
@@ -619,7 +609,7 @@ Describe "Application Gateway Parameter Validation" {
 
         It "logAnalyticsName parameter is mandatory" {
 
-            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 

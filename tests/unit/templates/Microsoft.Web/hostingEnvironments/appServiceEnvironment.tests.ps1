@@ -238,11 +238,13 @@ Describe "Application Service Environment Parameter Validation" {
 
 Describe "Application Service Environment Resource Validation" {
 
+    $ase = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Web/hostingEnvironments" }
+
     Context "type Validation" {
 
         It "type value is Microsoft.Web/hostingEnvironments" {
 
-            $json.resources.type | should be "Microsoft.Web/hostingEnvironments"
+            $ase.type | should be "Microsoft.Web/hostingEnvironments"
         }
     }
 
@@ -250,7 +252,7 @@ Describe "Application Service Environment Resource Validation" {
 
         It "apiVersion value is 2018-02-01" {
 
-            $json.resources.apiVersion | should be "2018-02-01"
+            $ase.apiVersion | should be "2018-02-01"
         }
     }
 
@@ -258,7 +260,7 @@ Describe "Application Service Environment Resource Validation" {
 
         It "kind is ASEV2" {
 
-            $json.resources.kind | should be "ASEV2"
+            $ase.kind | should be "ASEV2"
         }
     }
 
@@ -266,7 +268,7 @@ Describe "Application Service Environment Resource Validation" {
 
         It "ipSslAddressCount is 0" {
 
-            $json.resources.properties.ipSslAddressCount | should be 0
+            $ase.properties.ipSslAddressCount | should be 0
         }
     }
 }

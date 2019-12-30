@@ -35,17 +35,23 @@ $excludedTemplateFileNames = @()
 
 foreach($templateFilePath in $templateFilePaths)
 {
+    $exclude = $true
     $json = Get-Content -Path $templateFilePath | ConvertFrom-Json
 
     foreach($resourceType in $json.resources.type)
     {
-        if($inclusionTemplates -notcontains $resourceType)
+        if($inclusionTemplates -contains $resourceType)
         {
-            Write-Verbose "${templateFilePath} will be excluded from AzSK ARM template scanning"
-            $excludedTemplateFileNames += Split-Path -Path $templateFilePath -Leaf
+            $exclude = $false
             break
         }
-    }  
+    }
+
+    if($exclude)
+    {
+        Write-Verbose "${templateFilePath} will be excluded from AzSK ARM template scanning"
+        $excludedTemplateFileNames += Split-Path -Path $templateFilePath -Leaf
+    }
 }
 
 if($AsCsv)

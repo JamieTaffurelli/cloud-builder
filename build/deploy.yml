@@ -1,0 +1,48 @@
+parameters:
+  environment: "Production"
+  poolName: ""
+  azureSubscription: "templatesrg"
+  resourceGroupName: "templatesrg"
+  storageAccountName: "templatessa6546"
+  armParametersFile: "$(Pipeline.Workspace)/scripts/arm/templates-storageaccount.parameters.json"
+
+jobs:
+  - deployment: Deploy_Resources_Upload_Templates
+    pool:
+      name: ${{ parameters.poolName }}
+      workspace:
+        clean: all
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - download: current
+              displayName: Download ARM Templates
+              artifact: templates
+
+            - download: current
+              displayName: Download Scripts
+              artifact: scripts
+
+            - download: current
+              displayName: Download Module
+              artifact: module
+
+            - task: AzureResourceGroupDeployment@2
+              displayName: "Deploy Resources"
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                resourceGroupName: ${{ parameters.resourceGroupName }}
+                location: "North Europe"
+                csmFile: "$(Pipeline.Workspace)/scripts/arm/deploy.json"
+                csmParametersFile: ${{ parameters.armParametersFile }}
+                deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
+
+            - task: AzurePowerShell@4
+              displayName: "Upload Templates to Storage Account"
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                ScriptPath: "$(Pipeline.Workspace)/scripts/upload-templates.ps1"
+                ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "templates" -SearchPath "$(Pipeline.Workspace)/templates/" -ModulePath "$(Pipeline.Workspace)\module\AzureBuilder.psd1"'
+                azurePowerShellVersion: LatestVersion

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.2.1.0",
   "parameters": {
-    "aspName": {
+    "appServicePlanName": {
       "type": "string",
       "metadata": {
         "description": "The name of the App Service Plan"
@@ -11,7 +11,10 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": ["northeurope", "westeurope"],
+      "allowedValues": [
+        "northeurope",
+        "westeurope"
+      ],
       "metadata": {
         "description": "The location to deploy the App Service Plan to"
       }
@@ -19,26 +22,31 @@
     "kind": {
       "type": "string",
       "defaultValue": "Windows",
-      "allowedValues": ["Windows", "Linux", "FunctionApp", "Elastic"],
+      "allowedValues": [
+        "Windows",
+        "Linux",
+        "FunctionApp",
+        "Elastic"
+      ],
       "metadata": {
         "description": "Kind of App Service Plan workers"
       }
     },
-    "appServiceenvironmentSubscriptionId": {
+    "appServiceEnvironmentSubscriptionId": {
       "type": "string",
       "defaultValue": "[subscription().subscriptionId]",
       "metadata": {
         "description": "Subscription ID of App Service Environment to link Application Service Plan to"
       }
     },
-    "appServiceenvironmentResourceGroupName": {
+    "appServiceEnvironmentResourceGroupName": {
       "type": "string",
       "defaultValue": "[resourceGroup().name]",
       "metadata": {
         "description": "Resource Group of App Service Environment to link Application Service Plan to"
       }
     },
-    "appServiceenvironmentName": {
+    "appServiceEnvironmentName": {
       "type": "string",
       "metadata": {
         "description": "Name of App Service Environment to link Application Service Plan to"
@@ -61,37 +69,20 @@
     "skuSize": {
       "type": "string",
       "defaultValue": "Small",
-      "allowedValues": ["Small", "Medium", "Large"],
+      "allowedValues": [
+        "Small",
+        "Medium",
+        "Large"
+      ],
       "metadata": {
         "description": "The size of the workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
       }
     },
-    "minimumCapacity": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "The minimum number of workers in the Application Service Plan"
-      }
-    },
-    "maximumCapacity": {
-      "type": "int",
-      "defaultValue": 5,
-      "metadata": {
-        "description": "The maximum number of workers in the Application Service Plan"
-      }
-    },
-    "defaultCapacity": {
+    "capacity": {
       "type": "int",
       "defaultValue": 2,
       "metadata": {
         "description": "The default number of workers in the Application Service Plan"
-      }
-    },
-    "capabilities": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The capabilities of the App Service Plan"
       }
     },
     "tags": {
@@ -106,7 +97,7 @@
   },
   "resources": [
     {
-      "name": "[parameters('aspName')]",
+      "name": "[parameters('appServicePlanName')]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "kind": "[parameters('kind')]",
@@ -114,7 +105,7 @@
       "tags": "[parameters('tags')]",
       "properties": {
         "hostingEnvironmentProfile": {
-          "id": "[resourceId(parameters('appServiceenvironmentSubscriptionId'), parameters('appServiceenvironmentResourceGroupName'), 'Microsoft.Web/hostingEnvironments', parameters('appServiceenvironmentName'))]"
+          "id": "[resourceId(parameters('appServiceEnvironmentSubscriptionId'), parameters('appServiceEnvironmentResourceGroupName'), 'Microsoft.Web/hostingEnvironments', parameters('appServiceEnvironmentName'))]"
         },
         "perSiteScaling": "[parameters('perSiteScaling')]",
         "maximumElasticWorkerCount": "[parameters('maximumElasticWorkerCount')]",
@@ -126,19 +117,14 @@
         "tier": "Isolated",
         "size": "[variables('sku')]",
         "family": "I",
-        "skuCapacity": {
-          "minimum": "[parameters('minimumCapacity')]",
-          "maximum": "[parameters('maximumCapacity')]",
-          "default": "[parameters('defaultCapacity')]"
-        },
-        "capabilities": "[parameters('capabilities')]"
+        "capacity": "[parameters('capacity')]"
       }
     }
   ],
   "outputs": {
-    "asp": {
+    "appServicePlan": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Web/serverFarms', parameters('aspName')), '2018-02-01', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Web/serverFarms', parameters('appServicePlanName')), '2018-02-01', 'Full')]"
     }
   }
 }

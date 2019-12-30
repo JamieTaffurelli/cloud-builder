@@ -209,7 +209,7 @@ Describe "Event Hub Namespace Parameter Validation" {
 
         It "logAnalyticsName parameter is mandatory" {
 
-            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
