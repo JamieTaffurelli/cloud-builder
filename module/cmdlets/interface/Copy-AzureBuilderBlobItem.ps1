@@ -1,11 +1,11 @@
-function Copy-AzBuildBlobItem
+function Copy-AzureBuilderBlobItem
 {
     <#
         .DESCRIPTION
         Copies an item to blob storage with option to skip existing blobs
 
         .EXAMPLE
-        Copy-AzBuildBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt' -File 'C:\myFile.txt' -SkipExisting
+        Copy-AzureBuilderBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt' -File 'C:\myFile.txt' -SkipExisting
     #>
     [CmdletBinding(DefaultParameterSetName = 'DynamicAuth')]
     param
@@ -64,17 +64,17 @@ function Copy-AzBuildBlobItem
         {
             "DynamicAuth"
             {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -AuthMethod $AuthMethod
+                $context = New-AzureBuilderStorageContext -StorageAccountName $StorageAccountName -AuthMethod $AuthMethod
                 break
             }
             "StaticKeyAuth"
             {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
+                $context = New-AzureBuilderStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey
                 break
             }
             "StaticSasAuth"
             {
-                $context = New-AzBuildStorageContext -StorageAccountName $StorageAccountName -SasToken $SasToken
+                $context = New-AzureBuilderStorageContext -StorageAccountName $StorageAccountName -SasToken $SasToken
                 break
             }
             "StorageContext"
@@ -93,7 +93,7 @@ function Copy-AzBuildBlobItem
     }
     process
     {
-        $blobExists = Test-AzBuildBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob $Blob -StorageContext $Context
+        $blobExists = Test-AzureBuilderBlobItem -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob $Blob -StorageContext $Context
 
         if($blobExists -and $SkipExisting)
         {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.2.2.0",
   "parameters": {
     "appGatewayName": {
       "type": "string",
@@ -42,25 +42,28 @@
       }
     },
     "authenticationCertificates": {
-      "type": "array",
-      "defaultValue": [],
-      "maxLength": 100,
+      "type": "secureObject",
+      "defaultValue": {
+        "array": []
+      },
       "metadata": {
         "description": "Authentication certificates for the App Gateway"
       }
     },
     "trustedRootCertificates": {
-      "type": "array",
-      "defaultValue": [],
-      "maxLength": 100,
+      "type": "secureObject",
+      "defaultValue": {
+        "array": []
+      },
       "metadata": {
         "description": "Trusted root certificates for the App Gateway, format is {'name':'', 'properties': {'data':'', keyVaultName:'', 'keyVaultSecretName':''}"
       }
     },
     "sslCertificates": {
-      "type": "array",
-      "defaultValue": [],
-      "maxLength": 100,
+      "type": "secureObject",
+      "defaultValue": {
+        "array": []
+      },
       "metadata": {
         "description": "SSL certificates for the App Gateway, format is {'name':'', 'properties': {'data':'', 'password':'', keyVaultName:'', 'keyVaultSecretName':''}"
       }
@@ -242,26 +245,28 @@
         }
       ]
     },
+    "trustedRootCertificatesArray": "[parameters('trustedRootCertificates').array]",
     "trustedRootCertificates": {
       "copy": [
         {
           "name": "trustedRootCertificates",
-          "count": "[if(empty(parameters('trustedRootCertificates')), 1, length(parameters('trustedRootCertificates')))]",
+          "count": "[if(empty(variables('trustedRootCertificatesArray')), 1, length(variables('trustedRootCertificatesArray')))]",
           "input": {
-            "name": "[if(empty(parameters('trustedRootCertificates')), 'dummyName', parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].name)]",
-            "properties": "[if(or(empty(parameters('trustedRootCertificates')), contains(parameters('trustedRootCertificates')[copyIndex('sslCertificates')], 'properties'), empty(parameters('trustedRootCertificates')[copyIndex('sslCertificates')].properties)), json('{}'), json(concat('{', if(contains(parameters('trustedRootCertificates')[copyIndex('sslCertificates')].properties, 'data'), concat('\"data\": \"', parameters('trustedRootCertificates')[copyIndex('sslCertificates')].properties.data, '\",'), ''), '\"keyVaultSecretId\": \"', resourceId(if(contains(parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultSubscriptionId'), parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultSubscriptionId, subscription().subscriptionId), if(contains(parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultResourceGroupName'), parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultResourceGroupName, resourceGroup().name), 'Microsoft.KeyVault/vaults/secrets', parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultName, parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultSecretName), '}')))]"
+            "name": "[if(empty(variables('trustedRootCertificatesArray')), 'dummyName', variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].name)]",
+            "properties": "[if(empty(variables('trustedRootCertificatesArray')), json('{}'), json(concat('{', if(contains(variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties, 'data'), concat('\"data\": \"', variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties.data, '\"'), ''), if(contains(variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties, 'keyVaultName'), concat('\"keyVaultSecretId\": \"', resourceId(if(contains(variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties, 'keyVaultSubscriptionId'), variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties.keyVaultSubscriptionId, subscription().subscriptionId), if(contains(variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties, 'keyVaultResourceGroupName'), variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties.keyVaultResourceGroupName, resourceGroup().name), 'Microsoft.KeyVault/vaults/secrets', variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties.keyVaultName, variables('trustedRootCertificatesArray')[copyIndex('trustedRootCertificates')].properties.keyVaultSecretName), '\"'), ''), '}')))]"
           }
         }
       ]
     },
+    "sslCertificatesArray": "[parameters('sslCertificates').array]",
     "sslCertificates": {
       "copy": [
         {
           "name": "sslCertificates",
-          "count": "[if(empty(parameters('sslCertificates')), 1, length(parameters('sslCertificates')))]",
+          "count": "[if(empty(variables('sslCertificatesArray')), 1, length(variables('sslCertificatesArray')))]",
           "input": {
-            "name": "[if(empty(parameters('sslCertificates')), 'dummyName', parameters('sslCertificates')[copyIndex('sslCertificates')].name)]",
-            "properties": "[if(or(empty(parameters('sslCertificates')), not(contains(parameters('sslCertificates')[copyIndex('sslCertificates')], 'properties')), empty(parameters('sslCertificates')[copyIndex('sslCertificates')].properties)), json('{}'), json(concat('{', if(contains(parameters('sslCertificates')[copyIndex('sslCertificates')].properties, 'data'), concat('\"data\": \"', parameters('sslCertificates')[copyIndex('sslCertificates')].properties.data, '\",'), ''), if(contains(parameters('sslCertificates')[copyIndex('sslCertificates')].properties, 'password'), concat('\"password\": \"', parameters('sslCertificates')[copyIndex('sslCertificates')].properties.password, '\",'), ''), '\"keyVaultSecretId\": \"', resourceId(if(contains(parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultSubscriptionId'), parameters('trustedRootCertificates')[copyIndex('trustedRootCertificates')].properties.keyVaultSubscriptionId, subscription().subscriptionId), if(contains(parameters('sslCertificates')[copyIndex('trustedRootCertificates')].properties, 'keyVaultResourceGroupName'), parameters('sslCertificates')[copyIndex('sslCertificates')].properties.keyVaultResourceGroupName, resourceGroup().name), 'Microsoft.KeyVault/vaults/secrets', parameters('sslCertificates')[copyIndex('sslCertificates')].properties.keyVaultName, parameters('sslCertificates')[copyIndex('sslCertificates')].properties.keyVaultSecretName), '}')))]"
+            "name": "[if(empty(variables('sslCertificatesArray')), 'dummyName', variables('sslCertificatesArray')[copyIndex('sslCertificates')].name)]",
+            "properties": "[if(empty(variables('sslCertificatesArray')), json('{}'), json(concat('{', if(contains(variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties, 'data'), concat('\"data\": \"', variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties.data, '\"'), ''), if(contains(variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties, 'keyVaultName'), concat('\"keyVaultSecretId\": \"', resourceId(if(contains(variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties, 'keyVaultSubscriptionId'), variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties.keyVaultSubscriptionId, subscription().subscriptionId), if(contains(variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties, 'keyVaultResourceGroupName'), variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties.keyVaultResourceGroupName, resourceGroup().name), 'Microsoft.KeyVault/vaults/secrets', variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties.keyVaultName, variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties.secretName), '\"'), ''), if(contains(variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties, 'password'), concat(',\"password\": \"', variables('sslCertificatesArray')[copyIndex('sslCertificates')].properties.password, '\"'), ''), '}')))]"
           }
         }
       ]
@@ -334,7 +339,7 @@
               },
               "protocol": "[parameters('httpListeners')[copyIndex('httpListeners')].properties.protocol]",
               "hostName": "[parameters('httpListeners')[copyIndex('httpListeners')].properties.hostName]",
-              "sslCertificate": "[if(not(contains(parameters('httpListeners')[copyIndex('httpListeners')].properties, 'sslCertificate')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/sslCertificates', parameters('appGatewayName'), parameters('httpListeners')[copyIndex('httpListeners')].properties.sslCertificates.name), '\" }')))]",
+              "sslCertificate": "[if(not(contains(parameters('httpListeners')[copyIndex('httpListeners')].properties, 'sslCertificate')), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/applicationGateways/sslCertificates', parameters('appGatewayName'), parameters('httpListeners')[copyIndex('httpListeners')].properties.sslCertificate.name), '\" }')))]",
               "requireServerNameIndication": "[if(equals(parameters('httpListeners')[copyIndex('httpListeners')].properties.protocol, 'https'), json('true'), json('null'))]",
               "customErrorConfigurations": "[if(not(contains(parameters('httpListeners')[copyIndex('httpListeners')].properties, 'customErrorConfigurations')), json('[]'), parameters('httpListeners')[copyIndex('httpListeners')].properties.customErrorConfigurations)]"
             }
@@ -406,9 +411,9 @@
           "policyName": "AppGwSslPolicy20170401S"
         },
         "gatewayIPConfigurations": "[variables('gatewayIpConfigurations').gatewayIpConfigurations]",
-        "authenticationCertificates": "[parameters('authenticationCertificates')]",
-        "trustedRootCertificates": "[if(empty(parameters('trustedRootCertificates')), json('[]'), variables('trustedRootCertificates').trustedRootCertificates)]",
-        "sslCertificates": "[if(empty(parameters('sslCertificates')), json('[]'), variables('sslCertificates').sslCertificates)]",
+        "authenticationCertificates": "[parameters('authenticationCertificates').array]",
+        "trustedRootCertificates": "[if(empty(variables('trustedRootCertificatesArray')), json('[]'), variables('trustedRootCertificates').trustedRootCertificates)]",
+        "sslCertificates": "[if(empty(variables('sslCertificates')), json('[]'), variables('sslCertificates').sslCertificates)]",
         "frontendIPConfigurations": "[variables('frontendIPConfigurations').frontendIPConfigurations]",
         "frontendPorts": "[parameters('frontendPorts')]",
         "probes": "[parameters('probes')]",

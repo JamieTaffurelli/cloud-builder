@@ -19,5 +19,5 @@ param
 
 Import-Module $ModulePath -Force
 
-Copy-AzBuildTemplateFilesWithVersion -SearchFolder $SearchFolder -OutputFolder $OutputFolder
+Copy-AzureBuilderTemplateFilesWithVersion -SearchFolder $SearchFolder -OutputFolder $OutputFolder
 

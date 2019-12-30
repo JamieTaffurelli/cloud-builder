@@ -19,7 +19,7 @@ param
     [Parameter()]
     [ValidateScript( { ($PSItem | Test-Path -PathType Leaf) -and ([System.IO.Path]::GetExtension($PSItem) -eq ".psd1") } )]
     [String]
-    $ModulePath = (Get-ChildItem -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -Recurse -Include "*AzureBuilder.psd1").FullName
+    $ModulePath = (Get-ChildItem -Path $env:PIPELINE_WORKSPACE -Recurse -Include "*AzureBuilder.psd1").FullName
 )
 
 Import-Module $ModulePath -Force
@@ -31,7 +31,7 @@ if($templates)
 {
     foreach($template in $templates)
     {
-        Copy-AzBuildBlobItem -File $template.FullName -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($template.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty) -SkipExisting
+        Copy-AzureBuilderBlobItem -File $template.FullName -StorageAccountName $StorageAccountName -ContainerName $ContainerName -Blob ($template.FullName -replace [Regex]::Escape($SearchPath), [String]::Empty) -SkipExisting
     }
 }
 else 

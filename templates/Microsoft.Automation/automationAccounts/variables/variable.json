@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "variableName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Variable to create in the Automation Account"
+            }
+        },
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Automation Account"
+            }
+        },
+        "value": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Value of the Variable to create in the Automation Account"
+            }
+        },
+        "description": {
+            "type": "string",
+            "metadata": {
+                "description": "Description of the Variable"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('automationAccountName'), '/', parameters('variableName'))]",
+            "type": "Microsoft.Automation/automationAccounts/variables",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "value": "[parameters('value')]",
+                "description": "[parameters('description')]",
+                "isEncrypted": true
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

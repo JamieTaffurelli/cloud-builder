@@ -1,0 +1,156 @@
+parameters:
+  poolName: ""
+
+jobs:
+  - job:
+    pool:
+      name: ${{ parameters.poolName }}
+    steps:
+      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+        displayName: "Run Unit Tests"
+        inputs:
+          resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
+          codeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+          codeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
+          run32Bit: false
+
+      - task: PublishTestResults@2
+        displayName: "Publish Test Results"
+        inputs:
+          testResultsFormat: "NUnit"
+          testResultsFiles: "test-results.xml"
+          searchFolder: "$(System.DefaultWorkingDirectory)"
+          mergeTestResults: false
+          failTaskOnFailedTests: true
+          publishRunAttachments: true
+        condition: always()
+
+      - task: PublishCodeCoverageResults@1
+        displayName: "Publish Code Coverage"
+        inputs:
+          codeCoverageTool: "JaCoCo"
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+          failIfCoverageEmpty: true
+        condition: always()
+
+      - task: PowerShell@2
+        displayName: "Exclude Unscannable ARM Templates"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\set-azsk-template-exclusions.ps1'
+          arguments: "-AsCsv"
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+
+      - task: AzSKARMTemplateChecker@1
+        displayName: "Run AzSK ARM Template Checker"
+        inputs:
+          armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
+          skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
+          excludeFiles: "$(ExclusionTemplates)"
+          disableAutoUpdate: false
+
+      - task: PowerShell@2
+        displayName: "Version ARM Templates"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-templates.ps1'
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish ARM Templates (Pipeline)"
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)\templates'
+          artifact: "templates"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish ARM Templates (Build)"
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)\templates'
+          artifactName: "templates-build"
+          publishLocation: "Container"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: CopyFiles@2
+        displayName: "Copy Scripts to Staging Directory"
+        inputs:
+          sourceFolder: '$(System.DefaultWorkingDirectory)\scripts'
+          contents: '**\*'
+          targetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+          cleanTargetFolder: true
+          overWrite: true
+          flattenFolders: false
+        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Scripts (Pipeline)"
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
+          artifact: "scripts"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Scripts (Build)"
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
+          artifactName: "scripts-build"
+          publishLocation: "Container"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: CopyFiles@2
+        displayName: "Copy Module to Staging Directory"
+        inputs:
+          sourceFolder: '$(System.DefaultWorkingDirectory)\module'
+          contents: '**\*'
+          targetFolder: '$(Build.ArtifactStagingDirectory)\module'
+          cleanTargetFolder: true
+          overWrite: true
+          flattenFolders: false
+        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Module (Pipeline)"
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)\module'
+          artifact: "module"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Module (Build)"
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)\module'
+          artifactName: "module-build"
+          publishLocation: "Container"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: CopyFiles@2
+        displayName: "Copy Template Tests to Staging Directory"
+        inputs:
+          sourceFolder: '$(System.DefaultWorkingDirectory)\tests\unit\templates'
+          contents: '**\*'
+          targetFolder: '$(Build.ArtifactStagingDirectory)\tests'
+          cleanTargetFolder: true
+          overWrite: true
+          flattenFolders: false
+        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Template Tests (Pipeline)"
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)\tests'
+          artifact: "tests"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Template Tests (Build)"
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)\tests'
+          artifactName: "tests-build"
+          publishLocation: "Container"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

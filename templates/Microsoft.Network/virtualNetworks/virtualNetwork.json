@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.1.1.0",
   "parameters": {
     "virtualNetworkName": {
       "type": "string",
@@ -35,12 +35,6 @@
       "type": "array",
       "metadata": {
         "description": "The subnets to provision in the Virtual Network"
-      }
-    },
-    "ddosProtectionPlanId": {
-      "type": "string",
-      "metadata": {
-        "description": "The resource ID of the DDOS protection plan to associated with the Virtual Network"
       }
     },
     "logAnalyticsSubscriptionId": {
@@ -83,7 +77,7 @@
               "networkSecurityGroup": {
                 "id": "[resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupSubscriptionId'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupResourceGroupName'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupName)]"
               },
-              "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameSubscriptionId'), parameters('subnets')[copyIndex('subnets')].routeTableNameSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameResourceGroupName'), parameters('subnets')[copyIndex('subnets')].routeTableNameResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].routeTableName), '\"}')), json('null'))]",
+              "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameSubscriptionId'), parameters('subnets')[copyIndex('subnets')].routeTableNameSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameResourceGroupName'), parameters('subnets')[copyIndex('subnets')].routeTableNameResourceGroupName, resourceGroup().name), 'Microsoft.Network/routeTables', parameters('subnets')[copyIndex('subnets')].routeTableName), '\"}')), json('null'))]",
               "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, json('null'))]"
             }
           }
@@ -109,10 +103,7 @@
         },
         "subnets": "[variables('subnets').subnets]",
         "enableVmProtection": true,
-        "enableDdosProtection": true,
-        "ddosProtectionPlan": {
-          "id": "[parameters('ddosProtectionPlanId')]"
-        }
+        "enableDdosProtection": false
       },
       "resources": [
         {

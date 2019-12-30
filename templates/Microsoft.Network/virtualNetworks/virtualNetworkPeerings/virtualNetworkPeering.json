@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "peeringName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network Peering"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            }
+        },
+        "allowVirtualNetworkAccess": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Allow traffic to connect to remote Virtual Network"
+            }
+        },
+        "allowForwardedTraffic": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Allow traffic to be forwarded to other Virtual Networks"
+            }
+        },
+        "allowGatewayTransit": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Allow the remote Virtual Network to use this Virtual Networks Virtual Gateway"
+            }
+        },
+        "useRemoteGateways": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Allow this Virtual Network to use the remote Virtual Networks Virtual Gateway"
+            }
+        },
+        "remoteVirtualNetworkSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "Subscription ID of the Virtual Network to peer to"
+            }
+        },
+        "remoteVirtualNetworkResourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "Resource Group name of the Virtual Network to peer to"
+            }
+        },
+        "remoteVirtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network to peer to"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "name": "[concat(parameters('virtualNetworkName'), '/', parameters('peeringName'))]",
+            "apiVersion": "2019-04-01",
+            "properties": {
+                "allowVirtualNetworkAccess": "[parameters('allowVirtualNetworkAccess')]",
+                "allowForwardedTraffic": "[parameters('allowForwardedTraffic')]",
+                "allowGatewayTransit": "[parameters('allowGatewayTransit')]",
+                "useRemoteGateways": "[parameters('useRemoteGateways')]",
+                "remoteVirtualNetwork": {
+                    "id": "[resourceId(parameters('remoteVirtualNetworkSubscriptionId'), parameters('remoteVirtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks', parameters('remoteVirtualNetworkName'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "virtualNetworkPeering": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', parameters('virtualNetworkName'), parameters('peeringName')), '2019-04-01', 'Full')]"
+        }
+    }
+}

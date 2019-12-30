@@ -1,11 +1,11 @@
-function Copy-AzBuildTemplateFilesWithVersion
+function Copy-AzureBuilderTemplateFilesWithVersion
 {
     <#
         .DESCRIPTION
         Appends template files with content version value and copies to specified location
 
         .EXAMPLE
-        Copy-AzBuildTemplateFilesWithVersion -SearchFolder "C:\templates" -OutputFolder "C:\versioned-templates"
+        Copy-AzureBuilderTemplateFilesWithVersion -SearchFolder "C:\templates" -OutputFolder "C:\versioned-templates"
     #>
     [CmdletBinding()]
     param
@@ -33,7 +33,7 @@ function Copy-AzBuildTemplateFilesWithVersion
             foreach($templateFilePath in $templateFilePaths.FullName)
             {
                 Write-Verbose "Setting versioned file path for ${templateFilePath}"
-                $versionedTemplateFilePath = Set-AzBuildTemplateFilePathWithVersion -Path $templateFilePath
+                $versionedTemplateFilePath = Set-AzureBuilderTemplateFilePathWithVersion -Path $templateFilePath
 
                 $outputPath = $versionedTemplateFilePath -replace [regex]::Escape($SearchFolder), $OutputFolder
 

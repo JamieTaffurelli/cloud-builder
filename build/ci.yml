@@ -1,0 +1,13 @@
+trigger:
+  - master
+
+variables:
+  nonProdPoolName: "Prototypezdvukibld3"
+  prodPoolName: "HubProductionNorth"
+
+stages:
+  - stage: Build
+    jobs:
+      - template: build.yml
+        parameters:
+          poolName: ${{ variables.nonProdPoolName }}

@@ -200,6 +200,70 @@ Describe "Storage Account Parameter Validation" {
         }
     }
 
+    Context "corsRules Validation" {
+
+        It "Has corsRules parameter" {
+
+            $json.parameters.corsRules | should not be $null
+        }
+
+        It "corsRules parameter is of type array" {
+
+            $json.parameters.corsRules.type | should be "array"
+        }
+
+        It "corsRules parameter default value is an empty array" {
+
+            $json.parameters.corsRules.defaultValue.Count | should be 0
+        }
+    }
+
+    Context "retentionDays Validation" {
+
+        It "Has retentionDays parameter" {
+
+            $json.parameters.retentionDays | should not be $null
+        }
+
+        It "retentionDays parameter is of type int" {
+
+            $json.parameters.retentionDays.type | should be "int"
+        }
+
+        It "retentionDays parameter default value is 365" {
+
+            $json.parameters.retentionDays.defaultValue | should be 365
+        }
+
+        It "retentionDays parameter minimum value is 1" {
+
+            $json.parameters.retentionDays.minValue | should be 1
+        }
+
+        It "retentionDays parameter maximum value is 365" {
+
+            $json.parameters.retentionDays.maxValue | should be 365
+        }
+    }
+
+    Context "automaticSnapshotEnabled Validation" {
+
+        It "Has automaticSnapshotEnabled parameter" {
+
+            $json.parameters.automaticSnapshotEnabled | should not be $null
+        }
+
+        It "automaticSnapshotEnabled parameter is of type bool" {
+
+            $json.parameters.automaticSnapshotEnabled.type | should be "bool"
+        }
+
+        It "automaticSnapshotEnabled parameter default value is true" {
+
+            $json.parameters.automaticSnapshotEnabled.defaultValue | should be $true
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -221,11 +285,14 @@ Describe "Storage Account Parameter Validation" {
 
 Describe "Storage Account Resource Validation" {
 
+    $storageAccount = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Storage/storageAccounts" }
+    $blobService = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Storage/storageAccounts/blobServices" }
+
     Context "type Validation" {
 
         It "type value is Microsoft.Storage/storageAccounts" {
 
-            $json.resources.type | should be "Microsoft.Storage/storageAccounts"
+            $storageAccount.type | should be "Microsoft.Storage/storageAccounts"
         }
     }
 
@@ -233,7 +300,7 @@ Describe "Storage Account Resource Validation" {
 
         It "apiVersion value is 2018-11-01" {
 
-            $json.resources.apiVersion | should be "2018-11-01"
+            $storageAccount.apiVersion | should be "2018-11-01"
         }
     }
 
@@ -241,7 +308,7 @@ Describe "Storage Account Resource Validation" {
 
         It "Default action is deny when no rule is satisfied" {
 
-            $json.resources.properties.networkAcls.defaultAction -eq "Deny" | should be $true
+            $storageAccount.properties.networkAcls.defaultAction -eq "Deny" | should be $true
         }
 
         It "Default action for explicit network ACLs is allow" {
@@ -254,12 +321,12 @@ Describe "Storage Account Resource Validation" {
 
         It "File encryption is enabled" {
 
-            $json.resources.properties.encryption.services.file.enabled | should be $true
+            $storageAccount.properties.encryption.services.file.enabled | should be $true
         }
 
         It "Blob encryption is enabled" {
 
-            $json.resources.properties.encryption.services.blob.enabled | should be $true
+            $storageAccount.properties.encryption.services.blob.enabled | should be $true
         }
     }
 
@@ -267,7 +334,31 @@ Describe "Storage Account Resource Validation" {
 
         It "supportsHttpsTrafficOnly is true" {
 
-            $json.resources.properties.supportsHttpsTrafficOnly| should be $true
+            $storageAccount.properties.supportsHttpsTrafficOnly | should be $true
+        }
+    }
+
+    Context "blobServices Type Validation" {
+
+        It "type value is Microsoft.Storage/storageAccounts/blobServices" {
+
+            $blobService.type | should be "Microsoft.Storage/storageAccounts/blobServices"
+        }
+    }
+
+    Context "blobServices apiVersion Validation" {
+
+        It "apiVersion value is 2019-04-01" {
+
+            $blobService.apiVersion | should be "2019-04-01"
+        }
+    }
+
+    Context "blobServices deleteRetentionPolicy Validation" {
+
+        It "deleteRetentionPolicy is always enabled" {
+
+            $blobService.properties.deleteRetentionPolicy.enabled | should be $true
         }
     }
 }

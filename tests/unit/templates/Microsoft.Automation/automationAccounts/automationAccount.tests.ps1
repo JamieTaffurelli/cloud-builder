@@ -95,7 +95,7 @@ Describe "Automation Account Parameter Validation" {
 
         It "logAnalyticsName parameter is mandatory" {
 
-            ($json.parameters.solutionName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -149,6 +149,15 @@ Describe "Automation Account Resource Validation" {
         It "apiVersion value is 2015-10-31" {
 
             $automationAccount.apiVersion | should be "2015-10-31"
+        }
+    }
+
+    
+    Context "sku Validation" {
+
+        It "Sku Name value is Basic" {
+
+            $automationAccount.properties.sku.name | should be "Basic"
         }
     }
 

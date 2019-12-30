@@ -63,6 +63,24 @@ Describe "Virtual Machine Extension Parameter Validation" {
         }
     }
 
+    Context "typeHandlerVersion Validation" {
+
+        It "Has typeHandlerVersion parameter" {
+
+            $json.parameters.typeHandlerVersion | should not be $null
+        }
+
+        It "typeHandlerVersion parameter is of type string" {
+
+            $json.parameters.typeHandlerVersion.type | should be "string"
+        }
+
+        It "typeHandlerVersion parameter is mandatory" {
+
+            ($json.parameters.typeHandlerVersion.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "publisher Validation" {
 
         It "Has publisher parameter" {

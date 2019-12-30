@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "2.1.0.0",
   "parameters": {
     "appName": {
       "type": "string",
@@ -11,7 +11,10 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": ["northeurope", "westeurope"],
+      "allowedValues": [
+        "northeurope",
+        "westeurope"
+      ],
       "metadata": {
         "description": "The location to deploy the App Service to"
       }
@@ -19,9 +22,21 @@
     "kind": {
       "type": "string",
       "defaultValue": "app",
-      "allowedValues": ["app", "functionapp", "app,linux"],
+      "allowedValues": [
+        "app",
+        "functionapp",
+        "app,linux"
+      ],
       "metadata": {
         "description": "Kind of App Service Plan"
+      }
+    },
+    "hostNameSslStates": {
+      "type": "array",
+      "defaultValue": [
+      ],
+      "metadata": {
+        "description": "Define SSL bindings for the App Service"
       }
     },
     "appServicePlanSubscriptionId": {
@@ -74,28 +89,32 @@
     },
     "appSettings": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Application settings (key-value pairs)"
       }
     },
     "azureStorageAccounts": {
       "type": "object",
-      "defaultValue": {},
+      "defaultValue": {
+      },
       "metadata": {
         "description": "Linked Storage Accounts"
       }
     },
     "connectionStrings": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Connection string for app config"
       }
     },
     "handlerMappings": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Handler mappings for the app"
       }
@@ -158,7 +177,8 @@
     },
     "experiments": {
       "type": "object",
-      "defaultValue": {},
+      "defaultValue": {
+      },
       "metadata": {
         "description": "Defines routing behaviour for slots"
       }
@@ -179,7 +199,8 @@
     },
     "allowedExternalRedirectUrls": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "External redirect urls for logging in or out"
       }
@@ -221,14 +242,16 @@
     },
     "allowedAudiences": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Allowed IDs when validating JWTs issued by AAD"
       }
     },
     "additionalLoginParams": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Additional params to send to OpenID (key-value pairs)"
       }
@@ -291,7 +314,8 @@
     },
     "cors": {
       "type": "object",
-      "defaultValue": {},
+      "defaultValue": {
+      },
       "metadata": {
         "description": "Cross Origin Resource Sharing Settings"
       }
@@ -305,14 +329,16 @@
     },
     "ipSecurityRestrictions": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Network ACLs for main app"
       }
     },
     "scmIpSecurityRestrictions": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "Network ACLs for associated scm app"
       }
@@ -322,6 +348,37 @@
       "defaultValue": true,
       "metadata": {
         "description": "Enable session cookies to route client requests in the same session to the smae instance"
+      }
+    },
+    "diagnosticsLogsLevel": {
+      "type": "string",
+      "defaultValue": "Verbose",
+      "allowedValues": [
+        "Verbose",
+        "Information",
+        "Warning",
+        "Error"
+      ],
+      "metadata": {
+        "description": "The degree of severity for diagnostic logs."
+      }
+    },
+    "diagnosticsStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Storage Account to send diagnostic logs to"
+      }
+    },
+    "diagnosticsContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Storage Account Container to send diagnostic logs to"
+      }
+    },
+    "diagnosticsStorageAccountSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The SAS token for authentication to the Storage Account"
       }
     },
     "clientCertEnabled": {
@@ -352,6 +409,26 @@
         "description": "App Service will only accept https requests if true"
       }
     },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -359,7 +436,10 @@
       }
     }
   },
-  "variables": {},
+  "variables": {
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 365
+  },
   "resources": [
     {
       "name": "[parameters('appName')]",
@@ -370,6 +450,7 @@
       "tags": "[parameters('tags')]",
       "properties": {
         "enabled": true,
+        "hostNameSslStates": "[parameters('hostNameSslStates')]",
         "serverFarmId": "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]",
         "siteConfig": {
           "netFrameworkVersion": "[parameters('netFrameworkVersion')]",
@@ -426,7 +507,14 @@
           "scmIpSecurityRestrictionsUseMain": false,
           "http20Enabled": true,
           "minTlsVersion": "1.2",
-          "ftpsState": "FtpsOnly"
+          "ftpsState": "FtpsOnly",
+          "applicationLogs": {
+            "azureBlobStorage": {
+              "level": "[parameters('diagnosticsLogsLevel')]",
+              "sasUrl": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/', parameters('diagnosticsContainerName'), parameters('diagnosticsStorageAccountSasToken'))]",
+              "retentionInDays": 365
+            }
+          }
         },
         "scmSiteAlsoStopped": false,
         "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
@@ -437,7 +525,72 @@
       },
       "identity": {
         "type": "SystemAssigned"
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "AppServiceHTTPLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "AppServiceConsoleLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "AppServiceAppLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "AppServiceFileAuditLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "AppServiceAuditLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Web/Sites/', parameters('appName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {

@@ -55,6 +55,11 @@ Describe "Application Insights Parameter Validation" {
 
             $json.parameters.kind.type | should be "string"
         }
+
+        It "kind parameter default value is web" {
+
+            $json.parameters.kind.defaultValue | should be "web"
+        }
     }
 
     Context "appType Validation" {

@@ -1,11 +1,11 @@
-function Add-AzBuildKeyVaultManagedStorageAccount
+function Add-AzureBuilderKeyVaultManagedStorageAccount
 {
     <#
         .DESCRIPTION
-        Copies an item to blob storage with option to skip existing blobs
+        Adds Storage Account to Key Vault for scheduled key rotation
 
         .EXAMPLE
-        Copy-AzBuildBlobItem -StorageAccountName 'mystorage' -ContainerName 'mycontainer' -Blob 'blob.txt' -File 'C:\myFile.txt' -SkipExisting
+        Add-AzureBuilderKeyVaultManagedStorageAccount -StorageAccountName "mystorage" -VaultName "myvault" -CreateRoleAssignment
     #>
     [CmdletBinding()]
     param
@@ -29,11 +29,6 @@ function Add-AzBuildKeyVaultManagedStorageAccount
         [ValidateRange(0, 365)]
         [String]
         $RegenerationPeriodDays = 90,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [Switch]
-        $DisableAutoRegenerateKey,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -69,9 +64,7 @@ function Add-AzBuildKeyVaultManagedStorageAccount
                 -AccountName $StorageAccountName `
                 -AccountResourceId $storageAccountResourceId `
                 -ActiveKeyName $ActiveKeyName `
-                -RegenerationPeriod [System.Timespan]::FromDays($RegenerationPeriodDays) `
-                -ErrorAction "Stop"
-
+                -RegenerationPeriod ([System.Timespan]::FromDays($RegenerationPeriodDays))
         }
         else 
         {
