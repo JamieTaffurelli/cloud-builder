@@ -6,7 +6,18 @@ jobs:
     pool:
       name: ${{ parameters.poolName }}
     steps:
-      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+      - task: PowerShell@2	
+        displayName: 'Install Required PowerShell Modules'	
+        inputs:	
+          targetType: 'filePath'	
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
+          arguments: '@("az", "Pester")'	
+          errorActionPreference: 'stop'	
+          failOnStderr: false	
+          ignoreLASTEXITCODE: false	
+          pwsh: false	
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+            - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
         displayName: "Run Unit Tests"
         inputs:
           resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
