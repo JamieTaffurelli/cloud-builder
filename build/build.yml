@@ -6,6 +6,18 @@ jobs:
     pool:
       name: ${{ parameters.poolName }}
     steps:
+      - task: PowerShell@2	
+        displayName: 'Install Required PowerShell Modules'	
+        inputs:	
+          targetType: 'filePath'	
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
+          arguments: '@("az", "Pester")'	
+          errorActionPreference: 'stop'	
+          failOnStderr: false	
+          ignoreLASTEXITCODE: false	
+          pwsh: false	
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          
       - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
         displayName: "Run Unit Tests"
         inputs:
@@ -69,14 +81,6 @@ jobs:
           artifact: "templates"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish ARM Templates (Build)"
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\templates'
-          artifactName: "templates-build"
-          publishLocation: "Container"
-        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
       - task: CopyFiles@2
         displayName: "Copy Scripts to Staging Directory"
         inputs:
@@ -93,14 +97,6 @@ jobs:
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
           artifact: "scripts"
-        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish Scripts (Build)"
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\scripts'
-          artifactName: "scripts-build"
-          publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: CopyFiles@2
@@ -121,19 +117,23 @@ jobs:
           artifact: "module"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish Module (Build)"
-        inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\module'
-          artifactName: "module-build"
-          publishLocation: "Container"
-        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
       - task: CopyFiles@2
         displayName: "Copy Template Tests to Staging Directory"
         inputs:
           sourceFolder: '$(System.DefaultWorkingDirectory)\tests\unit\templates'
           contents: '**\*'
+          targetFolder: '$(Build.ArtifactStagingDirectory)\tests'
+          cleanTargetFolder: true
+          overWrite: true
+          flattenFolders: false
+        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+      - task: PublishPipelineArtifact@1
+        displayName: "Publish Template Tests (Pipeline)"
+        inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)\tests'
+          artifact: "tests"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
           targetFolder: '$(Build.ArtifactStagingDirectory)\tests'
           cleanTargetFolder: true
           overWrite: true
