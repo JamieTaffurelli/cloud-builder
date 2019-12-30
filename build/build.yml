@@ -134,8 +134,3 @@ jobs:
           targetPath: '$(Build.ArtifactStagingDirectory)\tests'
           artifact: "tests"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-          targetFolder: '$(Build.ArtifactStagingDirectory)\tests'
-          cleanTargetFolder: true
-          overWrite: true
-          flattenFolders: false
-        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
