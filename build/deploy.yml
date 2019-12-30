@@ -12,7 +12,6 @@ jobs:
       name: ${{ parameters.poolName }}
       workspace:
         clean: all
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     environment: ${{ parameters.environment }}
     strategy:
       runOnce:
