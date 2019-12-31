@@ -13,3 +13,4 @@ stages:
       - template: deploy.yml
         parameters:
           poolName: "Hosted Windows Container"
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
