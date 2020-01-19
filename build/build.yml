@@ -56,13 +56,13 @@ jobs:
           ignoreLASTEXITCODE: false
           pwsh: false
 
-      - task: AzSKARMTemplateChecker@1
-        displayName: "Run AzSK ARM Template Checker"
-        inputs:
-          armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
-          skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
-          excludeFiles: "$(ExclusionTemplates)"
-          disableAutoUpdate: false
+      #- task: AzSKARMTemplateChecker@1
+        #displayName: "Run AzSK ARM Template Checker"
+        #inputs:
+          #armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
+          #skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
+          #excludeFiles: "$(ExclusionTemplates)"
+          #disableAutoUpdate: false
 
       - task: PowerShell@2
         displayName: "Version ARM Templates"
