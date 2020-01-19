@@ -235,6 +235,55 @@ Describe "Application Service Environment Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 365" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 365
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -257,6 +306,7 @@ Describe "Application Service Environment Parameter Validation" {
 Describe "Application Service Environment Resource Validation" {
 
     $ase = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Web/hostingEnvironments" }
+    $diagnostics = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
 
     Context "type Validation" {
 
@@ -295,6 +345,29 @@ Describe "Application Service Environment Resource Validation" {
         It "Thumbprint name is DefaultSslCertificateThumbprint" {
 
             $ase.properties.clusterSettings.name | should be "DefaultSslCertificateThumbprint"
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is /providers/diagnosticSettings" {
+
+            $diagnostics.type | should be "/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $diagnostics.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("AppServiceEnvironmentPlatformLogs")).Length | should be 0
         }
     }
 }
