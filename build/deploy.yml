@@ -4,7 +4,7 @@ parameters:
   azureSubscription: "templatesrg"
   resourceGroupName: "templatesrg"
   storageAccountName: "templatessa6546"
-  armParametersFile: "$(Pipeline.Workspace)/scripts/arm/templates-storageaccount.parameters.json"
+  armParametersFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.parameters.json"
 
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
