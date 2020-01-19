@@ -62,7 +62,7 @@ jobs:
           armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
           skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
           excludeFiles: "$(ExclusionTemplates)"
-          disableAutoUpdate: true
+          disableAutoUpdate: false
 
       - task: PowerShell@2
         displayName: "Version ARM Templates"
