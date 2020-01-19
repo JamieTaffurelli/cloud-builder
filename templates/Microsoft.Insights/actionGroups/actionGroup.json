@@ -1,22 +1,11 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "actionGroupName": {
       "type": "string",
       "metadata": {
         "description": "The name of the Action Groups"
-      }
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
-      "metadata": {
-        "description": "The location to deploy the Action Group to"
       }
     },
     "groupShortName": {
@@ -126,7 +115,7 @@
       "name": "[parameters('actionGroupName')]",
       "type": "Microsoft.Insights/actionGroups",
       "apiVersion": "2019-06-01",
-      "location": "[parameters('location')]",
+      "location": "global",
       "tags": "[parameters('tags')]",
       "properties": {
         "groupShortName": "[parameters('groupShortName')]",

@@ -239,7 +239,6 @@
       "InternalWindowsEvent",
       "DHCPActivity",
       "AzureDataFactoryAnalytics",
-      "SQLThreatDetection",
       "AzureSecurityOfThings",
       "SQLVulnerabilityAssessment",
       "SQLAdvancedThreatProtection"

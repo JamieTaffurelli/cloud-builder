@@ -1,0 +1,160 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.2.0",
+    "parameters": {
+        "webTestName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Web Test to deploy"
+            }
+        },
+        "appInsightsSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "The Subscription ID of the App Insights to run Web Tests from"
+            }
+        },
+        "appInsightsResourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The Resource Group of the App Insights to run Web Tests from"
+            }
+        },
+        "appInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Insights to run Web Tests from"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "northeurope",
+                "westeurope"
+            ],
+            "metadata": {
+                "description": "The location to deploy the Web Test to"
+            }
+        },
+        "kind": {
+            "type": "string",
+            "defaultValue": "ping",
+            "allowedValues": [
+                "ping",
+                "multistep"
+            ],
+            "metadata": {
+                "description": "The location to deploy the Web Test to"
+            }
+        },
+        "description": {
+            "type": "string",
+            "metadata": {
+                "description": "The description of the Web Test"
+            }
+        },
+        "enabled": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable or Disable the Web Test"
+            }
+        },
+        "frequency": {
+            "type": "int",
+            "defaultValue": 300,
+            "metadata": {
+                "description": "Frequency in seconds to run the Web Test"
+            }
+        },
+        "timeout": {
+            "type": "int",
+            "defaultValue": 30,
+            "metadata": {
+                "description": "Timeout for requests"
+            }
+        },
+        "retryEnabled": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable retries for failed requests"
+            }
+        },
+        "locationIds": {
+            "type": "array",
+            "defaultValue": [
+                "emea-nl-ams-azr",
+                "emea-ru-msa-edge",
+                "emea-se-sto-edge",
+                "emea-gb-db3-azr",
+                "us-va-ash-azr"
+            ],
+            "metadata": {
+                "description": "Locations to run Web Tests from"
+            }
+        },
+        "webTest": {
+            "type": "string",
+            "metadata": {
+                "description": "XML specification of Web Test to run"
+            }
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags to apply to Web Test Rule"
+            }
+        }
+    },
+    "variables": {
+        "appInsightsTag": {
+            "[concat('hidden-link:', resourceId(parameters('appInsightsSubscriptionId'), parameters('appInsightsResourceGroupName'), 'Microsoft.Insights/components/', parameters('appInsightsName')))]": "Resource"
+        },
+        "tags": "[union(parameters('tags'), variables('appInsightsTag'))]",
+        "locations": {
+            "copy": [
+                {
+                    "name": "locations",
+                    "count": "[length(parameters('locationIds'))]",
+                    "input": {
+                        "id": "[parameters('locationIds')[copyIndex('locations')]]"
+                    }
+                }
+            ]
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('webtestName')]",
+            "type": "Microsoft.Insights/webTests",
+            "apiVersion": "2015-05-01",
+            "location": "[parameters('location')]",
+            "tags": "[variables('tags')]",
+            "kind": "[parameters('kind')]",
+            "properties": {
+                "syntheticMonitorId": "[parameters('webTestName')]",
+                "name": "[parameters('webTestName')]",
+                "description": "[parameters('description')]",
+                "enabled": "[parameters('enabled')]",
+                "frequency": "[parameters('frequency')]",
+                "timeout": "[parameters('timeout')]",
+                "kind": "[parameters('kind')]",
+                "retryEnabled": "[parameters('retryEnabled')]",
+                "locations": "[variables('locations').locations]",
+                "configuration": {
+                    "webTest": "[parameters('webTest')]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "webTest": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Insights/webTests', parameters('webTestName')), '2015-05-01', 'Full')]"
+        }
+    }
+}

@@ -21,29 +21,6 @@ Describe "Action Group Parameter Validation" {
         }
     }
 
-    Context "location Validation" {
-
-        It "Has location parameter" {
-
-            $json.parameters.location | should not be $null
-        }
-
-        It "location parameter is of type string" {
-
-            $json.parameters.location.type | should be "string"
-        }
-
-        It "location parameter default value is [resourceGroup().location]" {
-
-            $json.parameters.location.defaultValue | should be "[resourceGroup().location]"
-        }
-
-        It "location parameter allowed values are northeurope, westeurope" {
-
-            (Compare-Object -ReferenceObject $json.parameters.location.allowedValues -DifferenceObject @("northeurope", "westeurope")).Length | should be 0
-        }
-    }
-
     Context "groupShortName Validation" {
 
         It "Has groupShortName parameter" {
@@ -289,6 +266,14 @@ Describe "Action Group Resource Validation" {
         It "apiVersion value is 2019-06-01" {
 
             $json.resources.apiVersion | should be "2019-06-01"
+        }
+    }
+
+    Context "location Validation" {
+
+        It "location value is global" {
+
+            $json.resources.location | should be "global"
         }
     }
 }
