@@ -33,7 +33,7 @@ jobs:
               displayName: 'Install Required PowerShell Modules'	
               inputs:	
                 targetType: 'filePath'	
-                filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
+                filePath: '$(Pipeline.Workspace)\scripts\install-modules.ps1'	
                 arguments: '@("az")'	
                 errorActionPreference: 'stop'	
                 failOnStderr: false	
