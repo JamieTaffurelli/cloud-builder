@@ -488,7 +488,7 @@ Describe "Windows Virtual Machine Parameter Validation" {
             $json.parameters.dependencyAgentVersion.type | should be "string"
         }
 
-        It "dependencyAgentVersion parameter default value is an empty string" {
+        It "dependencyAgentVersion parameter default value is 9.9" {
 
             $json.parameters.dependencyAgentVersion.defaultValue | should be "9.9"
         }

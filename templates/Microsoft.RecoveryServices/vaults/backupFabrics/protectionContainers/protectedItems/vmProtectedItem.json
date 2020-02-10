@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "backupPolicyName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Backup Policy to attach to the Virtual Machine"
+            }
+        },
+        "vaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Recovery Services Vault that you wish to store backups in"
+            }
+        },
+        "vmName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Virtual Machine that you wish to set a backup for"
+            }
+        },
+        "vmResourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The Resource Group name of the Virtual Machine that you wish to set a backup for"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "northeurope",
+                "westeurope"
+            ],
+            "metadata": {
+                "description": "The location to deploy the Recovery Services Backup Policy to"
+            }
+        },
+        "tags": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "backupFabric": "Azure",
+        "protectionContainer": "[concat('iaasvmcontainer;iaasvmcontainerv2;', parameters('vmResourceGroupName'), ';', parameters('vmName'))]",
+        "protectedItem": "[concat('vm;iaasvmcontainerv2;', parameters('vmResourceGroupName'), ';', parameters('vmName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('vaultName'), '/', variables('backupFabric'), '/', variables('protectionContainer'), '/', variables('protectedItem'))]",
+            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+            "apiVersion": "2019-05-13",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "sourceResourceId": "[resourceId(parameters('vmResourceGroupName'), 'Microsoft.Compute/virtualMachines', parameters('vmName'))]",
+                "policyId": "[resourceId('Microsoft.RecoveryServices/vaults/backupPolicies', parameters('vaultName'), parameters('backupPolicyName'))]",
+                "protectedItemType": "Microsoft.Compute/virtualMachines"
+            }
+        }
+    ],
+    "outputs": {
+        "vmProtectedItem": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', parameters('vaultName'), variables('backupFabric'), variables('protectionContainer'), variables('protectedItem')), '2019-05-13', 'Full')]"
+        }
+    }
+}
