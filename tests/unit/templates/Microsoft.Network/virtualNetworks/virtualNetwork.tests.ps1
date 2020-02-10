@@ -109,6 +109,24 @@ Describe "Virtual Network Parameter Validation" {
         }
     }
 
+    Context "gatewaySubnetPrefix Validation" {
+
+        It "Has gatewaySubnetPrefix parameter" {
+
+            $json.parameters.gatewaySubnetPrefix | should not be $null
+        }
+
+        It "gatewaySubnetPrefix parameter is of type string" {
+
+            $json.parameters.gatewaySubnetPrefix.type | should be "string"
+        }
+
+        It "gatewaySubnetPrefix parameter default value is an empty string" {
+
+            $json.parameters.gatewaySubnetPrefix.defaultValue | should be ([string]::Empty)
+        }
+    }
+
     Context "logAnalyticsSubscriptionId Validation" {
 
         It "Has logAnalyticsSubscriptionId parameter" {
@@ -231,11 +249,6 @@ Describe "Virtual Network Resource Validation" {
         It "subnets variable allows service endpoints" {
 
             $json.variables.subnets.copy.input.properties.serviceEndpoints | should not be $null
-        }
-
-        It "subnets property uses subnets variable" {
-
-            $vnet.properties.subnets | should be "[variables('subnets').subnets]"
         }
     }
 

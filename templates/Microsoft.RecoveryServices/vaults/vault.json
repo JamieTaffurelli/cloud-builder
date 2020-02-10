@@ -1,0 +1,316 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.2.0",
+    "parameters": {
+        "vaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Recovery Services Vault that you wish to create."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "northeurope",
+                "westeurope"
+            ],
+            "metadata": {
+                "description": "The location to deploy the Recovery Services Vault to"
+            }
+        },
+        "logAnalyticsSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+            }
+        },
+        "logAnalyticsResourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+            }
+        },
+        "logAnalyticsName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Log Analytics Workspace to send diagnostics to"
+            }
+        },
+        "templateContainerUrl": {
+            "type": "string",
+            "metadata": {
+                "descriptions": "URL of blob container templates are located"
+            }
+        },
+        "templateSas": {
+            "type": "securestring",
+            "metadata": {
+                "descriptions": "SAS token for templates Storage Account"
+            }
+        },
+        "tags": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "diagnosticsEnabled": true,
+        "diagnosticsRetentionInDays": 365,
+        "backupPolicyTemplateVersion": "1.0.0.0",
+        "backupPolicyTemplateUrl": "[concat(parameters('templateContainerUrl'), 'Microsoft.RecoveryServices/vaults/backupPolicies/backupPolicy.', variables('backupPolicyTemplateVersion'), '.json', parameters('templateSas'))]",
+        "scheduleRunTimes": [
+            "2016-09-21T05:30:00Z"
+        ]
+    },
+    "resources": [
+        {
+            "name": "[parameters('vaultName')]",
+            "type": "Microsoft.RecoveryServices/vaults",
+            "apiVersion": "2018-01-10",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+            },
+            "sku": {
+                "name": "RS0",
+                "tier": "Standard"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-07-01",
+                    "type": "/providers/diagnosticSettings",
+                    "name": "Microsoft.Insights/service",
+                    "properties": {
+                        "metrics": [
+                        ],
+                        "logs": [
+                            {
+                                "category": "AzureBackupReport",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "CoreAzureBackup",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AddonAzureBackupJobs",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AddonAzureBackupAlerts",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AddonAzureBackupPolicy",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AddonAzureBackupStorage",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AddonAzureBackupProtectedInstance",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryJobs",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryEvents",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryReplicatedItems",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryReplicationStats",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryRecoveryPoints",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryReplicationDataUploadRate",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            },
+                            {
+                                "category": "AzureSiteRecoveryProtectedDiskDataChurn",
+                                "enabled": "[variables('diagnosticsEnabled')]",
+                                "retentionPolicy": {
+                                    "enabled": "[variables('diagnosticsEnabled')]",
+                                    "days": "[variables('diagnosticsRetentionInDays')]"
+                                }
+                            }
+                        ],
+                        "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.RecoveryServices/vaults/', parameters('vaultName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('vaultName'), '-iaas-backup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('backupPolicyTemplateUrl')]",
+                    "contentVersion": "[variables('backupPolicyTemplateVersion')]"
+                },
+                "parameters": {
+                    "backupPolicyName": {
+                        "value": "iaas-backup"
+                    },
+                    "vaultName": {
+                        "value": "[parameters('vaultName')]"
+                    },
+                    "properties": {
+                        "value": {
+                            "backupManagementType": "AzureIaasVM",
+                            "instantRpRetentionRangeInDays": 5,
+                            "schedulePolicy": {
+                                "scheduleRunFrequency": "Daily",
+                                "scheduleRunDays": null,
+                                "scheduleRunTimes": "[variables('scheduleRunTimes')]",
+                                "schedulePolicyType": "SimpleSchedulePolicy"
+                            },
+                            "retentionPolicy": {
+                                "dailySchedule": {
+                                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                                    "retentionDuration": {
+                                        "count": 7,
+                                        "durationType": "Days"
+                                    }
+                                },
+                                "weeklySchedule": {
+                                    "daysOfTheWeek": [
+                                        "Sunday",
+                                        "Wednesday"
+                                    ],
+                                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                                    "retentionDuration": {
+                                        "count": 4,
+                                        "durationType": "Weeks"
+                                    }
+                                },
+                                "monthlySchedule": {
+                                    "retentionScheduleFormatType": "Daily",
+                                    "retentionScheduleDaily": {
+                                        "daysOfTheMonth": [
+                                            {
+                                                "date": 1,
+                                                "isLast": false
+                                            }
+                                        ]
+                                    },
+                                    "retentionScheduleWeekly": null,
+                                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                                    "retentionDuration": {
+                                        "count": 12,
+                                        "durationType": "Months"
+                                    }
+                                },
+                                "yearlySchedule": {
+                                    "retentionScheduleFormatType": "Daily",
+                                    "monthsOfYear": [
+                                        "January",
+                                        "May",
+                                        "September"
+                                    ],
+                                    "retentionScheduleDaily": {
+                                        "daysOfTheMonth": [
+                                            {
+                                                "date": 1,
+                                                "isLast": false
+                                            }
+                                        ]
+                                    },
+                                    "retentionScheduleWeekly": null,
+                                    "retentionTimes": "[variables('scheduleRunTimes')]",
+                                    "retentionDuration": {
+                                        "count": 10,
+                                        "durationType": "Years"
+                                    }
+                                },
+                                "retentionPolicyType": "LongTermRetentionPolicy"
+                            },
+                            "timeZone": "GMT Standard Time"
+                        }
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.RecoveryServices/vaults/', parameters('vaultName'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "vault": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.RecoveryServices/vaults', parameters('vaultName')), '2018-01-10', 'Full')]"
+        }
+    }
+}
