@@ -30,6 +30,18 @@ jobs:
               displayName: Download Module
               artifact: module
 
+            - task: PowerShell@2
+              displayName: "Install Required PowerShell Modules"
+              inputs:
+                targetType: "filePath"
+                filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
+                arguments: '@("az")'
+                errorActionPreference: "stop"
+                failOnStderr: false
+                ignoreLASTEXITCODE: false
+                pwsh: false
+                workingDirectory: "$(System.DefaultWorkingDirectory)"
+
             - task: AzureResourceGroupDeployment@2
               displayName: "Deploy Resources"
               inputs:
