@@ -36,7 +36,7 @@ jobs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 resourceGroupName: ${{ parameters.resourceGroupName }}
                 location: "North Europe"
-                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json.json"
+                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json"
                 csmParametersFile: ${{ parameters.armParametersFile }}
                 deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
 
@@ -46,4 +46,12 @@ jobs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 ScriptPath: "$(Pipeline.Workspace)/scripts/upload-templates.ps1"
                 ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "templates" -SearchPath "$(Pipeline.Workspace)/templates/" -ModulePath "$(Pipeline.Workspace)\module\AzureBuilder.psd1"'
+                azurePowerShellVersion: LatestVersion
+
+            - task: AzurePowerShell@4
+              displayName: "Upload DSC Resources to Storage Account"
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
+                ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "dsc" -SearchPath "$(Pipeline.Workspace)/dsc/" -ModulePath "$(Pipeline.Workspace)/module/AzureBuilder.psd1"'
                 azurePowerShellVersion: LatestVersion
