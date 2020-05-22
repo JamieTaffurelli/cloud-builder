@@ -1,13 +1,16 @@
 trigger:
   - master
 
-variables:
-  nonProdPoolName: "Prototypezdvukibld3"
-  prodPoolName: "HubProductionNorth"
-
 stages:
   - stage: Build
     jobs:
       - template: build.yml
         parameters:
-          poolName: ${{ variables.nonProdPoolName }}
+          poolName: "Hosted Windows Container"
+
+  - stage: Deploy	
+    jobs:	
+      - template: deploy.yml	
+        parameters:	
+          poolName: "Hosted Windows Container"	
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
