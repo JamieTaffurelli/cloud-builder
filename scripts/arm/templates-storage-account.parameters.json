@@ -2,26 +2,17 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "containerName": {
-      "value": "templates"
+    "containerNames": {
+      "value": [
+        "templates",
+        "dsc"
+      ]
     },
     "storageAccountName": {
       "value": "templatessa6546"
     },
-    "skuName": {
-      "value": "Standard_GRS"
-    },
-    "bypass": {
-      "value": "Logging, Metrics, AzureServices"
-    },
-    "ipRules": {
-      "value": [{ "value": "104.56.78.90", "action": "Allow" }]
-    },
     "logAnalyticsName": {
       "value": "templatesLogAnalytics"
-    },
-    "sku": {
-      "value": "PerGB2018"
     },
     "tags": {
       "value": {
