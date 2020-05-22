@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.1.0.0",
+  "contentVersion": "1.2.0.0",
   "parameters": {
     "storageAccountName": {
       "type": "string",
@@ -193,7 +193,20 @@
         },
         "supportsHttpsTrafficOnly": true,
         "accessTier": "[if(equals(parameters('kind'),'BlobStorage'), parameters('accessTier'), json('null'))]"
-      }
+      },
+      "resources": [
+        {
+          "type": "providers/advancedThreatProtectionSettings",
+          "name": "Microsoft.Security/current",
+          "apiVersion": "2019-01-01",
+          "properties": {
+            "isEnabled": true
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+          ]
+        }
+      ]
     },
     {
       "name": "[concat(parameters('storageAccountName'), '/default')]",

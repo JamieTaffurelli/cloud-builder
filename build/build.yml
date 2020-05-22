@@ -4,21 +4,22 @@ parameters:
 jobs:
   - job:
     pool:
-      name: ${{ parameters.poolName }}
+      vmImage: ${{ parameters.poolName }}
     steps:
-      - task: PowerShell@2	
-        displayName: 'Install Required PowerShell Modules'	
-        inputs:	
-          targetType: 'filePath'	
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
-          arguments: '@("az", "Pester")'	
-          errorActionPreference: 'stop'	
-          failOnStderr: false	
-          ignoreLASTEXITCODE: false	
-          pwsh: false	
+
+      - task: PowerShell@2		
+        displayName: 'Install Required PowerShell Modules'
+        inputs:		
+          targetType: 'filePath'		
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'		
+          arguments: '@("az")'		
+          errorActionPreference: 'stop'		
+          failOnStderr: false		
+          ignoreLASTEXITCODE: false		
+          pwsh: false		
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-          
-      - task: richardfennellBM.BM-VSTS-PesterRunner-Task.Pester-Task.Pester@8
+
+      - task: cca5462b-887d-4617-bf3f-dcf0d3c622e9@9
         displayName: "Run Unit Tests"
         inputs:
           resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
@@ -45,6 +46,11 @@ jobs:
           failIfCoverageEmpty: true
         condition: always()
 
+  - job:
+    pool:
+      vmImage: ${{ parameters.poolName }}
+    steps:
+
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
         inputs:
@@ -56,19 +62,42 @@ jobs:
           ignoreLASTEXITCODE: false
           pwsh: false
 
-      #- task: AzSKARMTemplateChecker@1
-        #displayName: "Run AzSK ARM Template Checker"
-        #inputs:
-          #armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
-          #skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
-          #excludeFiles: "$(ExclusionTemplates)"
-          #disableAutoUpdate: false
+      - task: AzSKARMTemplateChecker@1
+        displayName: "Run AzSK ARM Template Checker"
+        inputs:
+          armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
+          skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
+          excludeFiles: "$(ExclusionTemplates)"
+          disableAutoUpdate: false
+
+      - task: PowerShell@2		
+        displayName: 'Install Required PowerShell Modules'
+        inputs:		
+          targetType: 'filePath'		
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'		
+          arguments: '@("az")'		
+          errorActionPreference: 'stop'		
+          failOnStderr: false		
+          ignoreLASTEXITCODE: false		
+          pwsh: false		
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
 
       - task: PowerShell@2
         displayName: "Version ARM Templates"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-templates.ps1'
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+
+      - task: PowerShell@2
+        displayName: "Version DSC Configurations"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
+          arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)\dsc\configurations" -OutputFolder "$(Build.ArtifactStagingDirectory)\dsc\configurations" -FileType "DSC"'
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
@@ -133,4 +162,25 @@ jobs:
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)\tests'
           artifact: "tests"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: CopyFiles@2
+        displayName: "Copy DSC Resources to Staging Directory"
+        inputs:
+          sourceFolder: '$(System.DefaultWorkingDirectory)\dsc'
+          contents: |
+            **\*
+            !configurations\*
+          targetFolder: '$(Build.ArtifactStagingDirectory)\dsc'
+          cleanTargetFolder: false
+          overWrite: true
+          flattenFolders: false
+        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish DSC Resources (Build)"
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)\dsc'
+          artifactName: "dsc"
+          publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

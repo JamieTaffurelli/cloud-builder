@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.1.0.0",
+  "contentVersion": "2.2.3.0",
   "parameters": {
     "appName": {
       "type": "string",
@@ -88,11 +88,11 @@
       }
     },
     "appSettings": {
-      "type": "array",
-      "defaultValue": [
-      ],
+      "type": "secureobject",
+      "defaultValue": {
+      },
       "metadata": {
-        "description": "Application settings (key-value pairs)"
+        "description": "Application settings (key-value pairs { appSettings: [ { key: value } ] })"
       }
     },
     "azureStorageAccounts": {
@@ -173,14 +173,6 @@
       ],
       "metadata": {
         "description": "Load Balancing rules for multiple app instances and slots"
-      }
-    },
-    "experiments": {
-      "type": "object",
-      "defaultValue": {
-      },
-      "metadata": {
-        "description": "Defines routing behaviour for slots"
       }
     },
     "siteAuthEnabled": {
@@ -438,7 +430,60 @@
   },
   "variables": {
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 365
+    "diagnosticsRetentionInDays": 365,
+    "webAppLogs": [
+      {
+        "category": "AppServiceHTTPLogs",
+        "enabled": "[variables('diagnosticsEnabled')]",
+        "retentionPolicy": {
+          "enabled": "[variables('diagnosticsEnabled')]",
+          "days": "[variables('diagnosticsRetentionInDays')]"
+        }
+      },
+      {
+        "category": "AppServiceConsoleLogs",
+        "enabled": "[variables('diagnosticsEnabled')]",
+        "retentionPolicy": {
+          "enabled": "[variables('diagnosticsEnabled')]",
+          "days": "[variables('diagnosticsRetentionInDays')]"
+        }
+      },
+      {
+        "category": "AppServiceAppLogs",
+        "enabled": "[variables('diagnosticsEnabled')]",
+        "retentionPolicy": {
+          "enabled": "[variables('diagnosticsEnabled')]",
+          "days": "[variables('diagnosticsRetentionInDays')]"
+        }
+      },
+      {
+        "category": "AppServiceFileAuditLogs",
+        "enabled": "[variables('diagnosticsEnabled')]",
+        "retentionPolicy": {
+          "enabled": "[variables('diagnosticsEnabled')]",
+          "days": "[variables('diagnosticsRetentionInDays')]"
+        }
+      },
+      {
+        "category": "AppServiceAuditLogs",
+        "enabled": "[variables('diagnosticsEnabled')]",
+        "retentionPolicy": {
+          "enabled": "[variables('diagnosticsEnabled')]",
+          "days": "[variables('diagnosticsRetentionInDays')]"
+        }
+      }
+    ],
+    "functionAppLogs": [
+      {
+        "category": "FunctionAppLogs",
+        "enabled": "[variables('diagnosticsEnabled')]",
+        "retentionPolicy": {
+          "enabled": "[variables('diagnosticsEnabled')]",
+          "days": "[variables('diagnosticsRetentionInDays')]"
+        }
+      }
+    ],
+    "logs": "[if(equals(parameters('kind'), 'functionapp'), variables('functionAppLogs'), variables('webAppLogs'))]"
   },
   "resources": [
     {
@@ -463,7 +508,7 @@
           "httpLoggingEnabled": true,
           "logsDirectorySizeLimit": 128,
           "detailedErrorLoggingEnabled": true,
-          "appSettings": "[parameters('appSettings')]",
+          "appSettings": "[if(empty(parameters('appSettings')), json('[]'), parameters('appSettings').appSettings)]",
           "azureStorageAccounts": "[parameters('azureStorageAccounts')]",
           "connectionStrings": "[parameters('connectionStrings')]",
           "handlerMappings": "[parameters('handlerMappings')]",
@@ -477,7 +522,6 @@
           "managedPipelineMode": "Integrated",
           "virtualApplications": "[parameters('virtualApplications')]",
           "loadBalancing": "[parameters('loadBalancing')]",
-          "experiments": "[parameters('experiments')]",
           "autoHealEnabled": false,
           "siteAuthSettings": {
             "enabled": "[parameters('siteAuthEnabled')]",
@@ -542,48 +586,7 @@
                 }
               }
             ],
-            "logs": [
-              {
-                "category": "AppServiceHTTPLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              },
-              {
-                "category": "AppServiceConsoleLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              },
-              {
-                "category": "AppServiceAppLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              },
-              {
-                "category": "AppServiceFileAuditLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              },
-              {
-                "category": "AppServiceAuditLogs",
-                "enabled": "[variables('diagnosticsEnabled')]",
-                "retentionPolicy": {
-                  "enabled": "[variables('diagnosticsEnabled')]",
-                  "days": "[variables('diagnosticsRetentionInDays')]"
-                }
-              }
-            ],
+            "logs": "[variables('logs')]",
             "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
           },
           "dependsOn": [

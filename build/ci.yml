@@ -6,11 +6,11 @@ stages:
     jobs:
       - template: build.yml
         parameters:
-          poolName: "Hosted Windows Container"
-  
-  - stage: Deploy
-    jobs:
-      - template: deploy.yml
-        parameters:
-          poolName: "Hosted Windows Container"
+          poolName: "windows-latest"
+
+  - stage: Deploy	
+    jobs:	
+      - template: deploy.yml	
+        parameters:	
+          poolName: "windows-latest"	
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.4.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "vmExtensionName": {
       "type": "string",
@@ -43,6 +43,13 @@
         "description": "The type of the Virtual Machine Extension that you wish to create"
       }
     },
+    "forceUpdateTag": {
+      "type": "string",
+      "defaultValue": "v1.0",
+      "metadata": {
+        "description": "If this value is different compared to"
+      }
+    },
     "settings": {
       "type": "object",
       "defaultValue": {
@@ -75,6 +82,7 @@
         "type": "[parameters('type')]",
         "typeHandlerVersion": "[parameters('typeHandlerVersion')]",
         "autoUpgradeMinorVersion": true,
+        "forceUpdateTag": "[parameters('forceUpdateTag')]",
         "settings": "[parameters('settings')]",
         "protectedSettings": "[parameters('protectedSettings')]"
       }

@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.1.1.0",
+    "parameters": {
+        "configurationName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the configuration to make availiable in the Automation Account"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "northeurope",
+                "westeurope"
+            ],
+            "metadata": {
+                "description": "Location of the Automation Account"
+            }
+        },
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Automation Account to consume the configuration"
+            }
+        },
+        "logVerbose": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable verbose logging"
+            }
+        },
+        "logProgress": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable log progress"
+            }
+        },
+        "storageAccountContainerUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account URL to 'folder' to get the configuration from"
+            }
+        },
+        "sasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SAS token to authenticate against configuration Storage Account"
+            }
+        },
+        "configurationVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Version of the configuration to make availiable in the Automation Account"
+            }
+        },
+        "description": {
+            "type": "string",
+            "metadata": {
+                "description": "Description of the configuration to make availiable in the Automation Account"
+            }
+        }
+    },
+    "variables": {
+        "configurationName": "[concat(parameters('configurationName'), parameters('configurationVersion'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('automationAccountName'), '/', variables('configurationName'))]",
+            "type": "Microsoft.Automation/automationAccounts/configurations",
+            "apiVersion": "2015-10-31",
+            "location": "[parameters('location')]",
+            "properties": {
+                "logVerbose": "[parameters('logVerbose')]",
+                "logProgress": "[parameters('logProgress')]",
+                "source": {
+                    "type": "uri",
+                    "value": "[concat(parameters('storageAccountContainerUrl'), '/', parameters('configurationName'), parameters('configurationVersion'), '.ps1', parameters('sasToken'))]"
+                },
+                "description": "[parameters('description')]"
+            }
+        }
+    ],
+    "outputs": {
+        "configuration": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/configurations', parameters('automationAccountName'), variables('configurationName')), '2015-10-31', 'Full')]"
+        }
+    }
+}

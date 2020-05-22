@@ -494,6 +494,205 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
+    Context "diskEncryptionVersion Validation" {
+
+        It "Has diskEncryptionVersion parameter" {
+
+            $json.parameters.diskEncryptionVersion | should not be $null
+        }
+
+        It "diskEncryptionVersion parameter is of type string" {
+
+            $json.parameters.diskEncryptionVersion.type | should be "string"
+        }
+
+        It "diskEncryptionVersion parameter default value is 2.2" {
+
+            $json.parameters.diskEncryptionVersion.defaultValue | should be "2.2"
+        }
+    }
+
+    Context "diskEncryptionUpdateTag Validation" {
+
+        It "Has diskEncryptionUpdateTag parameter" {
+
+            $json.parameters.diskEncryptionUpdateTag | should not be $null
+        }
+
+        It "diskEncryptionUpdateTag parameter is of type string" {
+
+            $json.parameters.diskEncryptionUpdateTag.type | should be "string"
+        }
+
+        It "diskEncryptionUpdateTag parameter default value is [newGuid()]" {
+
+            $json.parameters.diskEncryptionUpdateTag.defaultValue | should be "[newGuid()]"
+        }
+    }
+
+    Context "diskEncryptionKeyVaultSubscriptionId Validation" {
+
+        It "Has diskEncryptionKeyVaultSubscriptionId parameter" {
+
+            $json.parameters.diskEncryptionKeyVaultSubscriptionId | should not be $null
+        }
+
+        It "diskEncryptionKeyVaultSubscriptionId parameter is of type string" {
+
+            $json.parameters.diskEncryptionKeyVaultSubscriptionId.type | should be "string"
+        }
+
+        It "diskEncryptionKeyVaultSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.diskEncryptionKeyVaultSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "diskEncryptionKeyVaultResourceGroupName Validation" {
+
+        It "Has diskEncryptionKeyVaultResourceGroupName parameter" {
+
+            $json.parameters.diskEncryptionKeyVaultResourceGroupName | should not be $null
+        }
+
+        It "diskEncryptionKeyVaultResourceGroupName parameter is of type string" {
+
+            $json.parameters.diskEncryptionKeyVaultResourceGroupName.type | should be "string"
+        }
+
+        It "diskEncryptionKeyVaultResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.diskEncryptionKeyVaultResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "diskEncryptionKeyVaultName Validation" {
+
+        It "Has diskEncryptionKeyVaultName parameter" {
+
+            $json.parameters.diskEncryptionKeyVaultName | should not be $null
+        }
+
+        It "diskEncryptionKeyVaultName parameter is of type string" {
+
+            $json.parameters.diskEncryptionKeyVaultName.type | should be "string"
+        }
+
+        It "diskEncryptionKeyVaultName parameter is mandatory" {
+
+            ($json.parameters.diskEncryptionKeyVaultName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+
+    Context "kekKeyVaultSubscriptionId Validation" {
+
+        It "Has kekKeyVaultSubscriptionId parameter" {
+
+            $json.parameters.kekKeyVaultSubscriptionId | should not be $null
+        }
+
+        It "kekKeyVaultSubscriptionId parameter is of type string" {
+
+            $json.parameters.kekKeyVaultSubscriptionId.type | should be "string"
+        }
+
+        It "kekKeyVaultSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.kekKeyVaultSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "kekKeyVaultResourceGroupName Validation" {
+
+        It "Has kekKeyVaultResourceGroupName parameter" {
+
+            $json.parameters.kekKeyVaultResourceGroupName | should not be $null
+        }
+
+        It "kekKeyVaultResourceGroupName parameter is of type string" {
+
+            $json.parameters.kekKeyVaultResourceGroupName.type | should be "string"
+        }
+
+        It "kekKeyVaultResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.kekKeyVaultResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "kekKeyVaultName Validation" {
+
+        It "Has kekKeyVaultName parameter" {
+
+            $json.parameters.kekKeyVaultName | should not be $null
+        }
+
+        It "kekKeyVaultName parameter is of type string" {
+
+            $json.parameters.kekKeyVaultName.type | should be "string"
+        }
+
+        It "kekKeyVaultName parameter is mandatory" {
+
+            ($json.parameters.kekKeyVaultName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "kekName Validation" {
+
+        It "Has kekName parameter" {
+
+            $json.parameters.kekName | should not be $null
+        }
+
+        It "kekName parameter is of type string" {
+
+            $json.parameters.kekName.type | should be "string"
+        }
+
+        It "kekName parameter is mandatory" {
+
+            ($json.parameters.kekName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "kekVersion Validation" {
+
+        It "Has kekVersion parameter" {
+
+            $json.parameters.kekVersion | should not be $null
+        }
+
+        It "kekVersion parameter is of type string" {
+
+            $json.parameters.kekVersion.type | should be "string"
+        }
+
+        It "kekVersion parameter is mandatory" {
+
+            ($json.parameters.kekVersion.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "keyEncryptionAlgorithm Validation" {
+
+        It "Has keyEncryptionAlgorithm parameter" {
+
+            $json.parameters.keyEncryptionAlgorithm | should not be $null
+        }
+
+        It "keyEncryptionAlgorithm parameter is of type string" {
+
+            $json.parameters.keyEncryptionAlgorithm.type | should be "string"
+        }
+
+        It "keyEncryptionAlgorithm parameter default value is RSA-OAEP" {
+
+            $json.parameters.keyEncryptionAlgorithm.defaultValue | should be "RSA-OAEP"
+        }
+    }
+    
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -516,8 +715,9 @@ Describe "Windows Virtual Machine Parameter Validation" {
 Describe "Windows Virtual Machine Resource Validation" {
 
     $vmResource = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Compute/virtualMachines" }
-    $bgInfoResource = $json.resources | Where-Object { $PSItem.name -eq "BGInfo" }
-    $dependencyAgentResource = $json.resources | Where-Object { $PSItem.name -eq "DependencyAgentWindows" }
+    $bgInfoResource = $json.resources | Where-Object { $PSItem.name -like "*BGInfo*" }
+    $dependencyAgentResource = $json.resources | Where-Object { $PSItem.name -like "*DependencyAgentWindows*" }
+    $diskEncryptionResource = $json.resources | Where-Object { $PSItem.name -like "*AzureDiskEncryption*" }
     
     Context "type Validation" {
 
@@ -606,11 +806,6 @@ Describe "Windows Virtual Machine Resource Validation" {
             $bgInfoResource.properties.mode | should be "Incremental"
         }
 
-        It "contentVersion is 1.0.4.0" {
-
-            $bgInfoResource.properties.templateLink.contentVersion | should be "1.0.4.0"
-        }
-
         It "vmExtensionName is BGInfo" {
 
             $bgInfoResource.properties.parameters.vmExtensionName.value | should be "BGInfo"
@@ -654,11 +849,6 @@ Describe "Windows Virtual Machine Resource Validation" {
             $dependencyAgentResource.properties.mode | should be "Incremental"
         }
 
-        It "contentVersion is 1.0.4.0" {
-
-            $dependencyAgentResource.properties.templateLink.contentVersion | should be "1.0.4.0"
-        }
-
         It "vmExtensionName is DependencyAgentWindows" {
 
             $dependencyAgentResource.properties.parameters.vmExtensionName.value | should be "DependencyAgentWindows"
@@ -682,6 +872,59 @@ Describe "Windows Virtual Machine Resource Validation" {
         It "depends on VM creation" {
 
             $dependencyAgentResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
+        }
+    }
+
+    Context "AzureDiskEncryption Validation" {
+
+        It "type is Microsoft.Resources/deployments" {
+
+            $diskEncryptionResource.type | should be "Microsoft.Resources/deployments"
+        }
+
+        It "apiVersion is 2018-05-01" {
+
+            $diskEncryptionResource.apiVersion | should be "2018-05-01"
+        }
+
+        It "mode is Incremental" {
+
+            $diskEncryptionResource.properties.mode | should be "Incremental"
+        }
+
+        It "vmExtensionName is AzureDiskEncryption" {
+
+            $diskEncryptionResource.properties.parameters.vmExtensionName.value | should be "AzureDiskEncryption"
+        }
+
+        It "vmName is [parameters('vmName')]" {
+
+            $diskEncryptionResource.properties.parameters.vmName.value | should be "[parameters('vmName')]"
+        }
+
+        It "publisher is Microsoft.Azure.Security" {
+
+            $diskEncryptionResource.properties.parameters.publisher.value | should be "Microsoft.Azure.Security"
+        }
+        
+        It "type is AzureDiskEncryption" {
+
+            $diskEncryptionResource.properties.parameters.type.value | should be "AzureDiskEncryption"
+        }
+
+        It "encryptionOperation is EnableEncryption" {
+
+            $diskEncryptionResource.properties.parameters.settings.value.encryptionOperation | should be "EnableEncryption"
+        }
+
+        It "uses KEK" {
+
+            $diskEncryptionResource.properties.parameters.settings.value.keyEncryptionKeyUrl | should not be $null
+        }
+
+        It "depends on VM creation" {
+
+            $diskEncryptionResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
         }
     }
 }

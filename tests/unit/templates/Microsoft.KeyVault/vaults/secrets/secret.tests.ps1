@@ -113,7 +113,7 @@ Describe "Secret Parameter Validation" {
     }
 }
 
-Describe "Access Policies Resource Validation" {
+Describe "Secret Resource Validation" {
 
     Context "type Validation" {
 
@@ -128,6 +128,22 @@ Describe "Access Policies Resource Validation" {
         It "apiVersion value is 2018-02-14" {
 
             $json.resources.apiVersion | should be "2018-02-14"
+        }
+    }
+}
+
+Describe "Secret Output Validation" {
+
+    Context "Secret Reference Validation" {
+
+        It "type value is string" {
+
+            $json.outputs.secretUri.type | should be "string"
+        }
+
+        It "Uses full reference for Secret" {
+
+            $json.outputs.secretUri.value | should be "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('secretName')), '2018-02-14', 'Full').properties.secretUriWithVersion]"
         }
     }
 }

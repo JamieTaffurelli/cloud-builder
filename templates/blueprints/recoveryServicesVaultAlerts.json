@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.7.0",
+    "contentVersion": "1.0.5.0",
     "parameters": {
         "templateStorageAccountName": {
             "type": "string",
@@ -18,13 +18,6 @@
             "type": "array",
             "metadata": {
                 "description": "The names of the Recovery Services Vaults to monitor"
-            }
-        },
-        "region": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Region of the Recovery Services Vaults"
             }
         },
         "logAnalyticsWorkspaceLocation": {
@@ -67,20 +60,6 @@
                 "description": "Enable or Disable the Metric Alert"
             }
         },
-        "evaluationFrequency": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "How often to evalute Metric Alerts (ISO 8601)"
-            }
-        },
-        "windowSize": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "Period of time to monitor for Metric Alerts (ISO 8601)"
-            }
-        },
         "frequencyInMinutes": {
             "type": "int",
             "defaultValue": 5,
@@ -93,39 +72,6 @@
             "defaultValue": 5,
             "metadata": {
                 "description": "Time period in which to run Scheduled Query Rules"
-            }
-        },
-        "alertSensitivity": {
-            "type": "string",
-            "defaultValue": "High",
-            "allowedValues": [
-                "High",
-                "Medium",
-                "Low"
-            ],
-            "metadata": {
-                "description": "Sensitivity of alert for dynamic threshold"
-            }
-        },
-        "numberOfEvaluationPeriods": {
-            "type": "string",
-            "defaultValue": "4",
-            "metadata": {
-                "description": "Number of time periods for algorithm to analyse"
-            }
-        },
-        "minFailingPeriodsToAlert": {
-            "type": "string",
-            "defaultValue": "3",
-            "metadata": {
-                "description": "Number of periods to fail threshold before alert is triggered"
-            }
-        },
-        "autoMitigate": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Auto resolve alert"
             }
         },
         "actionGroupIds": {
@@ -142,201 +88,28 @@
         }
     },
     "variables": {
-        "metricAlertActions": {
-            "copy": [
-                {
-                    "name": "metricAlertActions",
-                    "count": "[length(parameters('actionGroupIds'))]",
-                    "input": {
-                        "actionGroupId": "[parameters('actionGroupIds')[copyIndex('metricAlertActions')]]"
-                    }
-                }
-            ]
-        },
         "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
-        "metricAlertBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/metricAlerts/')]",
         "scheduledQueryRuleBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/scheduledQueryRules/')]",
-        "appServiceHttpReturnCodeTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceHttpReturnCodeMetricAlert.1.0.5.0.json', parameters('templatesSas'))]",
-        "appServiceTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
-        "appServiceResponseTimeTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceResponseTimeMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
-        "appServiceHttpReturnCodeRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appServiceHttpReturnCodeRule.1.0.0.0.json', parameters('templatesSas'))]"
+        "recoveryServiceAlertTriggeredRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'recoveryServiceAlertTriggeredRule.1.0.1.0.json', parameters('templatesSas'))]",
+        "recoveryServiceBackupFailedRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'recoveryServiceBackupFailedRule.1.0.2.0.json', parameters('templatesSas'))]",
+        "recoveryServiceFailoverRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'recoveryServiceFailoverRule.1.0.3.0.json', parameters('templatesSas'))]",
+        "recoveryServiceRecoveryJobFailedRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'recoveryServiceRecoveryJobFailedRule.1.0.2.0.json', parameters('templatesSas'))]",
+        "recoveryServiceReplicationRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'recoveryServiceReplicationRule.1.0.2.0.json', parameters('templatesSas'))]"
     },
     "resources": [
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appServiceNames')[copyIndex()], '-http-return-code-alert')]",
+            "name": "[concat(parameters('vaultNames')[copyIndex()], '-recovery-service-alert-triggered')]",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('appServiceHttpReturnCodeTemplateUrl')]",
-                    "contentVersion": "1.0.5.0"
+                    "uri": "[variables('recoveryServiceAlertTriggeredRuleTemplateUrl')]",
+                    "contentVersion": "1.0.1.0"
                 },
                 "parameters": {
-                    "appServiceName": {
-                        "value": "[parameters('appServiceNames')[copyIndex()]]"
-                    },
-                    "appServiceRegion": {
-                        "value": "[parameters('region')]"
-                    },
-                    "enabled": {
-                        "value": "[parameters('enabled')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "evaluationFrequency": {
-                        "value": "[parameters('evaluationFrequency')]"
-                    },
-                    "windowSize": {
-                        "value": "[parameters('windowSize')]"
-                    },
-                    "alertSensitivity": {
-                        "value": "[parameters('alertSensitivity')]"
-                    },
-                    "numberOfEvaluationPeriods": {
-                        "value": "[parameters('numberOfEvaluationPeriods')]"
-                    },
-                    "minFailingPeriodsToAlert": {
-                        "value": "[parameters('minFailingPeriodsToAlert')]"
-                    },
-                    "autoMitigate": {
-                        "value": "[parameters('autoMitigate')]"
-                    },
-                    "actions": {
-                        "value": "[variables('metricAlertActions').metricAlertActions]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appServiceHttpReturnCodeLoop",
-                "count": "[length(parameters('appServiceNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appServiceNames')[copyIndex()], '-total-request-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appServiceTotalRequestTemplateUrl')]",
-                    "contentVersion": "1.0.3.0"
-                },
-                "parameters": {
-                    "appServiceName": {
-                        "value": "[parameters('appServiceNames')[copyIndex()]]"
-                    },
-                    "appServiceRegion": {
-                        "value": "[parameters('region')]"
-                    },
-                    "enabled": {
-                        "value": "[parameters('enabled')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "evaluationFrequency": {
-                        "value": "[parameters('evaluationFrequency')]"
-                    },
-                    "windowSize": {
-                        "value": "[parameters('windowSize')]"
-                    },
-                    "alertSensitivity": {
-                        "value": "[parameters('alertSensitivity')]"
-                    },
-                    "numberOfEvaluationPeriods": {
-                        "value": "[parameters('numberOfEvaluationPeriods')]"
-                    },
-                    "minFailingPeriodsToAlert": {
-                        "value": "[parameters('minFailingPeriodsToAlert')]"
-                    },
-                    "autoMitigate": {
-                        "value": "[parameters('autoMitigate')]"
-                    },
-                    "actions": {
-                        "value": "[variables('metricAlertActions').metricAlertActions]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appServiceTotalRequestLoop",
-                "count": "[length(parameters('appServiceNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appServiceNames')[copyIndex()], '-response-time-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appServiceResponseTimeTemplateUrl')]",
-                    "contentVersion": "1.0.3.0"
-                },
-                "parameters": {
-                    "appServiceName": {
-                        "value": "[parameters('appServiceNames')[copyIndex()]]"
-                    },
-                    "appServiceRegion": {
-                        "value": "[parameters('region')]"
-                    },
-                    "enabled": {
-                        "value": "[parameters('enabled')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "evaluationFrequency": {
-                        "value": "[parameters('evaluationFrequency')]"
-                    },
-                    "windowSize": {
-                        "value": "[parameters('windowSize')]"
-                    },
-                    "alertSensitivity": {
-                        "value": "[parameters('alertSensitivity')]"
-                    },
-                    "numberOfEvaluationPeriods": {
-                        "value": "[parameters('numberOfEvaluationPeriods')]"
-                    },
-                    "minFailingPeriodsToAlert": {
-                        "value": "[parameters('minFailingPeriodsToAlert')]"
-                    },
-                    "autoMitigate": {
-                        "value": "[parameters('autoMitigate')]"
-                    },
-                    "actions": {
-                        "value": "[variables('metricAlertActions').metricAlertActions]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appServiceResponseTimeLoop",
-                "count": "[length(parameters('appServiceNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appServiceNames')[copyIndex()], '-http-return-code-query-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appServiceHttpReturnCodeRuleTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "appServiceName": {
-                        "value": "[parameters('appServiceNames')[copyIndex()]]"
+                    "vaultName": {
+                        "value": "[parameters('vaultNames')[copyIndex()]]"
                     },
                     "location": {
                         "value": "[parameters('logAnalyticsWorkspaceLocation')]"
@@ -362,7 +135,7 @@
                     "aznsAction": {
                         "value": {
                             "actionGroup": "[parameters('actionGroupIds')]",
-                            "emailSubject": "[concat(parameters('appServiceNames')[copyIndex()], ' is returning http errors')]"
+                            "emailSubject": "[concat(parameters('vaultNames')[copyIndex()], ' backup alerts are being triggered in Log Analytics')]"
                         }
                     },
                     "tags": {
@@ -371,8 +144,212 @@
                 }
             },
             "copy": {
-                "name": "appServiceHttpCodeLoop",
-                "count": "[length(parameters('appServiceNames'))]"
+                "name": "recoveryVaultsAlertLoop",
+                "count": "[length(parameters('vaultNames'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('vaultNames')[copyIndex()], '-recovery-service-backup-failed-alert')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('recoveryServiceBackupFailedRuleTemplateUrl')]",
+                    "contentVersion": "1.0.2.0"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[parameters('vaultNames')[copyIndex()]]"
+                    },
+                    "location": {
+                        "value": "[parameters('logAnalyticsWorkspaceLocation')]"
+                    },
+                    "enabled": {
+                        "value": "[string(parameters('enabled'))]"
+                    },
+                    "dataSourceResourceGroupName": {
+                        "value": "[parameters('logAnalyticsResourceGroupName')]"
+                    },
+                    "dataSourceName": {
+                        "value": "[parameters('logAnalyticsName')]"
+                    },
+                    "frequencyInMinutes": {
+                        "value": "[parameters('frequencyInMinutes')]"
+                    },
+                    "timeWindowInMinutes": {
+                        "value": "[parameters('timeWindowInMinutes')]"
+                    },
+                    "severity": {
+                        "value": "[parameters('severity')]"
+                    },
+                    "aznsAction": {
+                        "value": {
+                            "actionGroup": "[parameters('actionGroupIds')]",
+                            "emailSubject": "[concat(parameters('vaultNames')[copyIndex()], ' backup jobs are failing')]"
+                        }
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "recoveryVaultBackupFailedLoop",
+                "count": "[length(parameters('vaultNames'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('vaultNames')[copyIndex()], '-recovery-service-failover-alert')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('recoveryServiceFailoverRuleTemplateUrl')]",
+                    "contentVersion": "1.0.3.0"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[parameters('vaultNames')[copyIndex()]]"
+                    },
+                    "location": {
+                        "value": "[parameters('logAnalyticsWorkspaceLocation')]"
+                    },
+                    "enabled": {
+                        "value": "[string(parameters('enabled'))]"
+                    },
+                    "dataSourceResourceGroupName": {
+                        "value": "[parameters('logAnalyticsResourceGroupName')]"
+                    },
+                    "dataSourceName": {
+                        "value": "[parameters('logAnalyticsName')]"
+                    },
+                    "frequencyInMinutes": {
+                        "value": "[parameters('frequencyInMinutes')]"
+                    },
+                    "timeWindowInMinutes": {
+                        "value": "[parameters('timeWindowInMinutes')]"
+                    },
+                    "severity": {
+                        "value": "[parameters('severity')]"
+                    },
+                    "aznsAction": {
+                        "value": {
+                            "actionGroup": "[parameters('actionGroupIds')]",
+                            "emailSubject": "[concat(parameters('vaultNames')[copyIndex()], ' failover health is not normal')]"
+                        }
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "recoveryVaultFailoverLoop",
+                "count": "[length(parameters('vaultNames'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('vaultNames')[copyIndex()], '-recovery-service-job-alert')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('recoveryServiceRecoveryJobFailedRuleTemplateUrl')]",
+                    "contentVersion": "1.0.2.0"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[parameters('vaultNames')[copyIndex()]]"
+                    },
+                    "location": {
+                        "value": "[parameters('logAnalyticsWorkspaceLocation')]"
+                    },
+                    "enabled": {
+                        "value": "[string(parameters('enabled'))]"
+                    },
+                    "dataSourceResourceGroupName": {
+                        "value": "[parameters('logAnalyticsResourceGroupName')]"
+                    },
+                    "dataSourceName": {
+                        "value": "[parameters('logAnalyticsName')]"
+                    },
+                    "frequencyInMinutes": {
+                        "value": "[parameters('frequencyInMinutes')]"
+                    },
+                    "timeWindowInMinutes": {
+                        "value": "[parameters('timeWindowInMinutes')]"
+                    },
+                    "severity": {
+                        "value": "[parameters('severity')]"
+                    },
+                    "aznsAction": {
+                        "value": {
+                            "actionGroup": "[parameters('actionGroupIds')]",
+                            "emailSubject": "[concat(parameters('vaultNames')[copyIndex()], ' recovery jobs are failing')]"
+                        }
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "recoveryServiceJobFailedLoop",
+                "count": "[length(parameters('vaultNames'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('vaultNames')[copyIndex()], '-recovery-service-replication-alert')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('recoveryServiceReplicationRuleTemplateUrl')]",
+                    "contentVersion": "1.0.2.0"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[parameters('vaultNames')[copyIndex()]]"
+                    },
+                    "location": {
+                        "value": "[parameters('logAnalyticsWorkspaceLocation')]"
+                    },
+                    "enabled": {
+                        "value": "[string(parameters('enabled'))]"
+                    },
+                    "dataSourceResourceGroupName": {
+                        "value": "[parameters('logAnalyticsResourceGroupName')]"
+                    },
+                    "dataSourceName": {
+                        "value": "[parameters('logAnalyticsName')]"
+                    },
+                    "frequencyInMinutes": {
+                        "value": "[parameters('frequencyInMinutes')]"
+                    },
+                    "timeWindowInMinutes": {
+                        "value": "[parameters('timeWindowInMinutes')]"
+                    },
+                    "severity": {
+                        "value": "[parameters('severity')]"
+                    },
+                    "aznsAction": {
+                        "value": {
+                            "actionGroup": "[parameters('actionGroupIds')]",
+                            "emailSubject": "[concat(parameters('vaultNames')[copyIndex()], ' replication health is not normal')]"
+                        }
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "recoveryServiceReplicationLoop",
+                "count": "[length(parameters('vaultNames'))]"
             }
         }
     ],

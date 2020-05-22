@@ -220,14 +220,14 @@ Describe "App Service Parameter Validation" {
             $json.parameters.appSettings | should not be $null
         }
 
-        It "appSettings parameter is of type array" {
+        It "appSettings parameter is of type secureobject" {
 
-            $json.parameters.appSettings.type | should be "array"
+            $json.parameters.appSettings.type | should be "secureobject"
         }
 
-        It "appSettings parameter default value is an empty array" {
+        It "appSettings parameter default value is an empty object" {
 
-            $json.parameters.appSettings.defaultValue | should be @()
+            $json.parameters.appSettings.defaultValue.PSObject.Properties.Name.Count | should be 0
         }
     }
 
@@ -415,24 +415,6 @@ Describe "App Service Parameter Validation" {
         It "loadBalancing parameter allowed values are 'app', 'functionapp', 'app', 'linux'" {
 
             (Compare-Object -ReferenceObject $json.parameters.loadBalancing.allowedValues -DifferenceObject @("WeightedRoundRobin", "LeastRequests", "LeastResponseTime", "WeightedTotalTraffic", "RequestHash")).Length | should be 0
-        }
-    }
-
-    Context "experiments Validation" {
-
-        It "Has experiments parameter" {
-
-            $json.parameters.experiments | should not be $null
-        }
-
-        It "experiments parameter is of type object" {
-
-            $json.parameters.experiments.type | should be "object"
-        }
-
-        It "experiments parameter default value is an empty object" {
-
-            $json.parameters.experiments.defaultValue.PSObject.Properties.Name.Count | should be 0
         }
     }
 
@@ -1233,9 +1215,9 @@ Describe "App Service Resource Validation" {
             $diagnostics.properties.metrics.category | should be "AllMetrics"
         }
 
-        It "All logs are enabled" {
+        It "Logs are enabled" {
 
-            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceFileAuditLogs", "AppServiceAuditLogs")).Length | should be 0
+            $diagnostics.properties.logs | should not be $null
         }
     }
 }

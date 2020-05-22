@@ -9,9 +9,10 @@ parameters:
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
     pool:
-      name: ${{ parameters.poolName }}
+      vmImage: ${{ parameters.poolName }}
       workspace:
         clean: all
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     environment: ${{ parameters.environment }}
     strategy:
       runOnce:
@@ -29,25 +30,13 @@ jobs:
               displayName: Download Module
               artifact: module
 
-            - task: PowerShell@2	
-              displayName: 'Install Required PowerShell Modules'	
-              inputs:	
-                targetType: 'filePath'	
-                filePath: '$(Pipeline.Workspace)\scripts\install-modules.ps1'	
-                arguments: '@("az")'	
-                errorActionPreference: 'stop'	
-                failOnStderr: false	
-                ignoreLASTEXITCODE: false	
-                pwsh: false	
-                workingDirectory: '$(System.DefaultWorkingDirectory)'
-
             - task: AzureResourceGroupDeployment@2
               displayName: "Deploy Resources"
               inputs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 resourceGroupName: ${{ parameters.resourceGroupName }}
                 location: "North Europe"
-                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json"
+                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json.json"
                 csmParametersFile: ${{ parameters.armParametersFile }}
                 deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
 

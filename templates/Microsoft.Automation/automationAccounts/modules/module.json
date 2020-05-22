@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.1.0.0",
+    "parameters": {
+        "moduleName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the module to make availiable in the Automation Account"
+            }
+        },
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Automation Account to consume the module"
+            }
+        },
+        "storageAccountContainerUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage Account URL to 'folder' to get the module from"
+            }
+        },
+        "sasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SAS token to authenticate against module Storage Account"
+            }
+        },
+        "moduleVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Version of the module to make availiable in the Automation Account"
+            }
+        },
+        "moduleFileType": {
+            "type": "string",
+            "defaultValue": "nupkg",
+            "allowedValues": [
+                "zip",
+                "nupkg"
+            ],
+            "metadata": {
+                "description": "File extension of the module to make availiable in the Automation Account"
+            }
+        }
+    },
+    "variables": {
+        "moduleName": "[toLower(parameters('moduleName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('automationAccountName'), '/', parameters('moduleName'))]",
+            "type": "Microsoft.Automation/automationAccounts/modules",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "contentLink": {
+                    "uri": "[concat(parameters('storageAccountContainerUrl'), '/', variables('moduleName'), '.', parameters('moduleVersion'), '.', parameters('moduleFileType'), parameters('sasToken'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "module": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/modules', parameters('automationAccountName'), parameters('moduleName')), '2015-10-31', 'Full')]"
+        }
+    }
+}

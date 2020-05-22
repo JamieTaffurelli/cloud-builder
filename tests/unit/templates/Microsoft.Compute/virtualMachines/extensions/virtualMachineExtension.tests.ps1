@@ -117,6 +117,24 @@ Describe "Virtual Machine Extension Parameter Validation" {
         }
     }
 
+    Context "forceUpdateTag Validation" {
+
+        It "Has forceUpdateTag parameter" {
+
+            $json.parameters.forceUpdateTag | should not be $null
+        }
+
+        It "forceUpdateTag parameter is of type string" {
+
+            $json.parameters.forceUpdateTag.type | should be "string"
+        }
+
+        It "forceUpdateTag parameter default value is v1.0" {
+
+            $json.parameters.forceUpdateTag.defaultValue | should be "v1.0"
+        }
+    }
+
     Context "settings Validation" {
 
         It "Has settings parameter" {

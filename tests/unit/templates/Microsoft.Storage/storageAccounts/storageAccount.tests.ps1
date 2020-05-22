@@ -338,6 +338,19 @@ Describe "Storage Account Resource Validation" {
         }
     }
 
+    Context "Advanced Threat Protection Validation" {
+
+        It "ATP Resource exists" {
+
+            $storageAccount.resources.type | should be "providers/advancedThreatProtectionSettings"
+        }
+
+        It "ATP is enabled" {
+
+            $storageAccount.resources.properties.isEnabled | should be $true
+        }
+    }
+
     Context "blobServices Type Validation" {
 
         It "type value is Microsoft.Storage/storageAccounts/blobServices" {
