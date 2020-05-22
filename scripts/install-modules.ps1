@@ -11,5 +11,5 @@ Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
 
 foreach($module in $Modules)
 {
-    Install-Module -Name $module -Force -Scope CurrentUser
+    Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber
 }
