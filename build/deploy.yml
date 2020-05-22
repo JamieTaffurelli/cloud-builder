@@ -29,7 +29,7 @@ jobs:
             - download: current
               displayName: Download Module
               artifact: module
-
+              
             - task: PowerShell@2
               displayName: "Install Required PowerShell Modules"
               inputs:
@@ -41,14 +41,14 @@ jobs:
                 ignoreLASTEXITCODE: false
                 pwsh: false
                 workingDirectory: "$(System.DefaultWorkingDirectory)"
-
+                
             - task: AzureResourceGroupDeployment@2
               displayName: "Deploy Resources"
               inputs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 resourceGroupName: ${{ parameters.resourceGroupName }}
                 location: "North Europe"
-                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json"
+                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json.json"
                 csmParametersFile: ${{ parameters.armParametersFile }}
                 deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
 
