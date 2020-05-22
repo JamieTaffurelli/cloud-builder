@@ -50,7 +50,7 @@ jobs:
     pool:
       vmImage: ${{ parameters.poolName }}
     steps:
-      
+
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
         inputs:
@@ -69,6 +69,18 @@ jobs:
           skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
           excludeFiles: "$(ExclusionTemplates)"
           disableAutoUpdate: false
+
+      - task: PowerShell@2		
+        displayName: 'Install Required PowerShell Modules'
+        inputs:		
+          targetType: 'filePath'		
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'		
+          arguments: '@("az")'		
+          errorActionPreference: 'stop'		
+          failOnStderr: false		
+          ignoreLASTEXITCODE: false		
+          pwsh: false		
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
 
       - task: PowerShell@2
         displayName: "Version ARM Templates"
