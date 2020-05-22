@@ -1,0 +1,108 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.1.0",
+    "parameters": {
+        "resourceSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "The Subscription ID of the Azure Resource you wish to schedule for."
+            }
+        },
+        "resourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The Resource Group of the Azure Resource you wish to schedule for."
+            }
+        },
+        "resourceType": {
+            "type": "string",
+            "defaultValue": "Microsoft.Compute/virtualMachines",
+            "metadata": {
+                "description": "The tyep of the Azure Resource you wish to schedule for."
+            }
+        },
+        "resourceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Azure Resource you wish to schedule for."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "northeurope",
+                "westeurope"
+            ],
+            "metadata": {
+                "description": "The location to deploy the schedule to"
+            }
+        },
+        "status": {
+            "type": "string",
+            "defaultValue": "Enabled",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ],
+            "metadata": {
+                "description": "Enable or disable the shutdown schedule"
+            }
+        },
+        "timeOfDay": {
+            "type": "string",
+            "defaultValue": "1900",
+            "metadata": {
+                "description": "Time of day to run job"
+            }
+        },
+        "timeZoneId": {
+            "type": "string",
+            "defaultValue": "GMT Standard Time",
+            "metadata": {
+                "description": "Timezone of job schedule"
+            }
+        },
+        "notificationSettings": {
+            "type": "object",
+            "defaultValue": {
+            },
+            "metadata": {
+                "description": "Notification settings for job execution"
+            }
+        },
+        "tags": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "scheduleName": "[concat('shutdown-computevm-', parameters('resourceName'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('scheduleName')]",
+            "type": "Microsoft.DevTestLab/schedules",
+            "apiVersion": "2018-09-15",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "status": "[parameters('status')]",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "[parameters('timeOfDay')]"
+                },
+                "timeZoneId": "[parameters('timeZoneId')]",
+                "notificationSettings": "[parameters('notificationSettings')]",
+                "targetResourceId": "[resourceId(parameters('resourceSubscriptionId'), parameters('resourceGroupName'), parameters('resourceType'), parameters('resourceName'))]"
+            }
+        }
+    ],
+    "outputs": {
+        "schedule": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.DevTestLab/schedules', variables('scheduleName')), '2018-09-15', 'Full')]"
+        }
+    }
+}

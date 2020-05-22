@@ -16,9 +16,9 @@ Describe "VM Protected Item Parameter Validation" {
             $json.parameters.backupPolicyName.type | should be "string"
         }
 
-        It "backupPolicyName parameter is mandatory" {
+        It "backupPolicyName parameter is iaas-backup" {
 
-            ($json.parameters.backupPolicyName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            $json.parameters.backupPolicyName.defaultValue | should be "iaas-backup"
         }
     }
 

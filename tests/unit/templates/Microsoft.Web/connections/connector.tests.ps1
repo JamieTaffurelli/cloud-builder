@@ -19,56 +19,6 @@ Describe "Connector Parameter Validation" {
         }
     }
 
-    Context "tags Validation" {
-        It "Has tagOpCo tag parameter" {
-            $json.parameters.tagOpCo | should not be $null
-        }
-        It "Has tagEnvironment tag parameter" {
-            $json.parameters.tagEnvironment | should not be $null
-        }
-        It "Has tagApplication tag parameter" {
-            $json.parameters.tagApplication | should not be $null
-        }
-        It "Has tagUse tag parameter" {
-            $json.parameters.tagUse | should not be $null
-        }
-        It "Has tagsAdditional tag parameter" {
-            $json.parameters.tagsAdditional | should not be $null
-        }
-
-        It "tagOpCo tag parameter is of type string" {
-            $json.parameters.tagOpCo.type | should be "string"
-        }
-        It "tagEnvironment tag parameter is of type string" {
-            $json.parameters.tagEnvironment.type | should be "string"
-        }
-        It "tagApplication tag parameter is of type string" {
-            $json.parameters.tagApplication.type | should be "string"
-        }
-        It "tagUse tag parameter is of type string" {
-            $json.parameters.tagUse.type | should be "string"
-        }
-        It "tagsAdditional tag parameter is of type object" {
-            $json.parameters.tagsAdditional.type | should be "object"
-        }
-
-        It "tagOpCo tag parameter is not mandatory" {
-            $json.parameters.tagOpCo.PSObject.Properties.Name -contains "defaultValue" | should be $true 
-        }
-        It "tagEnvironment tag parameter is mandatory" { 
-            $json.parameters.tagEnvironment.PSObject.Properties.Name -contains "defaultValue" | should be $false 
-        }
-        It "tagApplication tag parameter is mandatory" { 
-            $json.parameters.tagApplication.PSObject.Properties.Name -contains "defaultValue" | should be $false 
-        }
-        It "tagUse tag parameter is mandatory" { 
-            $json.parameters.tagUse.PSObject.Properties.Name -contains "defaultValue" | should be $false 
-        }
-        It "tagsAdditional tag parameter is not mandatory" {
-            $json.parameters.tagsAdditional.PSObject.Properties.Name -contains "defaultValue" | should be $true 
-        }
-    }
-
     Context "connectorType Validation" {
         It "Has connectorType parameter" {
             $json.parameters.connectorType | should not be $null
@@ -114,6 +64,24 @@ Describe "Connector Parameter Validation" {
         }
         It "parameterValues parameter is mandatory" {
             $json.parameters.parameterValues.PSObject.Properties.Name -contains "defaultValue" | should be $false
+        }
+    }
+
+    Context "tags Validation" {
+
+        It "Has tags parameter" {
+
+            $json.parameters.tags | should not be $null
+        }
+
+        It "tags parameter is of type object" {
+
+            $json.parameters.tags.type | should be "object"
+        }
+
+        It "tags parameter is mandatory" {
+
+            ($json.parameters.tags.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 }

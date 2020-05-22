@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.3.12.0",
+  "contentVersion": "2.2.0.0",
   "parameters": {
     "vmName": {
       "type": "string",
@@ -195,6 +195,79 @@
         "descriptions": "Version of Dependency Agent extension"
       }
     },
+    "diskEncryptionVersion": {
+      "type": "string",
+      "defaultValue": "2.2",
+      "metadata": {
+        "descriptions": "Version of Disk Encryption extension"
+      }
+    },
+    "diskEncryptionUpdateTag": {
+      "type": "string",
+      "defaultValue": "[newGuid()]",
+      "metadata": {
+        "descriptions": "Will force disk encryption to reinstall with default value, pass in static value to override this"
+      }
+    },
+    "diskEncryptionKeyVaultSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the key vault to generate BitLocker encryption key"
+      }
+    },
+    "diskEncryptionKeyVaultResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the key vault to generate BitLocker encryption key"
+      }
+    },
+    "diskEncryptionKeyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the key vault to generate BitLocker encryption key"
+      }
+    },
+    "kekKeyVaultSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the key vault to apply key encryption key to BitLocker key"
+      }
+    },
+    "kekKeyVaultResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the key vault to apply key encryption key to BitLocker key"
+      }
+    },
+    "kekKeyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the key vault to apply key encryption key to BitLocker key"
+      }
+    },
+    "kekName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the key to apply key encryption key to BitLocker key"
+      }
+    },
+    "kekVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the key vault to generate key encryption key"
+      }
+    },
+    "keyEncryptionAlgorithm": {
+      "type": "string",
+      "defaultValue": "RSA-OAEP",
+      "metadata": {
+        "description": "The encryption algorithm of the kek, RSA-OEAP recommended"
+      }
+    },
     "tags": {
       "type": "object"
     }
@@ -240,7 +313,7 @@
     "availabilitySet": {
       "id": "[parameters('availabilitySetId')]"
     },
-    "vmExtensionTemplateVersion": "1.0.4.0",
+    "vmExtensionTemplateVersion": "1.1.0.0",
     "vmExtensionsTemplateUrl": "[concat(parameters('templateContainerUrl'), 'Microsoft.Compute/virtualMachines/extensions/virtualMachineExtension.', variables('vmExtensionTemplateVersion'), '.json', parameters('templateSas'))]"
   },
   "resources": [
@@ -310,12 +383,12 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "BGInfo",
+      "name": "[concat(parameters('vmName'), '-BGInfo')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('vmExtensionsTemplateUrl')]",
-          "contentVersion": "1.0.4.0"
+          "contentVersion": "[variables('vmExtensionTemplateVersion')]"
         },
         "parameters": {
           "vmExtensionName": {
@@ -345,12 +418,12 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
-      "name": "DependencyAgentWindows",
+      "name": "[concat(parameters('vmName'), '-DependencyAgentWindows')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('vmExtensionsTemplateUrl')]",
-          "contentVersion": "1.0.4.0"
+          "contentVersion": "[variables('vmExtensionTemplateVersion')]"
         },
         "parameters": {
           "vmExtensionName": {
@@ -367,6 +440,55 @@
           },
           "type": {
             "value": "DependencyAgentWindows"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('vmName'), '-AzureDiskEncryption')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('vmExtensionsTemplateUrl')]",
+          "contentVersion": "[variables('vmExtensionTemplateVersion')]"
+        },
+        "parameters": {
+          "vmExtensionName": {
+            "value": "AzureDiskEncryption"
+          },
+          "vmName": {
+            "value": "[parameters('vmName')]"
+          },
+          "typeHandlerVersion": {
+            "value": "[parameters('diskEncryptionVersion')]"
+          },
+          "publisher": {
+            "value": "Microsoft.Azure.Security"
+          },
+          "type": {
+            "value": "AzureDiskEncryption"
+          },
+          "forceUpdateTag": {
+            "value": "[parameters('diskEncryptionUpdateTag')]"
+          },
+          "settings": {
+            "value": {
+              "EncryptionOperation": "EnableEncryption",
+              "KeyEncryptionAlgorithm": "[parameters('keyEncryptionAlgorithm')]",
+              "KeyVaultURL": "[concat('https://', parameters('diskEncryptionKeyVaultName'), '.vault.azure.net/')]",
+              "KeyVaultResourceId": "[resourceId(parameters('diskEncryptionKeyVaultSubscriptionId'), parameters('diskEncryptionKeyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('diskEncryptionKeyVaultName'))]",
+              "KeyEncryptionKeyURL": "[concat('https://', parameters('kekKeyVaultName'), '.vault.azure.net/keys/', parameters('kekName'), '/', parameters('kekVersion'))]",
+              "KekVaultResourceId": "[resourceId(parameters('kekKeyVaultSubscriptionId'), parameters('kekKeyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('kekKeyVaultName'))]",
+              "ResizeOSDisk": false
+            }
           },
           "tags": {
             "value": "[parameters('tags')]"

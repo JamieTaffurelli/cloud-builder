@@ -1,9 +1,10 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.1.0.0",
     "parameters": {
         "backupPolicyName": {
             "type": "string",
+            "defaultValue": "iaas-backup",
             "metadata": {
                 "description": "The name of the Backup Policy to attach to the Virtual Machine"
             }

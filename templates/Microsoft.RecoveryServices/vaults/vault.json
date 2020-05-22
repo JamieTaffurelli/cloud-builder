@@ -1,7 +1,19 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.2.0",
+    "contentVersion": "1.0.7.0",
     "parameters": {
+        "templateStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The storage account to pull templates from"
+            }
+        },
+        "templatesSas": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The SAS token for then storage account to pull templates from"
+            }
+        },
         "vaultName": {
             "type": "string",
             "metadata": {
@@ -33,22 +45,58 @@
                 "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
             }
         },
+        "alertRuleLocation": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "The location of alert rules. Must be the same as the Log Analytics location"
+            }
+        },
         "logAnalyticsName": {
             "type": "string",
             "metadata": {
                 "description": "The name of the Log Analytics Workspace to send diagnostics to"
             }
         },
-        "templateContainerUrl": {
-            "type": "string",
+        "enableAlerts": {
+            "type": "bool",
+            "defaultValue": true,
             "metadata": {
-                "descriptions": "URL of blob container templates are located"
+                "description": "Enable Recovery Services Vault alert blueprint"
             }
         },
-        "templateSas": {
-            "type": "securestring",
+        "alertSeverity": {
+            "type": "int",
+            "defaultValue": 0,
+            "allowedValues": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
             "metadata": {
-                "descriptions": "SAS token for templates Storage Account"
+                "description": "Severity of Recovery Services Vault alert blueprint"
+            }
+        },
+        "alertEvaluationFrequencyInMinutes": {
+            "type": "int",
+            "defaultValue": 5,
+            "metadata": {
+                "description": "Frequency to run alert queries"
+            }
+        },
+        "windowSizeInMinutes": {
+            "type": "int",
+            "defaultValue": 5,
+            "metadata": {
+                "description": "Time window to run alert queries"
+            }
+        },
+        "actionGroupIds": {
+            "type": "array",
+            "metadata": {
+                "description": "Resource IDs of Action Groups to invoke on alert"
             }
         },
         "tags": {
@@ -59,7 +107,9 @@
         "diagnosticsEnabled": true,
         "diagnosticsRetentionInDays": 365,
         "backupPolicyTemplateVersion": "1.0.0.0",
-        "backupPolicyTemplateUrl": "[concat(parameters('templateContainerUrl'), 'Microsoft.RecoveryServices/vaults/backupPolicies/backupPolicy.', variables('backupPolicyTemplateVersion'), '.json', parameters('templateSas'))]",
+        "backupPolicyTemplateUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/Microsoft.RecoveryServices/vaults/backupPolicies/backupPolicy.', variables('backupPolicyTemplateVersion'), '.json', parameters('templatesSas'))]",
+        "recoveryServicesBlueprintAlertTemplateVersion": "1.0.5.0",
+        "recoveryServicesBlueprintAlertTemplateUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/blueprints/recoveryServicesVaultAlerts.', variables('recoveryServicesBlueprintAlertTemplateVersion'), '.json', parameters('templatesSas'))]",
         "scheduleRunTimes": [
             "2016-09-21T05:30:00Z"
         ]
@@ -296,6 +346,58 @@
                             },
                             "timeZone": "GMT Standard Time"
                         }
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.RecoveryServices/vaults/', parameters('vaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('vaultName'), '-recovery-service-alerts')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('recoveryServicesBlueprintAlertTemplateUrl')]",
+                    "contentVersion": "[variables('recoveryServicesBlueprintAlertTemplateVersion')]"
+                },
+                "parameters": {
+                    "templateStorageAccountName": {
+                        "value": "[parameters('templateStorageAccountName')]"
+                    },
+                    "templatesSas": {
+                        "value": "[parameters('templatesSas')]"
+                    },
+                    "vaultNames": {
+                        "value": [
+                            "[parameters('vaultName')]"
+                        ]
+                    },
+                    "logAnalyticsWorkspaceLocation": {
+                        "value": "[parameters('alertRuleLocation')]"
+                    },
+                    "enabled": {
+                        "value": "[parameters('enableAlerts')]"
+                    },
+                    "severity": {
+                        "value": "[parameters('alertSeverity')]"
+                    },
+                    "frequencyInMinutes": {
+                        "value": "[parameters('alertEvaluationFrequencyInMinutes')]"
+                    },
+                    "timeWindowInMinutes": {
+                        "value": "[parameters('windowSizeInMinutes')]"
+                    },
+                    "actionGroupIds": {
+                        "value": "[parameters('actionGroupIds')]"
+                    },
+                    "logAnalyticsName": {
+                        "value": "[parameters('logAnalyticsName')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"

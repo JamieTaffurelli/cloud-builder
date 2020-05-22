@@ -4,6 +4,42 @@ $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
 Describe "Recovery Services Vault Parameter Validation" {
 
+    Context "templateStorageAccountName Validation" {
+
+        It "Has templateStorageAccountName parameter" {
+
+            $json.parameters.templateStorageAccountName | should not be $null
+        }
+
+        It "templateStorageAccountName parameter is of type string" {
+
+            $json.parameters.templateStorageAccountName.type | should be "string"
+        }
+
+        It "templateStorageAccountName parameter is mandatory" {
+
+            ($json.parameters.templateStorageAccountName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "templatesSas Validation" {
+
+        It "Has templatesSas parameter" {
+
+            $json.parameters.templatesSas | should not be $null
+        }
+
+        It "templatesSas parameter is of type string" {
+
+            $json.parameters.templatesSas.type | should be "securestring"
+        }
+
+        It "templatesSas parameter is mandatory" {
+
+            ($json.parameters.templatesSas.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "vaultName Validation" {
 
         It "Has vaultName parameter" {
@@ -68,6 +104,8 @@ Describe "Recovery Services Vault Resource Validation" {
 
     $rsv = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.RecoveryServices/vaults" }
     $diagnostics = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
+    $backupPolicy = $json.resources | Where-Object { $PSItem.name -like "*iaas-backup*" }
+    $alerts = $json.resources | Where-Object { $PSItem.name -like "*recovery-service-alerts*" }
 
     Context "type Validation" {
 
@@ -100,6 +138,48 @@ Describe "Recovery Services Vault Resource Validation" {
         It "All logs are enabled" {
 
             (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("AzureBackupReport", "CoreAzureBackup", "AddonAzureBackupJobs", "AddonAzureBackupAlerts", "AddonAzureBackupPolicy", "AddonAzureBackupStorage", "AddonAzureBackupProtectedInstance", "AzureSiteRecoveryJobs", "AzureSiteRecoveryEvents", "AzureSiteRecoveryReplicatedItems", "AzureSiteRecoveryReplicationStats", "AzureSiteRecoveryRecoveryPoints", "AzureSiteRecoveryReplicationDataUploadRate", "AzureSiteRecoveryProtectedDiskDataChurn")).Length | should be 0
+        }
+    }
+
+    Context "Backup Policy Validation" {
+
+        It "Has a IaaS Backup Policy" {
+            $backupPolicy.properties.parameters.properties.value.backupManagementType | should be "AzureIaasVM"
+        }
+
+        It "Has 5 day instant recovery" {
+            $backupPolicy.properties.parameters.properties.value.instantRpRetentionRangeInDays | should be 5
+        }
+
+        It "Has a daily backup" {
+            $backupPolicy.properties.parameters.properties.value.schedulePolicy.scheduleRunFrequency | should be "Daily"
+        }
+
+        It "Retains daily backups backups for 7 days" {
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.dailySchedule.retentionDuration.count | should be 7
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.dailySchedule.retentionDuration.durationType | should be "Days"
+        }
+
+        It "Retains weekly backups backups for 4 weeks" {
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.weeklySchedule.retentionDuration.count | should be 4
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.weeklySchedule.retentionDuration.durationType | should be "Weeks"
+        }
+
+        It "Retains monthly backups backups for 12 months" {
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.monthlySchedule.retentionDuration.count | should be 12
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.monthlySchedule.retentionDuration.durationType | should be "Months"
+        }
+
+        It "Retains yearly backups backups for 10 years" {
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.yearlySchedule.retentionDuration.count | should be 10
+            $backupPolicy.properties.parameters.properties.value.retentionPolicy.yearlySchedule.retentionDuration.durationType | should be "Years"
+        }
+    }
+
+    Context "Alerts Validation" {
+
+        It "Deploys Alerts" {
+            $alerts | should not be $null
         }
     }
 }

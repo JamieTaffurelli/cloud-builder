@@ -1,5 +1,5 @@
 $cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
-$internalCmdletDirectory  = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
+$internalCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
 $interfaceCmdletDirectory = $internalCmdletDirectory -Replace "internal", "interface"
 . (Join-Path -Path $internalCmdletDirectory -ChildPath $cmdletFile -Resolve)
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath "Get-AzureBuilderResource.ps1" -Resolve)
@@ -11,7 +11,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
         Mock -CommandName New-AzStorageContext -MockWith { "Storage Context" }
         Mock -CommandName Get-AzureBuilderResource -MockWith { @{ ResourceGroupName = "ResourceGroup"; StorageAccountName = "StorageAccount" } }
         Mock -CommandName Get-AzStorageAccountKey -MockWith { @("PrimaryStorageKey", "SecondaryStorageKey") }
-        Mock -CommandName Write-Warning -MockWith {}
+        Mock -CommandName Write-Warning -MockWith { }
 
         It "Sets Storage Context with OAuth authentication as default" {
 

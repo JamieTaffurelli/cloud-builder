@@ -1,5 +1,5 @@
 $cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
-$interfaceCmdletDirectory  = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
+$interfaceCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
 $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "internal"
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath $cmdletFile -Resolve)
 . (Join-Path -Path $internalCmdletDirectory -ChildPath "New-AzureBuilderStorageContext.ps1" -Resolve)
@@ -8,8 +8,8 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
     Context "Storage Context Validation" {
 
-        Mock -CommandName New-AzureBuilderStorageContext -MockWith {}
-        Mock -CommandName Get-AzStorageBlob -MockWith {}
+        Mock -CommandName New-AzureBuilderStorageContext -MockWith { }
+        Mock -CommandName Get-AzStorageBlob -MockWith { }
         
         It "Uses OAuth authentication if specified" {
 
@@ -62,11 +62,11 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
     Context "Blob Retreival Validation" {
 
-        Mock -CommandName New-AzureBuilderStorageContext -MockWith {}
+        Mock -CommandName New-AzureBuilderStorageContext -MockWith { }
 
         It "Returns false if Get-AzStorageBlob returns null" {
 
-            Mock -CommandName Get-AzStorageBlob -MockWith {}
+            Mock -CommandName Get-AzStorageBlob -MockWith { }
 
             Test-AzureBuilderBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" | should be $false
 
@@ -97,7 +97,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
         It "Writes an error if other exception is thrown" {
 
             Mock -CommandName Get-AzStorageBlob -MockWith { throw [System.Exception]::new("cannot find blob") }
-            Mock -CommandName Write-Error -MockWith {}
+            Mock -CommandName Write-Error -MockWith { }
 
             Test-AzureBuilderBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth"
 

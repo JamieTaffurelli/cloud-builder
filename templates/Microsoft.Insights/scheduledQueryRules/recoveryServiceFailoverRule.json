@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.2.0",
+    "contentVersion": "1.0.3.0",
     "parameters": {
         "vaultName": {
             "type": "string",
@@ -95,7 +95,7 @@
     },
     "variables": {
         "queryName": "[concat(parameters('vaultName'), '-failover-alert')]",
-        "query": "[concat('AzureDiagnostics | where Category == \"AzureSiteRecoveryReplicatedItems\" and (failoverHealth_s == \"Critical\" or failoverHealth_s == \"Warning\") and Resource == \"', toUpper('vaultName'), '\"')]"
+        "query": "[concat('AzureDiagnostics | where Category == \"AzureSiteRecoveryReplicatedItems\" and (failoverHealth_s == \"Critical\" or failoverHealth_s == \"Warning\") and Resource == \"', toUpper(parameters('vaultName')), '\"')]"
     },
     "resources": [
         {
