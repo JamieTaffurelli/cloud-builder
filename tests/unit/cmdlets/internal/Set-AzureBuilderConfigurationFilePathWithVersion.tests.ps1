@@ -48,14 +48,6 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
             "TestDrive:\WebServer.ps1" | Set-AzureBuilderConfigurationFilePathWithVersion -ErrorAction Stop | should be "TestDrive:\WebServer123.ps1"
 
             Assert-MockCalled -CommandName Get-Content -Times 1 -Scope It -Exactly -ParameterFilter { $Path -eq "TestDrive:\WebServer.ps1" }
-
-            "TestDrive:\WebServer.ps1" | Set-AzureBuilderConfigurationFilePathWithVersion -ErrorAction Stop | should be "TestDrive:\WebServer123.ps1"
-
-            Assert-MockCalled -CommandName Get-Content -Times 1 -Scope It -Exactly -ParameterFilter { $Path -eq "TestDrive:\WebServer.ps1" }
-
-            "TestDrive:\WebServer.ps1" | Set-AzureBuilderConfigurationFilePathWithVersion -ErrorAction Stop | should be "TestDrive:\WebServer123.ps1"
-
-            Assert-MockCalled -CommandName Get-Content -Times 1 -Scope It -Exactly -ParameterFilter { $Path -eq "TestDrive:\WebServer.ps1" }
             Assert-MockCalled -CommandName Get-Content -Times 1 -Scope It -Exactly
         }
     }
