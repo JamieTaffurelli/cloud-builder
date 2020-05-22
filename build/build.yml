@@ -18,7 +18,7 @@ jobs:
           pwsh: false		
           workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-      - task: Pester@9
+      - task: cca5462b-887d-4617-bf3f-dcf0d3c622e9@9
         displayName: "Run Unit Tests"
         inputs:
           resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
