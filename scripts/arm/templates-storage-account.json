@@ -95,7 +95,7 @@
       "apiVersion": "2018-09-01-preview",
       "properties": {
         "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
-        "principalId": "8af6e1de-05c1-43cc-b89f-7037f62b8246",
+        "principalId": "e13ad98f-da60-40cd-8bd4-2d3b10352e23",
         "principalType": "ServicePrincipal",
         "canDelegate": false
       }
