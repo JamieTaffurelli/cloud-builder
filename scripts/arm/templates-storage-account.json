@@ -90,7 +90,7 @@
   },
   "resources": [
     {
-      "name": "string",
+      "name": "[guid('pipelinesp')]",
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2018-09-01-preview",
       "properties": {
