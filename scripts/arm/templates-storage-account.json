@@ -90,6 +90,17 @@
   },
   "resources": [
     {
+      "name": "string",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2018-09-01-preview",
+      "properties": {
+        "roleDefinitionId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+        "principalId": "8af6e1de-05c1-43cc-b89f-7037f62b8246",
+        "principalType": "ServicePrincipal",
+        "canDelegate": false
+      }
+    },
+    {
       "name": "[parameters('storageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2019-04-01",
