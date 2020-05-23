@@ -48,7 +48,7 @@ jobs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 resourceGroupName: ${{ parameters.resourceGroupName }}
                 location: "North Europe"
-                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json.json"
+                csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json"
                 csmParametersFile: ${{ parameters.armParametersFile }}
                 deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
 
