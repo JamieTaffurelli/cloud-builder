@@ -90,11 +90,11 @@
   },
   "resources": [
     {
-      "name": "[guid('pipelinesp')]",
+      "name": "[guid(resourceGroup().id, 'storageContributors')]",
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2018-09-01-preview",
       "properties": {
-        "roleDefinitionId": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+        "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
         "principalId": "8af6e1de-05c1-43cc-b89f-7037f62b8246",
         "principalType": "ServicePrincipal",
         "canDelegate": false
