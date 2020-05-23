@@ -56,7 +56,7 @@ jobs:
               displayName: "Upload Templates to Storage Account"
               inputs:
                 azureSubscription: ${{ parameters.azureSubscription }}
-                ScriptPath: "$(Pipeline.Workspace)/scripts/upload-templates.ps1"
+                ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
                 ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "templates" -SearchPath "$(Pipeline.Workspace)/templates/" -ModulePath "$(Pipeline.Workspace)\module\AzureBuilder.psd1"'
                 azurePowerShellVersion: LatestVersion
 
