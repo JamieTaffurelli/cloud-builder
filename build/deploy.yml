@@ -32,7 +32,7 @@ jobs:
 
             - download: current
               displayName: Download DSC
-              artifact: module
+              artifact: dsc
               
             - task: PowerShell@2
               displayName: "Install Required PowerShell Modules"
