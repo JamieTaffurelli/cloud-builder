@@ -3,7 +3,11 @@ $templateFolderPath = Split-Path -Path ($testPath -replace [regex]::Escape("test
 $armTemplatePaths = (Get-ChildItem -Path $templateFolderPath -Recurse -File -Filter "*.json").FullName
 
 Describe "Template Validation" -Tag @("AllTemplates") {
-
+    $schemaUrl = "https://schema.management.azure.com/schemas/"
+    $validSchemas = @("${schemaUrl}2015-01-01/deploymentTemplate.json#",
+                      "${schemaUrl}2019-04-01/deploymentTemplate.json#",
+                      "${schemaUrl}2019-08-01/managementGroupDeploymentTemplate.json#",
+                      "${schemaUrl}2018-05-01/subscriptionDeploymentTemplate.json#" )
     Context "JSON Validation" {
 
         foreach($armTemplatePath in $armTemplatePaths)
@@ -16,7 +20,7 @@ Describe "Template Validation" -Tag @("AllTemplates") {
             $arm = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
             It "${armTemplatePath} has valid schema" {
-                $arm.'$schema' | should be "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+                $validSchemas -contains $arm.'$schema' | should be $true
             }
 
             It "${armTemplatePath} has valid content version" {

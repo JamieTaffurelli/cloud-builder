@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "policyDefinitionName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Policy Definition you wish to create"
+            }
+        },
+        "policyType": {
+            "type": "string",
+            "defaultValue": "Custom",
+            "allowedValues": [
+                "BuiltIn",
+                "Custom",
+                "NotSpecified"
+            ],
+            "metadata": {
+                "description": "The type of the Policy Definition you wish to create"
+            }
+        },
+        "mode": {
+            "type": "string",
+            "defaultValue": "All",
+            "metadata": {
+                "description": "The mode of the Policy Definition you wish to create"
+            }
+        },
+        "displayName": {
+            "type": "string",
+            "metadata": {
+                "description": "The display name of the Policy Definition you wish to create"
+            }
+        },
+        "description": {
+            "type": "string",
+            "metadata": {
+                "description": "The description of the Policy Definition you wish to create"
+            }
+        },
+        "policyRule": {
+            "type": "object",
+            "metadata": {
+                "description": "The JSON object describing the rule of the Policy Definition you wish to create"
+            }
+        },
+        "metadata": {
+            "type": "object",
+            "metadata": {
+                "description": "The metadata of the Policy Definition you wish to create"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "metadata": {
+                "description": "The parameters of the Policy Definition you wish to create"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "name": "[parameters('policyDefinitionName')]",
+            "type": "Microsoft.Authorization/policyDefinitions",
+            "apiVersion": "2019-06-01",
+            "properties": {
+                "policyType": "[parameters('policyType')]",
+                "mode": "[parameters('mode')]",
+                "displayName": "[parameters('displayName')]",
+                "description": "[parameters('description')]",
+                "policyRule": "[parameters('policyRule')]",
+                "metadata": "[parameters('metadata')]",
+                "parameters": "[parameters('parameters')]"
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
