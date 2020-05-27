@@ -58,6 +58,29 @@ Describe "Policy Assignment Parameter Validation" {
         }
     }
 
+    Context "policyDefinitionType Validation" {
+
+        It "Has policyDefinitionType parameter" {
+
+            $json.parameters.policyDefinitionType | should not be $null
+        }
+
+        It "policyDefinitionType parameter is of type string" {
+
+            $json.parameters.policyDefinitionType.type | should be "string"
+        }
+
+        It "policyDefinitionType parameter default value is Initiative" {
+
+            $json.parameters.policyDefinitionType.defaultValue | should be "Initiative"
+        }
+
+        It "policyDefinitionType parameter allowed values are Initiative, Standard" {
+
+            (Compare-Object -ReferenceObject $json.parameters.policyDefinitionType.allowedValues -DifferenceObject @("Initiative", "Standard")).Length | should be 0
+        }
+    }
+
     Context "notScopes Validation" {
 
         It "Has notScopes parameter" {

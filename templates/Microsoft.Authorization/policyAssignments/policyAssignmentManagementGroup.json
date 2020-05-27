@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.1.0.0",
     "parameters": {
         "policyAssignmentName": {
             "type": "string",
@@ -16,6 +16,17 @@
         },
         "policyDefinitionName": {
             "type": "string",
+            "metadata": {
+                "description": "The name of the Policy Definition or Initiative you wish to assign to the Policy Assignment"
+            }
+        },
+        "policyDefinitionType": {
+            "type": "string",
+            "defaultValue": "Initiative",
+            "allowedValues": [
+                "Initiative",
+                "Standard"
+            ],
             "metadata": {
                 "description": "The name of the Policy Definition or Initiative you wish to assign to the Policy Assignment"
             }
@@ -73,6 +84,7 @@
         }
     },
     "variables": {
+        "resourceType": "[if(equals(parameters('policyDefinitionType'), 'Initiative'), 'policySetDefinitions/', 'policyDefinitions/')]"
     },
     "resources": [
         {
@@ -81,7 +93,7 @@
             "apiVersion": "2019-06-01",
             "properties": {
                 "displayName": "[parameters('displayName')]",
-                "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/policyDefinitions/', parameters('policyDefinitionName'))]",
+                "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/', variables('resourceType'), parameters('policyDefinitionName'))]",
                 "parameters": "[parameters('parameters')]",
                 "description": "[parameters('description')]",
                 "metadata": "[parameters('metadata')]",
