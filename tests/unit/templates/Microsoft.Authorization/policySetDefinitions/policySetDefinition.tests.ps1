@@ -45,24 +45,6 @@ Describe "Policy Set Definition Parameter Validation" {
         }
     }
 
-    Context "mode Validation" {
-
-        It "Has mode parameter" {
-
-            $json.parameters.mode | should not be $null
-        }
-
-        It "mode parameter is of type string" {
-
-            $json.parameters.mode.type | should be "string"
-        }
-
-        It "mode parameter default value is All" {
-
-            $json.parameters.mode.defaultValue | should be "All"
-        }
-    }
-
     Context "displayName Validation" {
 
         It "Has displayName parameter" {

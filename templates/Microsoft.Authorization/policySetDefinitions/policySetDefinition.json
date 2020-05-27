@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.0.1.0",
     "parameters": {
         "policySetDefinitionName": {
             "type": "string",
@@ -18,13 +18,6 @@
             ],
             "metadata": {
                 "description": "The type of the Policy Set Definition you wish to create"
-            }
-        },
-        "mode": {
-            "type": "string",
-            "defaultValue": "All",
-            "metadata": {
-                "description": "The mode of the Policy Set Definition you wish to create"
             }
         },
         "displayName": {
@@ -67,7 +60,6 @@
             "apiVersion": "2019-06-01",
             "properties": {
                 "policyType": "[parameters('policyType')]",
-                "mode": "[parameters('mode')]",
                 "displayName": "[parameters('displayName')]",
                 "description": "[parameters('description')]",
                 "policyDefinitions": "[parameters('policyDefinitions')]",
