@@ -124,9 +124,9 @@ Describe "Policy Assignment Parameter Validation" {
             $json.parameters.description | should not be $null
         }
 
-        It "parameters parameter is of type object" {
+        It "parameters parameter is of type string" {
 
-            $json.parameters.description.type | should be "object"
+            $json.parameters.description.type | should be "string"
         }
 
         It "parameters parameter is mandatory" {
