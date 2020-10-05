@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.2.0.0",
+  "contentVersion": "1.4.0.0",
   "parameters": {
     "vmName": {
       "type": "string",
@@ -13,10 +13,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Virtual Machine to"
       }
@@ -64,12 +61,7 @@
     "osDiskCaching": {
       "type": "string",
       "defaultValue": "",
-      "allowedValues": [
-        "",
-        "None",
-        "ReadOnly",
-        "ReadWrite"
-      ],
+      "allowedValues": ["", "None", "ReadOnly", "ReadWrite"],
       "metadata": {
         "description": "The caching option of the Virtual Machine OS disk (None, ReadOnly, ReadWrite), defaults to None for Standard storage, ReadOnly for Premium storage"
       }
@@ -77,11 +69,7 @@
     "osDiskCreateOption": {
       "type": "string",
       "defaultValue": "FromImage",
-      "allowedValues": [
-        "FromImage",
-        "Empty",
-        "Attach"
-      ],
+      "allowedValues": ["FromImage", "Empty", "Attach"],
       "metadata": {
         "description": "Specifies how the OS disk should be created"
       }
@@ -117,8 +105,7 @@
     },
     "dataDisks": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Specify Data Disks to attach to the Virtual Machine."
       }
@@ -140,14 +127,6 @@
       "defaultValue": false,
       "metadata": {
         "description": "Enable Automatic OS updates for the Virtual Machine"
-      }
-    },
-    "winRMListeners": {
-      "type": "array",
-      "defaultValue": [
-      ],
-      "metadata": {
-        "description": "Specify protocol and optional certificate url for WinRM agent"
       }
     },
     "networkInterfaces": {
@@ -195,79 +174,6 @@
         "descriptions": "Version of Dependency Agent extension"
       }
     },
-    "diskEncryptionVersion": {
-      "type": "string",
-      "defaultValue": "2.2",
-      "metadata": {
-        "descriptions": "Version of Disk Encryption extension"
-      }
-    },
-    "diskEncryptionUpdateTag": {
-      "type": "string",
-      "defaultValue": "[newGuid()]",
-      "metadata": {
-        "descriptions": "Will force disk encryption to reinstall with default value, pass in static value to override this"
-      }
-    },
-    "diskEncryptionKeyVaultSubscriptionId": {
-      "type": "string",
-      "defaultValue": "[subscription().subscriptionId]",
-      "metadata": {
-        "description": "The Subscription ID of the key vault to generate BitLocker encryption key"
-      }
-    },
-    "diskEncryptionKeyVaultResourceGroupName": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().name]",
-      "metadata": {
-        "description": "The Resource Group of the key vault to generate BitLocker encryption key"
-      }
-    },
-    "diskEncryptionKeyVaultName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the key vault to generate BitLocker encryption key"
-      }
-    },
-    "kekKeyVaultSubscriptionId": {
-      "type": "string",
-      "defaultValue": "[subscription().subscriptionId]",
-      "metadata": {
-        "description": "The Subscription ID of the key vault to apply key encryption key to BitLocker key"
-      }
-    },
-    "kekKeyVaultResourceGroupName": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().name]",
-      "metadata": {
-        "description": "The Resource Group of the key vault to apply key encryption key to BitLocker key"
-      }
-    },
-    "kekKeyVaultName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the key vault to apply key encryption key to BitLocker key"
-      }
-    },
-    "kekName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the key to apply key encryption key to BitLocker key"
-      }
-    },
-    "kekVersion": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the key vault to generate key encryption key"
-      }
-    },
-    "keyEncryptionAlgorithm": {
-      "type": "string",
-      "defaultValue": "RSA-OAEP",
-      "metadata": {
-        "description": "The encryption algorithm of the kek, RSA-OEAP recommended"
-      }
-    },
     "tags": {
       "type": "object"
     }
@@ -291,7 +197,7 @@
             "managedDisk": {
               "id": "[if(empty(parameters('dataDisks')), 1, resourceId(if(contains(parameters('dataDisks')[copyIndex('dataDisks')], 'diskSubscriptionId'), parameters('dataDisks')[copyIndex('dataDisks')].diskSubscriptionId, subscription().subscriptionId), if(contains(parameters('dataDisks')[copyIndex('dataDisks')], 'diskResourceGroupName'), parameters('dataDisks')[copyIndex('dataDisks')].diskResourceGroupName, resourceGroup().name), 'Microsoft.Compute/disks', parameters('dataDisks')[copyIndex('dataDisks')].diskName))]"
             },
-            "createOption": "Attach"
+            "createOption": "[if(or(empty(parameters('dataDisks')), not(contains(parameters('dataDisks')[copyIndex('dataDisks')], 'createOption'))), 'Attach', parameters('dataDisks')[copyIndex('dataDisks')].createOption)]"
           }
         }
       ]
@@ -313,7 +219,7 @@
     "availabilitySet": {
       "id": "[parameters('availabilitySetId')]"
     },
-    "vmExtensionTemplateVersion": "1.1.0.0",
+    "vmExtensionTemplateVersion": "1.0.4.0",
     "vmExtensionsTemplateUrl": "[concat(parameters('templateContainerUrl'), 'Microsoft.Compute/virtualMachines/extensions/virtualMachineExtension.', variables('vmExtensionTemplateVersion'), '.json', parameters('templateSas'))]"
   },
   "resources": [
@@ -357,13 +263,8 @@
           "adminPassword": "[parameters('adminPassword')]",
           "windowsConfiguration": {
             "provisionVMAgent": true,
-            "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]",
-            "timeZone": "GMT Standard Time",
-            "winRM": {
-              "listeners": "[parameters('WinRMListeners')]"
-            }
-          },
-          "allowExtensionOperations": true
+            "enableAutomaticUpdates": "[parameters('enableAutomaticUpdates')]"
+          }
         },
         "networkProfile": {
           "networkInterfaces": "[variables('networkInterfaces').networkInterfaces]"
@@ -388,7 +289,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('vmExtensionsTemplateUrl')]",
-          "contentVersion": "[variables('vmExtensionTemplateVersion')]"
+          "contentVersion": "1.0.4.0"
         },
         "parameters": {
           "vmExtensionName": {
@@ -423,7 +324,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('vmExtensionsTemplateUrl')]",
-          "contentVersion": "[variables('vmExtensionTemplateVersion')]"
+          "contentVersion": "1.0.4.0"
         },
         "parameters": {
           "vmExtensionName": {
@@ -449,57 +350,7 @@
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
       ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2018-05-01",
-      "name": "[concat(parameters('vmName'), '-AzureDiskEncryption')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[variables('vmExtensionsTemplateUrl')]",
-          "contentVersion": "[variables('vmExtensionTemplateVersion')]"
-        },
-        "parameters": {
-          "vmExtensionName": {
-            "value": "AzureDiskEncryption"
-          },
-          "vmName": {
-            "value": "[parameters('vmName')]"
-          },
-          "typeHandlerVersion": {
-            "value": "[parameters('diskEncryptionVersion')]"
-          },
-          "publisher": {
-            "value": "Microsoft.Azure.Security"
-          },
-          "type": {
-            "value": "AzureDiskEncryption"
-          },
-          "forceUpdateTag": {
-            "value": "[parameters('diskEncryptionUpdateTag')]"
-          },
-          "settings": {
-            "value": {
-              "EncryptionOperation": "EnableEncryption",
-              "KeyEncryptionAlgorithm": "[parameters('keyEncryptionAlgorithm')]",
-              "KeyVaultURL": "[concat('https://', parameters('diskEncryptionKeyVaultName'), '.vault.azure.net/')]",
-              "KeyVaultResourceId": "[resourceId(parameters('diskEncryptionKeyVaultSubscriptionId'), parameters('diskEncryptionKeyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('diskEncryptionKeyVaultName'))]",
-              "KeyEncryptionKeyURL": "[concat('https://', parameters('kekKeyVaultName'), '.vault.azure.net/keys/', parameters('kekName'), '/', parameters('kekVersion'))]",
-              "KekVaultResourceId": "[resourceId(parameters('kekKeyVaultSubscriptionId'), parameters('kekKeyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('kekKeyVaultName'))]",
-              "ResizeOSDisk": false
-            }
-          },
-          "tags": {
-            "value": "[parameters('tags')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
-      ]
     }
   ],
-  "outputs": {
-  }
+  "outputs": {}
 }

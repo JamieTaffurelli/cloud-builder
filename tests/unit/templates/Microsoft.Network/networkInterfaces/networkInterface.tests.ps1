@@ -323,7 +323,7 @@ Describe "Network Interface Parameter Validation" {
 
         It "enableIpForwarding parameter default value is false" {
 
-            $json.parameters.enableIpForwarding.defaultValue | should be $true
+            $json.parameters.enableIpForwarding.defaultValue | should be $false
         }
     }
 
