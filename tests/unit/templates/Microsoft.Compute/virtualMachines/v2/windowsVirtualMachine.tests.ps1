@@ -346,25 +346,7 @@ Describe "Windows Virtual Machine Parameter Validation" {
 
         It "enableAutomaticUpdates parameter default value is true" {
 
-            $json.parameters.purchasePlanRequired.defaultValue | should be $false
-        }
-    }
-
-    Context "winRMListeners Validation" {
-
-        It "Has winRMListeners parameter" {
-
-            $json.parameters.winRMListeners | should not be $null
-        }
-
-        It "winRMListeners parameter is of type array" {
-
-            $json.parameters.winRMListeners.type | should be "array"
-        }
-
-        It "winRMListeners parameter default value is an empty array" {
-
-            $json.parameters.winRMListeners.defaultValue.Count | should be 0
+            $json.parameters.enableAutomaticUpdates.defaultValue | should be $false
         }
     }
 
@@ -764,20 +746,6 @@ Describe "Windows Virtual Machine Resource Validation" {
         It "Provisions VM agent" {
 
             $vmResource.properties.osProfile.windowsConfiguration.provisionVMAgent | should be $true
-        }
-
-        
-        It "Uses GMT Standard Time" {
-
-            $vmResource.properties.osProfile.windowsConfiguration.timeZone | should be "GMT Standard Time"
-        }
-    }
-
-    Context "allowExtensionOperations Validation" {
-
-        It "Allows VM extensions" {
-
-            $vmResource.properties.osProfile.allowExtensionOperations | should be $true
         }
     }
 

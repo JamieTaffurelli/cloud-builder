@@ -127,9 +127,9 @@ Describe "Data Disk Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-09-30" {
+        It "apiVersion value is 2019-11-01" {
 
-            $json.resources.apiVersion | should be "2018-09-30"
+            $json.resources.apiVersion | should be "2019-11-01"
         }
     }
 
@@ -141,11 +141,11 @@ Describe "Data Disk Resource Validation" {
         }
     }
 
-    Context "encryptionSettingsCollection Validation" {
+    Context "Encryption Validation" {
 
-        It "Disk encryption is disabled" {
+        It "Default encryption is enabled" {
 
-            $json.resources.properties.encryptionSettingsCollection.enabled | should be $false
+            $json.resources.properties.encryption.type | should be "EncryptionAtRestWithPlatformKey"
         }
     }
 }
