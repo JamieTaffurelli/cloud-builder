@@ -195,19 +195,6 @@ jobs:
           publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
-      - task: CopyFiles@2
-        displayName: "Copy Runbooks to Staging Directory"
-        inputs:
-          sourceFolder: '$(System.DefaultWorkingDirectory)\runbooks'
-          contents: |
-            **\*
-            !configurations\*
-          targetFolder: '$(Build.ArtifactStagingDirectory)\runbooks'
-          cleanTargetFolder: false
-          overWrite: true
-          flattenFolders: false
-        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
-
       - task: PublishBuildArtifacts@1
         displayName: "Publish Runbooks Resources (Build)"
         inputs:

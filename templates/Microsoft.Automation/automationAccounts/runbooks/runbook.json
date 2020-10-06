@@ -1,0 +1,120 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "runbookName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the runbook to make availiable in the Automation Account"
+      }
+    },
+    "automationAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Automation Account to consume the runbook"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "Location of the runbook"
+      }
+    },
+    "logVerbose": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable verbose logging"
+      }
+    },
+    "logProgress": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable progress logging"
+      }
+    },
+    "runbookType": {
+      "type": "string",
+      "defaultValue": "PowerShell",
+      "allowedValues": [
+        "Script",
+        "Graph",
+        "PowerShellWorkflow",
+        "PowerShell",
+        "GraphPowerShellWorkflow",
+        "GraphPowerShell"
+      ],
+      "metadata": {
+        "description": "Enable progress logging"
+      }
+    },
+    "storageAccountContainerUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Storage Account URL to 'folder' to get the runbook from"
+      }
+    },
+    "sasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SAS token to authenticate against configuration Storage Account"
+      }
+    },
+    "runbookVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Version of the runbook to make availiable in the Automation Account"
+      }
+    },
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "Description of the runbook to make availiable in the Automation Account"
+      }
+    },
+    "logActivityTrace": {
+      "type": "int",
+      "defaultValue": 0,
+      "allowedValues": [0, 1, 2],
+      "metadata": {
+        "description": "Description of the runbook to make availiable in the Automation Account"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to runbook"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('automationAccountName'), '/', parameters('runbookName'))]",
+      "type": "Microsoft.Automation/automationAccounts/runbooks",
+      "apiVersion": "2018-06-30",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "logVerbose": "[parameters('logVerbose')]",
+        "logProgress": "[parameters('logProgress')]",
+        "runbookType": "[parameters('runbookType')]",
+        "publishContentLink": {
+          "uri": "[concat(parameters('storageAccountContainerUrl'), '/', parameters('runbookName'), '.', parameters('runbookVersion'), '.ps1', parameters('sasToken'))]",
+          "version": "[parameters('runbookVersion')]"
+        },
+        "description": "[parameters('description')]",
+        "logActivityTrace": "[parameters('logActivityTrace')]"
+      }
+    }
+  ],
+  "outputs": {
+    "runbook": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/runbooks', parameters('automationAccountName'), parameters('runbookName')), '2018-06-30', 'Full')]"
+    }
+  }
+}
