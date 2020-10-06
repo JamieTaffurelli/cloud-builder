@@ -4,25 +4,6 @@ $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
 Describe "Automation Account Job Schedule Parameter Validation" {
 
-
-    Context "jobScheduleName Validation" {
-
-        It "Has jobScheduleNameName parameter" {
-
-            $json.parameters.jobScheduleName | should not be $null
-        }
-
-        It "jobScheduleName parameter is of type string" {
-
-            $json.parameters.jobScheduleName.type | should be "string"
-        }
-
-        It "jobScheduleName parameter is mandatory" {
-
-            ($json.parameters.jobScheduleName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
     Context "scheduleName Validation" {
 
         It "Has scheduleName parameter" {
@@ -108,9 +89,9 @@ Describe "Automation Account Job Schedule Parameter Validation" {
             $json.parameters.runOn.type | should be "string"
         }
 
-        It "runOn parameter is mandatory" {
+        It "runOn parameter default value is an empty string" {
 
-            ($json.parameters.runOn.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            $json.parameters.runOn.defaultValue | should be ([string]::Empty)
         }
     }
 }

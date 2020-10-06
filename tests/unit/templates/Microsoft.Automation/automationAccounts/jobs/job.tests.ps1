@@ -90,9 +90,9 @@ Describe "Automation Account Job Parameter Validation" {
             $json.parameters.runOn.type | should be "string"
         }
 
-        It "runOn parameter is mandatory" {
+        It "runOn parameter default value is an empty string" {
 
-            ($json.parameters.runOn.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            $json.parameters.runOn.defaultValue | should be ([string]::Empty)
         }
     }
 }
