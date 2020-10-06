@@ -21,7 +21,7 @@ function Copy-AzureBuilderFilesWithVersion
         $OutputFolder,
 
         [Parameter()]
-        [ValidateSet( 'ARM', 'DSC')]
+        [ValidateSet( 'ARM', 'DSC', 'Script')]
         [String]
         $FileType = "ARM"
     )
@@ -39,13 +39,20 @@ function Copy-AzureBuilderFilesWithVersion
             {
                 Write-Verbose "Setting versioned file path for ${filePath}"
 
-                if($FileType -eq "ARM")
+                switch($FileType)
                 {
-                    $versionedFilePath = Set-AzureBuilderTemplateFilePathWithVersion -Path $filePath
-                }
-                else 
-                {
-                    $versionedFilePath = Set-AzureBuilderConfigurationFilePathWithVersion -Path $filePath
+                    "ARM"
+                    {
+                        $versionedFilePath = Set-AzureBuilderTemplateFilePathWithVersion -Path $filePath
+                    }
+                    "DSC"
+                    {
+                        $versionedFilePath = Set-AzureBuilderConfigurationFilePathWithVersion -Path $filePath
+                    }
+                    "Script"
+                    {
+                        $versionedFilePath = Set-AzureBuilderScriptFilePathWithVersion -Path $filePath
+                    }
                 }
 
                 $outputPath = $versionedFilePath -replace [regex]::Escape($SearchFolder), $OutputFolder

@@ -33,19 +33,23 @@ jobs:
             - download: current
               displayName: Download DSC
               artifact: dsc
-              
+
+            - download: current
+              displayName: Download Runbooks
+              artifact: runbooks
+
             - task: PowerShell@2
               displayName: "Install Required PowerShell Modules"
               inputs:
                 targetType: "filePath"
-                filePath: '$(Pipeline.Workspace)/scripts/install-modules.ps1'
+                filePath: "$(Pipeline.Workspace)/scripts/install-modules.ps1"
                 arguments: '@("az")'
                 errorActionPreference: "stop"
                 failOnStderr: false
                 ignoreLASTEXITCODE: false
                 pwsh: false
                 workingDirectory: "$(System.DefaultWorkingDirectory)"
-                
+
             - task: AzureResourceGroupDeployment@2
               displayName: "Deploy Resources"
               inputs:
@@ -70,4 +74,12 @@ jobs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
                 ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "dsc" -SearchPath "$(Pipeline.Workspace)/dsc/" -ModulePath "$(Pipeline.Workspace)/module/AzureBuilder.psd1"'
+                azurePowerShellVersion: LatestVersion
+
+            - task: AzurePowerShell@4
+              displayName: "Upload Runbooks Resources to Storage Account"
+              inputs:
+                azureSubscription: ${{ parameters.azureSubscription }}
+                ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
+                ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "runbooks" -SearchPath "$(Pipeline.Workspace)/runbooks/" -ModulePath "$(Pipeline.Workspace)/module/AzureBuilder.psd1"'
                 azurePowerShellVersion: LatestVersion

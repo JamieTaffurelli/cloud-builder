@@ -3,21 +3,21 @@ parameters:
 
 jobs:
   - job:
+    timeoutInMinutes: 120
     pool:
       vmImage: ${{ parameters.poolName }}
     steps:
-
-      - task: PowerShell@2		
-        displayName: 'Install Required PowerShell Modules'
-        inputs:		
-          targetType: 'filePath'		
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'		
-          arguments: '@("az")'		
-          errorActionPreference: 'stop'		
-          failOnStderr: false		
-          ignoreLASTEXITCODE: false		
-          pwsh: false		
-          workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: PowerShell@2
+        displayName: "Install Required PowerShell Modules"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
+          arguments: '@("az", "AzureAD")'
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
 
       - task: cca5462b-887d-4617-bf3f-dcf0d3c622e9@9
         displayName: "Run Unit Tests"
@@ -50,7 +50,6 @@ jobs:
     pool:
       vmImage: ${{ parameters.poolName }}
     steps:
-
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
         inputs:
@@ -70,17 +69,17 @@ jobs:
           excludeFiles: "$(ExclusionTemplates)"
           disableAutoUpdate: false
 
-      - task: PowerShell@2		
-        displayName: 'Install Required PowerShell Modules'
-        inputs:		
-          targetType: 'filePath'		
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'		
-          arguments: '@("az")'		
-          errorActionPreference: 'stop'		
-          failOnStderr: false		
-          ignoreLASTEXITCODE: false		
-          pwsh: false		
-          workingDirectory: '$(System.DefaultWorkingDirectory)'
+      - task: PowerShell@2
+        displayName: "Install Required PowerShell Modules"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
+          arguments: '@("az")'
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
 
       - task: PowerShell@2
         displayName: "Version ARM Templates"
@@ -98,6 +97,17 @@ jobs:
           targetType: "filePath"
           filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
           arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)\dsc\configurations" -OutputFolder "$(Build.ArtifactStagingDirectory)\dsc\configurations" -FileType "DSC"'
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+
+      - task: PowerShell@2
+        displayName: "Version Runbooks"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
+          arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)\runbooks" -OutputFolder "$(Build.ArtifactStagingDirectory)\runbooks" -FileType "Script"'
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
@@ -182,5 +192,26 @@ jobs:
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)\dsc'
           artifactName: "dsc"
+          publishLocation: "Container"
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - task: CopyFiles@2
+        displayName: "Copy Runbooks to Staging Directory"
+        inputs:
+          sourceFolder: '$(System.DefaultWorkingDirectory)\runbooks'
+          contents: |
+            **\*
+            !configurations\*
+          targetFolder: '$(Build.ArtifactStagingDirectory)\runbooks'
+          cleanTargetFolder: false
+          overWrite: true
+          flattenFolders: false
+        condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Runbooks Resources (Build)"
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)\runbooks'
+          artifactName: "runbooks"
           publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))

@@ -17,7 +17,7 @@ param
     $ModulePath = (Get-ChildItem -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -Recurse -Include "*AzureBuilder.psd1").FullName,
 
     [Parameter()]
-    [ValidateSet( 'ARM', 'DSC')]
+    [ValidateSet( 'ARM', 'DSC', 'Script')]
     [String]
     $FileType = "ARM"
 )
