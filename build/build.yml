@@ -3,6 +3,7 @@ parameters:
 
 jobs:
   - job:
+    timeoutInMinutes: 120
     pool:
       vmImage: ${{ parameters.poolName }}
     steps:
