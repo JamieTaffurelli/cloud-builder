@@ -1,13 +1,7 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.2.0",
   "parameters": {
-    "jobScheduleName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the job to apply to the runbook"
-      }
-    },
     "scheduleName": {
       "type": "string",
       "metadata": {
@@ -35,6 +29,7 @@
     },
     "runOn": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Group name where job will be executed"
       }
@@ -43,7 +38,7 @@
   "variables": {},
   "resources": [
     {
-      "name": "[concat(parameters('automationAccountName'), '/', guid(parameters('jobScheduleName')))]",
+      "name": "[concat(parameters('automationAccountName'), '/', guid(concat(parameters('runbookName'), '-', parameters('scheduleName'))))]",
       "type": "Microsoft.Automation/automationAccounts/jobSchedules",
       "apiVersion": "2015-10-31",
       "properties": {

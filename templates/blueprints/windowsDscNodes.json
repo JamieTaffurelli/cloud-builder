@@ -1,73 +1,73 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.2.0",
-  "parameters": {
-    "templateStorageAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "The storage account to pull templates from"
-      }
-    },
-    "templatesSas": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The SAS token for then storage account to pull templates from"
-      }
-    },
-    "configurationName": {
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.3.0",
+    "parameters": {
+        "templateStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The storage account to pull templates from"
+            }
+        },
+        "templatesSas": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The SAS token for then storage account to pull templates from"
+            }
+        },
+        "configurationName": {
             "type": "string"
-    },
-    "configurationVersion": {
+        },
+        "configurationVersion": {
             "type": "string"
-    },
-    "configurationDescription": {
+        },
+        "configurationDescription": {
             "type": "string"
-    },
-    "automationAccountName": {
+        },
+        "automationAccountName": {
             "type": "string"
-    },
-    "configurationData": {
+        },
+        "configurationData": {
             "type": "string"
-    },
-    "vmNames": {
+        },
+        "vmNames": {
             "type": "array"
-    },
-    "dscExtensionVersion": {
+        },
+        "dscExtensionVersion": {
             "type": "string",
             "defaultValue": "2.80"
-    },
-    "configurationMode": {
+        },
+        "configurationMode": {
             "type": "string",
             "defaultValue": "ApplyAndMonitor",
-            "allowedValues": ["ApplyAndAutoCorrect", "ApplyAndMonitor"]
-    },
-    "rebootNodeIfNeeded": {
+            "allowedValues": [ "ApplyAndAutoCorrect", "ApplyAndMonitor" ]
+        },
+        "rebootNodeIfNeeded": {
             "type": "bool",
             "defaultValue": true
-    },
-    "actionAfterReboot": {
+        },
+        "actionAfterReboot": {
             "type": "string",
             "defaultValue": "ContinueConfiguration"
-    },
-    "allowModuleOverwrite": {
+        },
+        "allowModuleOverwrite": {
             "type": "bool",
             "defaultValue": true
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags to apply to resources"
+            }
+        }
     },
-    "tags": {
-      "type": "object",
-      "metadata": {
-        "description": "Tags to apply to resources"
-      }
-    }
-  },
-  "variables": {
-    "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
-    "dscBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/dsc/')]",
-    "dscConfigurationTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/configurations/configuration.1.1.1.0.json', parameters('templatesSas'))]",
-    "compilationJobTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/compilationJobs/compilationJob.1.2.0.0.json', parameters('templatesSas'))]",
-    "vmExtensionTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Compute/virtualMachines/extensions/virtualMachineExtension.1.1.0.0.json', parameters('templatesSas'))]"
-  },
-  "resources": [
+    "variables": {
+        "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
+        "dscBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/dsc/')]",
+        "dscConfigurationTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/configurations/configuration.1.1.1.0.json', parameters('templatesSas'))]",
+        "compilationJobTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/compilationJobs/compilationJob.1.2.0.0.json', parameters('templatesSas'))]",
+        "vmExtensionTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Compute/virtualMachines/extensions/virtualMachineExtension.1.1.0.0.json', parameters('templatesSas'))]"
+    },
+    "resources": [
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
@@ -219,6 +219,6 @@
                 "[concat('Microsoft.Resources/deployments', '/', concat(parameters('configurationName'), '-compile'))]"
             ]
         }
-  ],
-  "outputs": {}
+    ],
+    "outputs": {}
 }
