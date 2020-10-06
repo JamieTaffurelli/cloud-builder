@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "jobScheduleName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the job to apply to the runbook"
+      }
+    },
+    "scheduleName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the job to apply to the runbook"
+      }
+    },
+    "runbookName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Automation Account to run the job"
+      }
+    },
+    "automationAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Automation Account to run the job"
+      }
+    },
+    "parameters": {
+      "type": "secureObject",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Parameters to pass to the runbook"
+      }
+    },
+    "runOn": {
+      "type": "string",
+      "metadata": {
+        "description": "Group name where job will be executed"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('automationAccountName'), '/', guid(parameters('jobScheduleName')))]",
+      "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+      "apiVersion": "2015-10-31",
+      "properties": {
+        "schedule": {
+          "name": "[parameters('scheduleName')]"
+        },
+        "runbook": {
+          "name": "[parameters('runbookName')]"
+        },
+        "parameters": "[parameters('parameters')]",
+        "runOn": "[parameters('runOn')]"
+      }
+    }
+  ],
+  "outputs": {
+    "jobSchedule": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/jobs', parameters('automationAccountName'), parameters('jobScheduleName')), '2015-10-31', 'Full')]"
+    }
+  }
+}
