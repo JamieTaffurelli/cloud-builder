@@ -3,10 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "containerNames": {
-      "value": [
-        "templates",
-        "dsc"
-      ]
+      "value": ["templates", "dsc", "runbooks"]
     },
     "storageAccountName": {
       "value": "templatessa6546"
