@@ -11,7 +11,7 @@ jobs:
         inputs:
           targetType: "filePath"
           filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
-          arguments: '@("az")'
+          arguments: '@("az", "AzureAD")'
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
@@ -211,6 +211,6 @@ jobs:
         displayName: "Publish Runbooks Resources (Build)"
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)\runbooks'
-          artifactName: "dsc"
+          artifactName: "runbooks"
           publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
