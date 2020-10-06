@@ -19,7 +19,7 @@ param
     [Parameter()]
     [ValidateSet( 'ARM', 'DSC', 'Script')]
     [String]
-    $FileType = "Script"
+    $FileType = "ARM"
 )
 
 Import-Module $ModulePath -Force
