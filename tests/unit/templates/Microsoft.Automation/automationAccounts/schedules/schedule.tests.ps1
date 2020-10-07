@@ -101,14 +101,14 @@ Describe "Automation Account Schedule Parameter Validation" {
             $json.parameters.interval | should not be $null
         }
 
-        It "interval parameter is of type object" {
+        It "interval parameter is of type int" {
 
-            $json.parameters.interval.type | should be "object"
+            $json.parameters.interval.type | should be "int"
         }
 
-        It "interval parameter default value is an empty object" {
+        It "interval parameter default value is 1" {
 
-            $json.parameters.interval.defaultValue.PSObject.Properties.Name.Count | should be 0
+            $json.parameters.interval.defaultValue | should be 1
         }
     }
 
