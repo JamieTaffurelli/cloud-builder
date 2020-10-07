@@ -47,6 +47,7 @@ jobs:
         condition: always()
 
   - job:
+    timeoutInMinutes: 120
     pool:
       vmImage: ${{ parameters.poolName }}
     steps:
