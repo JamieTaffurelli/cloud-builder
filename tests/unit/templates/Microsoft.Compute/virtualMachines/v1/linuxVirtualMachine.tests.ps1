@@ -2,7 +2,7 @@ $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Nam
 $armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
-Describe "Windows Virtual Machine Parameter Validation" {
+Describe "Linux Virtual Machine Parameter Validation" {
 
     Context "vmName Validation" {
 
@@ -26,9 +26,9 @@ Describe "Windows Virtual Machine Parameter Validation" {
             $json.parameters.vmName.minLength | should be 1
         }
 
-        It "vmName parameter maximum length is 15" {
+        It "vmName parameter maximum length is 64" {
 
-            $json.parameters.vmName.maxLength | should be 15
+            $json.parameters.vmName.maxLength | should be 64
         }
     }
 
@@ -103,9 +103,9 @@ Describe "Windows Virtual Machine Parameter Validation" {
             $json.parameters.imagePublisher.type | should be "string"
         }
 
-        It "imagePublisher parameter default value is MicrosoftWindowsServer" {
+        It "imagePublisher parameter is mandatory" {
 
-            $json.parameters.imagePublisher.defaultValue | should be "MicrosoftWindowsServer"
+            ($json.parameters.imagePublisher.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -121,9 +121,9 @@ Describe "Windows Virtual Machine Parameter Validation" {
             $json.parameters.imageOffer.type | should be "string"
         }
 
-        It "imageOffer parameter default value is WindowsServer" {
+        It "imageOffer parameter is mandatory" {
 
-            $json.parameters.imageOffer.defaultValue | should be "WindowsServer"
+            ($json.parameters.imageOffer.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -139,9 +139,9 @@ Describe "Windows Virtual Machine Parameter Validation" {
             $json.parameters.imageSku.type | should be "string"
         }
 
-        It "imageSku parameter default value is 2016-Datacenter" {
+        It "imageSku parameter is mandatory" {
 
-            $json.parameters.imageSku.defaultValue | should be "2016-Datacenter"
+            ($json.parameters.imageSku.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -332,21 +332,21 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
-    Context "enableAutomaticUpdates Validation" {
+    Context "sshPublicKey Validation" {
 
-        It "Has enableAutomaticUpdates parameter" {
+        It "Has sshPublicKey parameter" {
 
-            $json.parameters.enableAutomaticUpdates | should not be $null
+            $json.parameters.sshPublicKey | should not be $null
         }
 
-        It "enableAutomaticUpdates parameter is of type bool" {
+        It "sshPublicKey parameter is of type securestring" {
 
-            $json.parameters.enableAutomaticUpdates.type | should be "bool"
+            $json.parameters.sshPublicKey.type | should be "securestring"
         }
 
-        It "enableAutomaticUpdates parameter default value is true" {
+        It "sshPublicKey parameter is mandatory" {
 
-            $json.parameters.enableAutomaticUpdates.defaultValue | should be $false
+            ($json.parameters.sshPublicKey.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -365,6 +365,24 @@ Describe "Windows Virtual Machine Parameter Validation" {
         It "networkInterfaces parameter is mandatory" {
 
             ($json.parameters.networkInterfaces.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "encryptionAtHost Validation" {
+
+        It "Has encryptionAtHost parameter" {
+
+            $json.parameters.encryptionAtHost | should not be $null
+        }
+
+        It "encryptionAtHost parameter is of type bool" {
+
+            $json.parameters.encryptionAtHost.type | should be "bool"
+        }
+
+        It "encryptionAtHost parameter default value is true" {
+
+            $json.parameters.encryptionAtHost.defaultValue | should be $false
         }
     }
 
@@ -404,6 +422,24 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
+    Context "zones Validation" {
+
+        It "Has zones parameter" {
+
+            $json.parameters.zones | should not be $null
+        }
+
+        It "zones parameter is of type array" {
+
+            $json.parameters.zones.type | should be "array"
+        }
+
+        It "zones parameter default value is an empty array" {
+
+            $json.parameters.zones.defaultValue | should be @()
+        }
+    }
+
     Context "templateContainerUrl Validation" {
 
         It "Has templateContainerUrl parameter" {
@@ -440,24 +476,6 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
-    Context "bgVersion Validation" {
-
-        It "Has bgVersion parameter" {
-
-            $json.parameters.bgVersion | should not be $null
-        }
-
-        It "bgVersion parameter is of type string" {
-
-            $json.parameters.availabilitySetId.type | should be "string"
-        }
-
-        It "bgVersion parameter default value is an empty string" {
-
-            $json.parameters.bgVersion.defaultValue | should be "2.1"
-        }
-    }
-
     Context "dependencyAgentVersion Validation" {
 
         It "Has dependencyAgentVersion parameter" {
@@ -472,7 +490,7 @@ Describe "Windows Virtual Machine Parameter Validation" {
 
         It "dependencyAgentVersion parameter default value is an empty string" {
 
-            $json.parameters.dependencyAgentVersion.defaultValue | should be "9.9"
+            $json.parameters.dependencyAgentVersion.defaultValue | should be "9.10"
         }
     }
 
@@ -495,11 +513,10 @@ Describe "Windows Virtual Machine Parameter Validation" {
     }
 }
 
-Describe "Windows Virtual Machine Resource Validation" {
+Describe "Linux Virtual Machine Resource Validation" {
 
     $vmResource = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Compute/virtualMachines" }
-    $bgInfoResource = $json.resources | Where-Object { $PSItem.name -like "*BGInfo*" }
-    $dependencyAgentResource = $json.resources | Where-Object { $PSItem.name -like "*DependencyAgentWindows*" }
+    $dependencyAgentResource = $json.resources | Where-Object { $PSItem.name -like "*DependencyAgentLinux*" }
     
     Context "type Validation" {
 
@@ -511,9 +528,9 @@ Describe "Windows Virtual Machine Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2019-03-01" {
+        It "apiVersion value is 2020-06-01" {
 
-            $vmResource.apiVersion | should be "2019-03-01"
+            $vmResource.apiVersion | should be "2020-06-01"
         }
     }
 
@@ -527,9 +544,14 @@ Describe "Windows Virtual Machine Resource Validation" {
 
     Context "osDisk Validation" {
 
-        It "Uses Windows OS" {
+        It "Uses Linux OS" {
 
-            $vmResource.properties.storageProfile.osDisk.osType | should be "Windows"
+            $vmResource.properties.storageProfile.osDisk.osType | should be "Linux"
+        }
+
+        It "Platform encryption is on" {
+
+            $vmResource.properties.storageProfile.osDisk.encryptionSettings.enabled | should be $true
         }
     }
 
@@ -541,11 +563,11 @@ Describe "Windows Virtual Machine Resource Validation" {
         }
     }
 
-    Context "windowsConfiguration Validation" {
+    Context "linuxConfiguration Validation" {
 
         It "Provisions VM agent" {
 
-            $vmResource.properties.osProfile.windowsConfiguration.provisionVMAgent | should be $true
+            $vmResource.properties.osProfile.linuxConfiguration.provisionVMAgent | should be $true
         }
     }
 
@@ -557,55 +579,7 @@ Describe "Windows Virtual Machine Resource Validation" {
         }
     }
 
-    Context "BGInfo Validation" {
-
-        It "type is Microsoft.Resources/deployments" {
-
-            $bgInfoResource.type | should be "Microsoft.Resources/deployments"
-        }
-
-        It "apiVersion is 2018-05-01" {
-
-            $bgInfoResource.apiVersion | should be "2018-05-01"
-        }
-
-        It "mode is Incremental" {
-
-            $bgInfoResource.properties.mode | should be "Incremental"
-        }
-
-        It "contentVersion is 1.0.4.0" {
-
-            $bgInfoResource.properties.templateLink.contentVersion | should be "1.0.4.0"
-        }
-
-        It "vmExtensionName is BGInfo" {
-
-            $bgInfoResource.properties.parameters.vmExtensionName.value | should be "BGInfo"
-        }
-
-        It "vmName is [parameters('vmName')]" {
-
-            $bgInfoResource.properties.parameters.vmName.value | should be "[parameters('vmName')]"
-        }
-
-        It "publisher is Microsoft.Compute" {
-
-            $bgInfoResource.properties.parameters.publisher.value | should be "Microsoft.Compute"
-        }
-        
-        It "type is BGInfo" {
-
-            $bgInfoResource.properties.parameters.type.value | should be "BGInfo"
-        }
-
-        It "depends on VM creation" {
-
-            $bgInfoResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
-        }
-    }
-
-    Context "DependencyAgentWindows Validation" {
+    Context "DependencyAgentLinux Validation" {
 
         It "type is Microsoft.Resources/deployments" {
 
@@ -627,9 +601,9 @@ Describe "Windows Virtual Machine Resource Validation" {
             $dependencyAgentResource.properties.templateLink.contentVersion | should be "1.0.4.0"
         }
 
-        It "vmExtensionName is DependencyAgentWindows" {
+        It "vmExtensionName is DependencyAgentLinux" {
 
-            $dependencyAgentResource.properties.parameters.vmExtensionName.value | should be "DependencyAgentWindows"
+            $dependencyAgentResource.properties.parameters.vmExtensionName.value | should be "DependencyAgentLinux"
         }
 
         It "vmName is [parameters('vmName')]" {
@@ -642,9 +616,9 @@ Describe "Windows Virtual Machine Resource Validation" {
             $dependencyAgentResource.properties.parameters.publisher.value | should be "Microsoft.Azure.Monitoring.DependencyAgent"
         }
         
-        It "type is DependencyAgentWindows" {
+        It "type is DependencyAgentLinux" {
 
-            $dependencyAgentResource.properties.parameters.type.value | should be "DependencyAgentWindows"
+            $dependencyAgentResource.properties.parameters.type.value | should be "DependencyAgentLinux"
         }
 
         It "depends on VM creation" {
