@@ -1,0 +1,202 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.2.0",
+    "parameters": {
+        "templateStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The storage account to pull templates from"
+            }
+        },
+        "templatesSas": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The SAS token for then storage account to pull templates from"
+            }
+        },
+        "runbooks": {
+            "type": "array"
+        },
+        "automationAccountName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]"
+        },
+        "scheduleName": {
+            "type": "string"
+        },
+        "scheduleDescription": {
+            "type": "string"
+        },
+        "startTime": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "expiryTime": {
+            "type": "string",
+            "defaultValue": "9999-12-31T23:59:00+00:00"
+        },
+        "interval": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "frequency": {
+            "type": "string",
+            "allowedValues": [ "OneTime", "Minute", "Hour", "Day", "Week", "Month" ]
+        },
+        "timeZone": {
+            "type": "string",
+            "defaultValue": "Europe/London"
+        },
+        "advancedSchedule": {
+            "type": "object",
+            "defaultValue": {}
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags to apply to resources"
+            }
+        }
+    },
+    "variables": {
+        "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
+        "runbookBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/runbooks/')]",
+        "runbookTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/runbooks/runbook.1.0.0.0.json', parameters('templatesSas'))]",
+        "scheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/schedules/schedule.1.0.0.0.json', parameters('templatesSas'))]",
+        "jobScheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/jobSchedules/jobSchedule.1.0.2.0.json', parameters('templatesSas'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[parameters('runbooks')[copyIndex('runbookLoop')].name]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('runbookTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "runbookName": {
+                        "value": "[parameters('runbooks')[copyIndex('runbookLoop')].name]"
+                    },
+                    "automationAccountName": {
+                        "value": "[parameters('automationAccountName')]"
+                    },
+                    "storageAccountContainerUrl": {
+                        "value": "[variables('runbookBaseUrl')]"
+                    },
+                    "sasToken": {
+                        "value": "[parameters('templatesSas')]"
+                    },
+                    "runbookVersion": {
+                        "value": "[parameters('runbooks')[copyIndex('runbookLoop')].version]"
+                    },
+                    "description": {
+                        "value": "[parameters('runbooks')[copyIndex('runbookLoop')].description]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "logVerbose": {
+                        "value": "[if(contains(parameters('runbooks')[copyIndex('runbookLoop')], 'logVerbose'), parameters('runbooks')[copyIndex('runbookLoop')].logVerbose, json('true'))]"
+                    },
+                    "logProgress": {
+                        "value": "[if(contains(parameters('runbooks')[copyIndex('runbookLoop')], 'logProgress'), parameters('runbooks')[copyIndex('runbookLoop')].logProgress, json('true'))]"
+                    },
+                    "runbookType": {
+                        "value": "[if(contains(parameters('runbooks')[copyIndex('runbookLoop')], 'runbookType'), parameters('runbooks')[copyIndex('runbookLoop')].runbookType, json('\"Script\"'))]"
+                    },
+                    "logActivityTrace": {
+                        "value": "[if(contains(parameters('runbooks')[copyIndex('runbookLoop')], 'logVerbose'), parameters('runbooks')[copyIndex('runbookLoop')].logVerbose, json('0'))]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "runbookLoop",
+                "count": "[length(parameters('runbooks'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('scheduleName'))]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('scheduleTemplateUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "scheduleName": {
+                        "value": "[parameters('scheduleName')]"
+                    },
+                    "automationAccountName": {
+                        "value": "[parameters('automationAccountName')]"
+                    },
+                    "description": {
+                        "value": "[parameters('scheduleDescription')]"
+                    },
+                    "startTime": {
+                        "value": "[parameters('startTime')]"
+                    },
+                    "expiryTime": {
+                        "value": "[parameters('expiryTime')]"
+                    },
+                    "interval": {
+                        "value": "[parameters('interval')]"
+                    },
+                    "frequency": {
+                        "value": "[parameters('frequency')]"
+                    },
+                    "timeZone": {
+                        "value": "[parameters('timeZone')]"
+                    },
+                    "advancedSchedule": {
+                        "value": "[parameters('advancedSchedule')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "[concat(parameters('runbooks')[copyIndex('runbookScheduleLoop')].name, parameters('scheduleName'))]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('jobScheduleTemplateUrl')]",
+                    "contentVersion": "1.0.2.0"
+                },
+                "parameters": {
+                    "scheduleName": {
+                        "value": "[parameters('scheduleName')]"
+                    },
+                    "runbookName": {
+                        "value": "[parameters('runbooks')[copyIndex('runbookScheduleLoop')].name]"
+                    },
+                    "automationAccountName": {
+                        "value": "[parameters('automationAccountName')]"
+                    },
+                    "parameters": {
+                        "value": "[if(contains(parameters('runbooks')[copyIndex('runbookScheduleLoop')], 'parameters'), parameters('runbooks')[copyIndex('runbookLoop')].parameters, json('{}'))]"
+                    },
+                    "runOn": {
+                        "value": "[if(contains(parameters('runbooks')[copyIndex('runbookScheduleLoop')], 'runOn'), parameters('runbooks')[copyIndex('runbookLoop')].parameters, json('\"\"'))]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "runbookScheduleLoop",
+                "count": "[length(parameters('runbooks'))]"
+            },
+            "dependsOn": [
+                "runbookLoop"
+            ]
+        }
+    ],
+    "outputs": {}
+}
