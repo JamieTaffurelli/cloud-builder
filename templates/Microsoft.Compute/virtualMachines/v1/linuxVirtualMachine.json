@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.2.0",
   "parameters": {
     "vmName": {
       "type": "string",
@@ -131,13 +131,6 @@
         "description": "Specify Network Interfaces to attach to the Virtual Machine."
       }
     },
-    "encryptionAtHost": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Enabled encryption at rest on VM host"
-      }
-    },
     "diagnosticsStorageAccountName": {
       "type": "string",
       "metadata": {
@@ -246,9 +239,6 @@
           },
           "osDisk": {
             "osType": "Linux",
-            "encryptionSettings": {
-              "enabled": true
-            },
             "name": "[parameters('osDiskName')]",
             "caching": "[variables('osDiskCaching')]",
             "writeAcceleratorEnabled": "[parameters('writeAcceleratorEnabled')]",
@@ -282,9 +272,6 @@
         },
         "networkProfile": {
           "networkInterfaces": "[variables('networkInterfaces').networkInterfaces]"
-        },
-        "securityProfile": {
-          "encryptionAtHost": "[parameters('encryptionAtHost')]"
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
