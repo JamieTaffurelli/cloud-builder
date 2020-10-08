@@ -368,24 +368,6 @@ Describe "Linux Virtual Machine Parameter Validation" {
         }
     }
 
-    Context "encryptionAtHost Validation" {
-
-        It "Has encryptionAtHost parameter" {
-
-            $json.parameters.encryptionAtHost | should not be $null
-        }
-
-        It "encryptionAtHost parameter is of type bool" {
-
-            $json.parameters.encryptionAtHost.type | should be "bool"
-        }
-
-        It "encryptionAtHost parameter default value is true" {
-
-            $json.parameters.encryptionAtHost.defaultValue | should be $false
-        }
-    }
-
     Context "diagnosticsStorageAccountName Validation" {
 
         It "Has diagnosticsStorageAccountName parameter" {
@@ -547,11 +529,6 @@ Describe "Linux Virtual Machine Resource Validation" {
         It "Uses Linux OS" {
 
             $vmResource.properties.storageProfile.osDisk.osType | should be "Linux"
-        }
-
-        It "Platform encryption is on" {
-
-            $vmResource.properties.storageProfile.osDisk.encryptionSettings.enabled | should be $true
         }
     }
 
