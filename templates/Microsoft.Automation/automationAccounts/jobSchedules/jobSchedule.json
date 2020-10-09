@@ -56,7 +56,7 @@
   "outputs": {
     "jobSchedule": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/jobs', parameters('automationAccountName'), parameters('jobScheduleName')), '2015-10-31', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/jobs', parameters('automationAccountName'), guid(concat(parameters('runbookName'), '-', parameters('scheduleName')))), '2015-10-31', 'Full')]"
     }
   }
 }
