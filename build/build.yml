@@ -37,7 +37,7 @@ jobs:
   - job:
     timeoutInMinutes: 120
     pool:
-      pool: "windows-latest"
+      imageName: "windows-latest"
     steps:
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
