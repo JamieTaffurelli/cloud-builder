@@ -49,7 +49,7 @@ jobs:
   - job:
     timeoutInMinutes: 120
     pool:
-      vmImage: ${{ parameters.poolName }}
+      pool: ${{ parameters.poolName }}
     steps:
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
