@@ -9,7 +9,7 @@ parameters:
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
     pool:
-      pool: "windows-latest"
+      vmImage: "windows-latest"
       workspace:
         clean: all
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
