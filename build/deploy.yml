@@ -9,7 +9,7 @@ parameters:
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
     pool:
-      vmImage: ${{ parameters.poolName }}
+      pool: ${{ parameters.poolName }}
       workspace:
         clean: all
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
