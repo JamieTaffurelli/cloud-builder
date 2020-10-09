@@ -7,18 +7,6 @@ jobs:
     pool:
       pool: ${{ parameters.poolName }}
     steps:
-      - task: PowerShell@2
-        displayName: "Install Required PowerShell Modules"
-        inputs:
-          targetType: "filePath"
-          filePath: "$(System.DefaultWorkingDirectory)/scripts/install-modules.ps1"
-          arguments: '@("az", "AzureAD")'
-          errorActionPreference: "stop"
-          failOnStderr: false
-          ignoreLASTEXITCODE: false
-          pwsh: false
-          workingDirectory: "$(System.DefaultWorkingDirectory)"
-
       - task: cca5462b-887d-4617-bf3f-dcf0d3c622e9@9
         displayName: "Run Unit Tests"
         inputs:
