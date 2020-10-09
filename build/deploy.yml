@@ -65,7 +65,7 @@ jobs:
               inputs:
                 azureSubscription: ${{ parameters.azureSubscription }}
                 ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
-                ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "templates" -SearchPath "$(Pipeline.Workspace)/templates/" -ModulePath "$(Pipeline.Workspace)\module\AzureBuilder.psd1"'
+                ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "templates" -SearchPath "$(Pipeline.Workspace)/templates/" -ModulePath "$(Pipeline.Workspace)/module/AzureBuilder.psd1"'
                 azurePowerShellVersion: LatestVersion
 
             - task: AzurePowerShell@4

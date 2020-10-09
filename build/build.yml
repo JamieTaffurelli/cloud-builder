@@ -11,7 +11,7 @@ jobs:
         displayName: "Install Required PowerShell Modules"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/install-modules.ps1"
           arguments: '@("az", "AzureAD")'
           errorActionPreference: "stop"
           failOnStderr: false
@@ -22,9 +22,9 @@ jobs:
       - task: cca5462b-887d-4617-bf3f-dcf0d3c622e9@9
         displayName: "Run Unit Tests"
         inputs:
-          resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
-          codeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
-          codeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
+          resultsFile: "$(System.DefaultWorkingDirectory)/test-results.xml"
+          codeCoverageOutputFile: "$(System.DefaultWorkingDirectory)/code-coverage.xml"
+          codeCoverageFolder: "$(System.DefaultWorkingDirectory)/module/cmdlets"
           run32Bit: false
 
       - task: PublishTestResults@2
@@ -42,7 +42,7 @@ jobs:
         displayName: "Publish Code Coverage"
         inputs:
           codeCoverageTool: "JaCoCo"
-          summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+          summaryFileLocation: "$(System.DefaultWorkingDirectory)/code-coverage.xml"
           failIfCoverageEmpty: true
         condition: always()
 
@@ -55,7 +55,7 @@ jobs:
         displayName: "Exclude Unscannable ARM Templates"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\set-azsk-template-exclusions.ps1'
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/set-azsk-template-exclusions.ps1"
           arguments: "-AsCsv"
           errorActionPreference: "stop"
           failOnStderr: false
@@ -65,8 +65,8 @@ jobs:
       - task: AzSKARMTemplateChecker@1
         displayName: "Run AzSK ARM Template Checker"
         inputs:
-          armTemplateFilePath: '$(System.DefaultWorkingDirectory)\templates'
-          skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
+          armTemplateFilePath: "$(System.DefaultWorkingDirectory)/templates"
+          skipControlsFromFile: "$(System.DefaultWorkingDirectory)/azsk-control-exceptions.csv"
           excludeFiles: "$(ExclusionTemplates)"
           disableAutoUpdate: false
 
@@ -74,7 +74,7 @@ jobs:
         displayName: "Install Required PowerShell Modules"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/install-modules.ps1"
           arguments: '@("az")'
           errorActionPreference: "stop"
           failOnStderr: false
@@ -86,7 +86,7 @@ jobs:
         displayName: "Version ARM Templates"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/version-files.ps1"
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
@@ -96,8 +96,8 @@ jobs:
         displayName: "Version DSC Configurations"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
-          arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)\dsc\configurations" -OutputFolder "$(Build.ArtifactStagingDirectory)\dsc\configurations" -FileType "DSC"'
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/version-files.ps1"
+          arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)/dsc/configurations" -OutputFolder "$(Build.ArtifactStagingDirectory)/dsc/configurations" -FileType "DSC"'
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
@@ -107,8 +107,8 @@ jobs:
         displayName: "Version Runbooks"
         inputs:
           targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\version-files.ps1'
-          arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)\runbooks" -OutputFolder "$(Build.ArtifactStagingDirectory)\runbooks" -FileType "Script"'
+          filePath: "$(System.DefaultWorkingDirectory)/scripts/version-files.ps1"
+          arguments: '-SearchFolder "$(System.DefaultWorkingDirectory)/runbooks" -OutputFolder "$(Build.ArtifactStagingDirectory)/runbooks" -FileType "Script"'
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
@@ -117,16 +117,16 @@ jobs:
       - task: PublishPipelineArtifact@1
         displayName: "Publish ARM Templates (Pipeline)"
         inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)\templates'
+          targetPath: "$(Build.ArtifactStagingDirectory)/templates"
           artifact: "templates"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: CopyFiles@2
         displayName: "Copy Scripts to Staging Directory"
         inputs:
-          sourceFolder: '$(System.DefaultWorkingDirectory)\scripts'
-          contents: '**\*'
-          targetFolder: '$(Build.ArtifactStagingDirectory)\scripts'
+          sourceFolder: "$(System.DefaultWorkingDirectory)/scripts"
+          contents: "**/*"
+          targetFolder: "$(Build.ArtifactStagingDirectory)/scripts"
           cleanTargetFolder: true
           overWrite: true
           flattenFolders: false
@@ -135,16 +135,16 @@ jobs:
       - task: PublishPipelineArtifact@1
         displayName: "Publish Scripts (Pipeline)"
         inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
+          targetPath: "$(Build.ArtifactStagingDirectory)/scripts"
           artifact: "scripts"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: CopyFiles@2
         displayName: "Copy Module to Staging Directory"
         inputs:
-          sourceFolder: '$(System.DefaultWorkingDirectory)\module'
-          contents: '**\*'
-          targetFolder: '$(Build.ArtifactStagingDirectory)\module'
+          sourceFolder: "$(System.DefaultWorkingDirectory)/module"
+          contents: "**/*"
+          targetFolder: "$(Build.ArtifactStagingDirectory)/module"
           cleanTargetFolder: true
           overWrite: true
           flattenFolders: false
@@ -153,16 +153,16 @@ jobs:
       - task: PublishPipelineArtifact@1
         displayName: "Publish Module (Pipeline)"
         inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)\module'
+          targetPath: "$(Build.ArtifactStagingDirectory)/module"
           artifact: "module"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: CopyFiles@2
         displayName: "Copy Template Tests to Staging Directory"
         inputs:
-          sourceFolder: '$(System.DefaultWorkingDirectory)\tests\unit\templates'
-          contents: '**\*'
-          targetFolder: '$(Build.ArtifactStagingDirectory)\tests'
+          sourceFolder: "$(System.DefaultWorkingDirectory)/tests/unit/templates"
+          contents: "**/*"
+          targetFolder: "$(Build.ArtifactStagingDirectory)/tests"
           cleanTargetFolder: true
           overWrite: true
           flattenFolders: false
@@ -171,18 +171,18 @@ jobs:
       - task: PublishPipelineArtifact@1
         displayName: "Publish Template Tests (Pipeline)"
         inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)\tests'
+          targetPath: "$(Build.ArtifactStagingDirectory)/tests"
           artifact: "tests"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: CopyFiles@2
         displayName: "Copy DSC Resources to Staging Directory"
         inputs:
-          sourceFolder: '$(System.DefaultWorkingDirectory)\dsc'
+          sourceFolder: "$(System.DefaultWorkingDirectory)/dsc"
           contents: |
-            **\*
-            !configurations\*
-          targetFolder: '$(Build.ArtifactStagingDirectory)\dsc'
+            **/*
+            !configurations/*
+          targetFolder: "$(Build.ArtifactStagingDirectory)/dsc"
           cleanTargetFolder: false
           overWrite: true
           flattenFolders: false
@@ -191,7 +191,7 @@ jobs:
       - task: PublishBuildArtifacts@1
         displayName: "Publish DSC Resources (Build)"
         inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\dsc'
+          pathtoPublish: "$(Build.ArtifactStagingDirectory)/dsc"
           artifactName: "dsc"
           publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -199,7 +199,7 @@ jobs:
       - task: PublishBuildArtifacts@1
         displayName: "Publish Runbooks Resources (Build)"
         inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\runbooks'
+          pathtoPublish: "$(Build.ArtifactStagingDirectory)/runbooks"
           artifactName: "runbooks"
           publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
