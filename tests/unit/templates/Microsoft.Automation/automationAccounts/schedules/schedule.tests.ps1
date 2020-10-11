@@ -70,9 +70,9 @@ Describe "Automation Account Schedule Parameter Validation" {
             $json.parameters.startTime.type | should be "string"
         }
 
-        It "startTime parameter default value is [utcNow()]" {
+        It "startTime parameter is mandatory" {
 
-            $json.parameters.startTime.defaultValue | should be "[utcNow()]"
+            ($json.parameters.startTime.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -202,7 +202,7 @@ Describe "Automation Account Schedule Output Validation" {
 
         It "Uses full reference for Automation Account Schedule" {
 
-            $json.outputs.schedule.value | should be "[reference(resourceId('Microsoft.Automation/automationAccounts/jobs', parameters('automationAccountName'), parameters('scheduleName')), '2015-10-31', 'Full')]"
+            $json.outputs.schedule.value | should be "[reference(resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), parameters('scheduleName')), '2015-10-31', 'Full')]"
         }
     }
 }

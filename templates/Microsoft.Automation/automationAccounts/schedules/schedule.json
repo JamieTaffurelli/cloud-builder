@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.1.0",
+  "contentVersion": "1.0.2.0",
   "parameters": {
     "scheduleName": {
       "type": "string",
@@ -22,7 +22,6 @@
     },
     "startTime": {
       "type": "string",
-      "defaultValue": "[utcNow()]",
       "metadata": {
         "description": "Start time of schedule"
       }
@@ -45,7 +44,7 @@
       "type": "string",
       "allowedValues": ["OneTime", "Minute", "Hour", "Day", "Week", "Month"],
       "metadata": {
-        "description": "Fequency of the schedule"
+        "description": "Frequency of the schedule"
       }
     },
     "timeZone": {
@@ -83,7 +82,7 @@
   "outputs": {
     "schedule": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/jobs', parameters('automationAccountName'), parameters('scheduleName')), '2015-10-31', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Automation/automationAccounts/schedules', parameters('automationAccountName'), parameters('scheduleName')), '2015-10-31', 'Full')]"
     }
   }
 }
