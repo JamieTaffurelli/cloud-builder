@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.2.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "templateStorageAccountName": {
       "type": "string",
@@ -31,16 +31,14 @@
       "type": "string"
     },
     "startTime": {
-      "type": "string",
-      "defaultValue": "[utcNow()]"
+      "type": "string"
     },
     "expiryTime": {
       "type": "string",
       "defaultValue": "9999-12-31T23:59:00+00:00"
     },
     "interval": {
-      "type": "object",
-      "defaultValue": {}
+      "type": "int"
     },
     "frequency": {
       "type": "string",
@@ -63,10 +61,10 @@
   },
   "variables": {
     "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
-    "runbookBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/runbooks/')]",
+    "runbookBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/runbooks')]",
     "runbookTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/runbooks/runbook.1.0.0.0.json', parameters('templatesSas'))]",
-    "scheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/schedules/schedule.1.0.0.0.json', parameters('templatesSas'))]",
-    "jobScheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/jobSchedules/jobSchedule.1.0.2.0.json', parameters('templatesSas'))]"
+    "scheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/schedules/schedule.1.0.2.0.json', parameters('templatesSas'))]",
+    "jobScheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/jobSchedules/jobSchedule.1.0.4.0.json', parameters('templatesSas'))]"
   },
   "resources": [
     {
@@ -131,7 +129,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('scheduleTemplateUrl')]",
-          "contentVersion": "1.0.0.0"
+          "contentVersion": "1.0.2.0"
         },
         "parameters": {
           "scheduleName": {
@@ -172,7 +170,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('jobScheduleTemplateUrl')]",
-          "contentVersion": "1.0.2.0"
+          "contentVersion": "1.0.4.0"
         },
         "parameters": {
           "scheduleName": {
@@ -196,7 +194,10 @@
         "name": "runbookScheduleLoop",
         "count": "[length(parameters('runbooks'))]"
       },
-      "dependsOn": ["runbookLoop"]
+      "dependsOn": [
+        "runbookLoop",
+        "[concat('Microsoft.Resources/Deployments/', parameters('scheduleName'))]"
+      ]
     }
   ],
   "outputs": {}
