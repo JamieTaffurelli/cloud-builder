@@ -64,7 +64,7 @@
     "runbookBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/runbooks')]",
     "runbookTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/runbooks/runbook.1.0.0.0.json', parameters('templatesSas'))]",
     "scheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/schedules/schedule.1.0.2.0.json', parameters('templatesSas'))]",
-    "jobScheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/jobSchedules/jobSchedule.1.0.3.0.json', parameters('templatesSas'))]"
+    "jobScheduleTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Automation/automationAccounts/jobSchedules/jobSchedule.1.0.4.0.json', parameters('templatesSas'))]"
   },
   "resources": [
     {
@@ -170,7 +170,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('jobScheduleTemplateUrl')]",
-          "contentVersion": "1.0.3.0"
+          "contentVersion": "1.0.4.0"
         },
         "parameters": {
           "scheduleName": {
