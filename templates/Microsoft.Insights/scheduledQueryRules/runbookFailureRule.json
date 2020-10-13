@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.0.1.0",
     "parameters": {
         "automationAccountName": {
             "type": "string",
@@ -101,7 +101,7 @@
     },
     "variables": {
         "queryName": "[concat(parameters('runbookName'), '-failure-alert')]",
-        "query": "[concat('AzureDiagnostics | where Category == \"JobLogs\" and Resource == \"', parameters('automationAccountName'),'\" and RunbookName_s == \"', parameters('runbookName'),'\" and (ResultType == \"Failed\" or ResultType == \"Suspended\")')]"
+        "query": "[concat('AzureDiagnostics | where Category == \"JobLogs\" and Resource == \"', toUpper(parameters('automationAccountName')),'\" and RunbookName_s == \"', parameters('runbookName'),'\" and (ResultType == \"Failed\" or ResultType == \"Suspended\")')]"
     },
     "resources": [
         {
