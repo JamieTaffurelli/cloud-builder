@@ -1,0 +1,143 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Automation Account to pull data from"
+            }
+        },
+        "runbookName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the runbook to pull data from"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "northeurope",
+                "westeurope"
+            ],
+            "metadata": {
+                "description": "The location to deploy the Scheduled Query Rule to"
+            }
+        },
+        "enabled": {
+            "type": "string",
+            "defaultValue": "true",
+            "metadata": {
+                "description": "Enable or Disable the Metric Alert"
+            }
+        },
+        "dataSourceSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "The Subscription ID of the data source to query"
+            }
+        },
+        "dataSourceResourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The Resource Group of the data source to query"
+            }
+        },
+        "dataSourceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the data source to query"
+            }
+        },
+        "frequencyInMinutes": {
+            "type": "int",
+            "defaultValue": 5,
+            "metadata": {
+                "description": "How often to run the query"
+            }
+        },
+        "timeWindowInMinutes": {
+            "type": "int",
+            "defaultValue": 5,
+            "metadata": {
+                "description": "Time period in which to query data"
+            }
+        },
+        "severity": {
+            "type": "int",
+            "allowedValues": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "metadata": {
+                "description": "Severity of the Scheduled Query Rule"
+            }
+        },
+        "aznsAction": {
+            "type": "object",
+            "metadata": {
+                "description": "Action object: actionGroup, emailSubject, customWebhookPayload"
+            }
+        },
+        "threshold": {
+            "type": "string",
+            "defaultValue": "0",
+            "metadata": {
+                "description": "Number of results (greater than) before alert is triggered"
+            }
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "Tags to apply to Scheduled Query Rule"
+            }
+        }
+    },
+    "variables": {
+        "queryName": "[concat(parameters('runbookName'), '-failure-alert')]",
+        "query": "[concat('AzureDiagnostics | where Category == \"JobLogs\" and Resource == \"', parameters('automationAccountName'),'\" and RunbookName_s == \"', parameters('runbookName'),'\" and (ResultType == \"Failed\" or ResultType == \"Suspended\")')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('queryName')]",
+            "type": "Microsoft.Insights/scheduledQueryRules",
+            "apiVersion": "2018-04-16",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "description": "[concat('Query for Automation Account ', parameters('automationAccountName'), ' Runbook ', parameters('runbookName'), ' failures' )]",
+                "enabled": "[parameters('enabled')]",
+                "source": {
+                    "query": "[variables('query')]",
+                    "dataSourceId": "[resourceId(parameters('dataSourcesubscriptionId'), parameters('dataSourceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('dataSourceName'))]",
+                    "queryType": "ResultCount"
+                },
+                "schedule": {
+                    "frequencyInMinutes": "[parameters('frequencyInMinutes')]",
+                    "timeWindowInMinutes": "[parameters('timeWindowInMinutes')]"
+                },
+                "action": {
+                    "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                    "severity": "[parameters('severity')]",
+                    "aznsAction": "[parameters('aznsAction')]",
+                    "trigger": {
+                        "thresholdOperator": "GreaterThan",
+                        "threshold": "[parameters('threshold')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "scheduledQueryRule": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Insights/scheduledQueryRules', variables('queryName')), '2018-04-16', 'Full')]"
+        }
+    }
+}
