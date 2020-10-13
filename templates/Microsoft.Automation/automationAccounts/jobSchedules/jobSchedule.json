@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.4.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "scheduleName": {
       "type": "string",
@@ -11,7 +11,13 @@
     "runbookName": {
       "type": "string",
       "metadata": {
-        "description": "Name of the Automation Account to run the job"
+        "description": "Name of the runbook to run the job"
+      }
+    },
+    "runbookVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Version of the runbook to run the job"
       }
     },
     "automationAccountName": {
@@ -38,7 +44,7 @@
   "variables": {},
   "resources": [
     {
-      "name": "[concat(parameters('automationAccountName'), '/', guid(concat(parameters('runbookName'), '-', parameters('scheduleName'))))]",
+      "name": "[concat(parameters('automationAccountName'), '/', guid(concat(parameters('runbookName'), '-', parameters('runbookVersion'), '-', parameters('scheduleName'))))]",
       "type": "Microsoft.Automation/automationAccounts/jobSchedules",
       "apiVersion": "2015-10-31",
       "properties": {
