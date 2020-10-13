@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 0.2.0
+.VERSION 0.3.0
 
 .GUID 3e9cc084-703b-496f-b508-ced49bb46061
 
@@ -36,7 +36,7 @@ Connect-AzureAD -Tenant $connection.TenantID -ApplicationId $connection.Applicat
 Write-Output "Getting application details"
 $apps = Get-AzureADApplication -All $true
 $message = "{0} with object ID {1} has key ID {2} that expires on {3}, which is {4} than the specified {5} days"
-
+$errCount = 0
 foreach($app in $apps)
 {
     if($app.Tags | Where-Object { $ExcludeTags -contains $_ })
@@ -51,6 +51,7 @@ foreach($app in $apps)
         {
             if($key.EndDate -lt (Get-Date).AddDays($DaysBeforeExpiry))
             {
+                $errCount++
                 Write-Error (($message) -f $app.DisplayName, $app.ObjectId, $key.KeyId, $key.EndDate.ToString("dd/MM/yyyy"), "less", $DaysBeforeExpiry)
             }
             else 
@@ -59,6 +60,11 @@ foreach($app in $apps)
             }
         }
     }
+}
+
+if($errCount)
+{
+    throw "Applications are expiring in less than ${DaysBeforeExpiry} days"
 }
 
 

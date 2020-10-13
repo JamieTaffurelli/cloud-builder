@@ -61,7 +61,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
             $app.PasswordCredentials.EndDate = (Get-Date).AddDays(29)
             $app.KeyCredentials.EndDate = (Get-Date).AddDays(29)
 
-            . (Join-Path -Path $runbookDirectory -ChildPath $runbookFile -Resolve)
+            { . (Join-Path -Path $runbookDirectory -ChildPath $runbookFile -Resolve) } | should throw "Applications are expiring in less than 30"
 
             Assert-MockCalled -CommandName Get-AzureADApplication -Scope It -Times 1 -Exactly
             Assert-MockCalled -CommandName Write-Error -Scope It -Times 2 -Exactly -ParameterFilter { $Message -eq "$($app.DisplayName) with object ID $($app.ObjectId) has key ID $($app.PasswordCredentials.KeyId) that expires on $($app.PasswordCredentials.EndDate.ToString("dd/MM/yyyy")), which is less than the specified 30 days" }
