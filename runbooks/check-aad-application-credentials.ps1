@@ -1,15 +1,11 @@
 
 <#PSScriptInfo
 
-.VERSION 0.1.0
+.VERSION 1.0.0
 
-.GUID 3e1b78ea-8a5b-4fa6-a45f-a8ea4cb24d8b
+.GUID 3e9cc084-703b-496f-b508-ced49bb46061
 
-.AUTHOR jamie.taffurelli@swiftcover.com
-
-.COMPANYNAME AXA Insurance UK
-
-.COPYRIGHT 2020 AXA Insurance UK. All rights reserved.
+.AUTHOR jltaffurelli@outlook.com
 
 #>
 
@@ -49,30 +45,17 @@ foreach($app in $apps)
     }
     else 
     {
-        $secrets = $app.PasswordCredentials
-        $certs = $app.KeyCredentials
+        $keys = @($app.PasswordCredentials) + @($app.KeyCredentials)
 
-        foreach($secret in $secrets)
+        foreach($key in $keys)
         {
-            if($secret.EndDate -lt (Get-Date).AddDays($DaysBeforeExpiry))
+            if($key.EndDate -lt (Get-Date).AddDays($DaysBeforeExpiry))
             {
-                Write-Error (($message) -f $app.DisplayName, $app.ObjectId, $secret.KeyId, $secret.EndDate.ToString("dd/MM/yyyy"), "less", $DaysBeforeExpiry)
+                Write-Error (($message) -f $app.DisplayName, $app.ObjectId, $key.KeyId, $key.EndDate.ToString("dd/MM/yyyy"), "less", $DaysBeforeExpiry)
             }
             else 
             {
-                Write-Output (($message) -f $app.DisplayName, $app.ObjectId, $secret.KeyId, $secret.EndDate.ToString("dd/MM/yyyy"), "more", $DaysBeforeExpiry)
-            }
-        }
-
-        foreach($cert in $certs)
-        {
-            if($cert.EndDate -lt (Get-Date).AddDays($DaysBeforeExpiry))
-            {
-                Write-Error (($message) -f $app.DisplayName, $app.ObjectId, $cert.KeyId, $cert.EndDate.ToString("dd/MM/yyyy"), "less", $DaysBeforeExpiry)
-            }
-            else 
-            {
-                Write-Output (($message) -f $app.DisplayName, $app.ObjectId, $cert.KeyId, $cert.EndDate.ToString("dd/MM/yyyy"), "more", $DaysBeforeExpiry)
+                Write-Output (($message) -f $app.DisplayName, $app.ObjectId, $key.KeyId, $key.EndDate.ToString("dd/MM/yyyy"), "more", $DaysBeforeExpiry)
             }
         }
     }
