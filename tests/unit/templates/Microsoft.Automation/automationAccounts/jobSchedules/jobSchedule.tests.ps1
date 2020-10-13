@@ -40,6 +40,24 @@ Describe "Automation Account Job Schedule Parameter Validation" {
         }
     }
 
+    Context "runbookVersion Validation" {
+
+        It "Has runbookVersion parameter" {
+
+            $json.parameters.runbookVersion | should not be $null
+        }
+
+        It "runbookVersion parameter is of type string" {
+
+            $json.parameters.runbookVersion.type | should be "string"
+        }
+
+        It "runbookVersion parameter is mandatory" {
+
+            ($json.parameters.runbookVersion.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "automationAccountName Validation" {
 
         It "Has automationAccountName parameter" {
