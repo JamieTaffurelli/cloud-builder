@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.0.1.0",
     "parameters": {
         "templateStorageAccountName": {
             "type": "string",
@@ -96,7 +96,7 @@
     "variables": {
         "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
         "scheduledQueryRuleBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/scheduledQueryRules/')]",
-        "recoveryServiceFailoverRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'runbookFailureRule.1.0.0.0.json', parameters('templatesSas'))]"
+        "recoveryServiceFailoverRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'runbookFailureRule.1.0.1.0.json', parameters('templatesSas'))]"
     },
     "resources": [
         {
@@ -107,7 +107,7 @@
                 "mode": "Incremental",
                 "templateLink": {
                     "uri": "[variables('recoveryServiceFailoverRuleTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
+                    "contentVersion": "1.0.1.0"
                 },
                 "parameters": {
                     "automationAccountName": {
