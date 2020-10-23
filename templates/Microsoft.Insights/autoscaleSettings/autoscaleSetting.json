@@ -1,112 +1,106 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "autoscaleSettingName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Autoscale Setting"
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "northeurope",
-                "westeurope"
-            ],
-            "metadata": {
-                "description": "The location to deploy the Autoscale Setting to"
-            }
-        },
-        "profiles": {
-            "type": "array",
-            "metadata": {
-                "description": "List of rule profiles"
-            }
-        },
-        "sendToSubscriptionAdministrator": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Send email Alert to Subscription Administrator on Scale operation"
-            }
-        },
-        "sendToSubscriptionCoAdministrators": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Send email Alert to Subscription Co-Administrators on Scale operation"
-            }
-        },
-        "customEmails": {
-            "type": "array",
-            "defaultValue": [
-            ],
-            "metadata": {
-                "description": "Send email Alert to custom email addresses on Scale operation"
-            }
-        },
-        "webHooks": {
-            "type": "array",
-            "defaultValue": [
-            ],
-            "metadata": {
-                "description": "Take action via webhook on Scale operation"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Autoscale Setting"
-            }
-        },
-        "targetResourceId": {
-            "type": "string",
-            "metadata": {
-                "description": "Resource ID to apply Autoscale Setting to"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Action Group"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "autoscaleSettingName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Autoscale Setting"
+      }
     },
-    "variables": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Autoscale Setting to"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('autoscaleSettingName')]",
-            "type": "Microsoft.Insights/autoscaleSettings",
-            "apiVersion": "2014-04-01",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "profiles": "[parameters('profiles')]",
-                "notifications": [
-                    {
-                        "operation": "Scale",
-                        "email": {
-                            "sendToSubscriptionAdministrator": "[parameters('sendToSubscriptionAdministrator')]",
-                            "sendToSubscriptionCoAdministrators": "[parameters('sendToSubscriptionCoAdministrators')]",
-                            "customEmails": "[parameters('customEmails')]"
-                        },
-                        "webhooks": "[parameters('webhooks')]"
-                    }
-                ],
-                "enabled": "[parameters('enabled')]",
-                "name": "[parameters('autoscaleSettingName')]",
-                "targetResourceUri": "[parameters('targetResourceId')]"
-            }
-        }
-    ],
-    "outputs": {
-        "autoscaleSetting": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/autoscaleSettings', parameters('autoscaleSettingName')), '2014-04-01', 'Full')]"
-        }
+    "profiles": {
+      "type": "array",
+      "metadata": {
+        "description": "List of rule profiles"
+      }
+    },
+    "sendToSubscriptionAdministrator": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Send email Alert to Subscription Administrator on Scale operation"
+      }
+    },
+    "sendToSubscriptionCoAdministrators": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Send email Alert to Subscription Co-Administrators on Scale operation"
+      }
+    },
+    "customEmails": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Send email Alert to custom email addresses on Scale operation"
+      }
+    },
+    "webHooks": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Take action via webhook on Scale operation"
+      }
+    },
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Autoscale Setting"
+      }
+    },
+    "targetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID to apply Autoscale Setting to"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Action Group"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('autoscaleSettingName')]",
+      "type": "Microsoft.Insights/autoscaleSettings",
+      "apiVersion": "2014-04-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "profiles": "[parameters('profiles')]",
+        "notifications": [
+          {
+            "operation": "Scale",
+            "email": {
+              "sendToSubscriptionAdministrator": "[parameters('sendToSubscriptionAdministrator')]",
+              "sendToSubscriptionCoAdministrators": "[parameters('sendToSubscriptionCoAdministrators')]",
+              "customEmails": "[parameters('customEmails')]"
+            },
+            "webhooks": "[parameters('webhooks')]"
+          }
+        ],
+        "enabled": "[parameters('enabled')]",
+        "name": "[parameters('autoscaleSettingName')]",
+        "targetResourceUri": "[parameters('targetResourceId')]"
+      }
+    }
+  ],
+  "outputs": {
+    "autoscaleSetting": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/autoscaleSettings', parameters('autoscaleSettingName')), '2014-04-01', 'Full')]"
+    }
+  }
 }

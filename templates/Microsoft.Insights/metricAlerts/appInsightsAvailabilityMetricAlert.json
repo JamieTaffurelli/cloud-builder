@@ -1,151 +1,144 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "metricAlertName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Metric Alert to deploy"
-            }
-        },
-        "description": {
-            "type": "string",
-            "metadata": {
-                "description": "The description of the Metric Alert"
-            }
-        },
-        "severity": {
-            "type": "int",
-            "allowedValues": [
-                0,
-                1,
-                2,
-                3,
-                4
-            ],
-            "metadata": {
-                "description": "Severity of the Metric Alert"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Metric Alert"
-            }
-        },
-        "webTestSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "The Subscription ID of the Web Test to query"
-            }
-        },
-        "webTestResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "The Resource Group of the Web Test to query"
-            }
-        },
-        "webTestName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Web Test to query"
-            }
-        },
-        "appInsightsSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "The Subscription ID of the App Insights to query"
-            }
-        },
-        "appInsightsResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "The Resource Group of the App Insights to query"
-            }
-        },
-        "appInsightsName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the App Insights to query"
-            }
-        },
-        "evaluationFrequency": {
-            "type": "string",
-            "metadata": {
-                "description": "How often to evalute Metric (ISO 8601)"
-            }
-        },
-        "windowSize": {
-            "type": "string",
-            "metadata": {
-                "description": "Period of time to monitor (ISO 8601)"
-            }
-        },
-        "failedLocationCount": {
-            "type": "int",
-            "metadata": {
-                "description": "Number of failed locations before alert is triggered"
-            }
-        },
-        "autoMitigate": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Auto resolve alert"
-            }
-        },
-        "actions": {
-            "type": "array",
-            "metadata": {
-                "description": "Action to take on Metric Alert (Action Group or Webhook)"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Metric Alert"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "metricAlertName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Metric Alert to deploy"
+      }
     },
-    "variables": {
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "The description of the Metric Alert"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('metricAlertName')]",
-            "type": "Microsoft.Insights/metricAlerts",
-            "apiVersion": "2018-03-01",
-            "location": "global",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[parameters('description')]",
-                "severity": "[parameters('severity')]",
-                "enabled": "[parameters('enabled')]",
-                "scopes": [
-                    "[resourceId(parameters('webTestSubscriptionId'), parameters('webTestResourceGroupName'), 'Microsoft.Insights/webTests', parameters('webTestName'))]",
-                    "[resourceId(parameters('appInsightsSubscriptionId'), parameters('appInsightsResourceGroupName'), 'Microsoft.Insights/components', parameters('appInsightsName'))]"
-                ],
-                "evaluationFrequency": "[parameters('evaluationFrequency')]",
-                "windowSize": "[parameters('windowSize')]",
-                "criteria": {
-                    "odata.type": "Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria",
-                    "webTestId": "[resourceId(parameters('webTestSubscriptionId'), parameters('webTestResourceGroupName'), 'Microsoft.Insights/webTests', parameters('webTestName'))]",
-                    "componentId": "[resourceId(parameters('appInsightsSubscriptionId'), parameters('appInsightsResourceGroupName'), 'Microsoft.Insights/components', parameters('appInsightsName'))]",
-                    "failedLocationCount": "[parameters('failedLocationCount')]"
-                },
-                "autoMitigate": "[parameters('autoMitigate')]",
-                "actions": "[parameters('actions')]"
-            }
-        }
-    ],
-    "outputs": {
-        "metricAlert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', parameters('metricAlertName')), '2018-03-01', 'Full')]"
-        }
+    "severity": {
+      "type": "int",
+      "allowedValues": [0, 1, 2, 3, 4],
+      "metadata": {
+        "description": "Severity of the Metric Alert"
+      }
+    },
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Metric Alert"
+      }
+    },
+    "webTestSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Web Test to query"
+      }
+    },
+    "webTestResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Web Test to query"
+      }
+    },
+    "webTestName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Web Test to query"
+      }
+    },
+    "appInsightsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the App Insights to query"
+      }
+    },
+    "appInsightsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the App Insights to query"
+      }
+    },
+    "appInsightsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Insights to query"
+      }
+    },
+    "evaluationFrequency": {
+      "type": "string",
+      "metadata": {
+        "description": "How often to evalute Metric (ISO 8601)"
+      }
+    },
+    "windowSize": {
+      "type": "string",
+      "metadata": {
+        "description": "Period of time to monitor (ISO 8601)"
+      }
+    },
+    "failedLocationCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of failed locations before alert is triggered"
+      }
+    },
+    "autoMitigate": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Auto resolve alert"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "metadata": {
+        "description": "Action to take on Metric Alert (Action Group or Webhook)"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Metric Alert"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('metricAlertName')]",
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "location": "global",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[parameters('description')]",
+        "severity": "[parameters('severity')]",
+        "enabled": "[parameters('enabled')]",
+        "scopes": [
+          "[resourceId(parameters('webTestSubscriptionId'), parameters('webTestResourceGroupName'), 'Microsoft.Insights/webTests', parameters('webTestName'))]",
+          "[resourceId(parameters('appInsightsSubscriptionId'), parameters('appInsightsResourceGroupName'), 'Microsoft.Insights/components', parameters('appInsightsName'))]"
+        ],
+        "evaluationFrequency": "[parameters('evaluationFrequency')]",
+        "windowSize": "[parameters('windowSize')]",
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria",
+          "webTestId": "[resourceId(parameters('webTestSubscriptionId'), parameters('webTestResourceGroupName'), 'Microsoft.Insights/webTests', parameters('webTestName'))]",
+          "componentId": "[resourceId(parameters('appInsightsSubscriptionId'), parameters('appInsightsResourceGroupName'), 'Microsoft.Insights/components', parameters('appInsightsName'))]",
+          "failedLocationCount": "[parameters('failedLocationCount')]"
+        },
+        "autoMitigate": "[parameters('autoMitigate')]",
+        "actions": "[parameters('actions')]"
+      }
+    }
+  ],
+  "outputs": {
+    "metricAlert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', parameters('metricAlertName')), '2018-03-01', 'Full')]"
+    }
+  }
 }

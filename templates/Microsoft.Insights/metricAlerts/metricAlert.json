@@ -1,137 +1,130 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.0",
-    "parameters": {
-        "metricAlertName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Metric Alert to deploy"
-            }
-        },
-        "description": {
-            "type": "string",
-            "metadata": {
-                "description": "The description of the Metric Alert"
-            }
-        },
-        "severity": {
-            "type": "int",
-            "allowedValues": [
-                0,
-                1,
-                2,
-                3,
-                4
-            ],
-            "metadata": {
-                "description": "Severity of the Metric Alert"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Metric Alert"
-            }
-        },
-        "scopes": {
-            "type": "array",
-            "metadata": {
-                "description": "Resource IDs that the Metric Alert is scoped to"
-            }
-        },
-        "evaluationFrequency": {
-            "type": "string",
-            "metadata": {
-                "description": "How often to evalute Metric (ISO 8601)"
-            }
-        },
-        "windowSize": {
-            "type": "string",
-            "metadata": {
-                "description": "Period of time to monitor (ISO 8601)"
-            }
-        },
-        "targetResourceType": {
-            "type": "string",
-            "metadata": {
-                "description": "Resource type of the target resource(s)"
-            }
-        },
-        "targetResourceRegion": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Region of the target resource(s)"
-            }
-        },
-        "type": {
-            "type": "string",
-            "allowedValues": [
-                "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
-                "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria"
-            ],
-            "metadata": {
-                "description": "Type of Alert criteria"
-            }
-        },
-        "allOf": {
-            "type": "array",
-            "metadata": {
-                "description": "Metric Criteria objects"
-            }
-        },
-        "autoMitigate": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Auto resolve alert"
-            }
-        },
-        "actions": {
-            "type": "array",
-            "metadata": {
-                "description": "Action to take on Metric Alert (Action Group or Webhook)"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Metric Alert"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.1.0",
+  "parameters": {
+    "metricAlertName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Metric Alert to deploy"
+      }
     },
-    "variables": {
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "The description of the Metric Alert"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('metricAlertName')]",
-            "type": "Microsoft.Insights/metricAlerts",
-            "apiVersion": "2018-03-01",
-            "location": "global",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[parameters('description')]",
-                "severity": "[parameters('severity')]",
-                "enabled": "[parameters('enabled')]",
-                "scopes": "[parameters('scopes')]",
-                "evaluationFrequency": "[parameters('evaluationFrequency')]",
-                "windowSize": "[parameters('windowSize')]",
-                "targetResourceType": "[parameters('targetResourceType')]",
-                "targetResourceRegion": "[parameters('targetResourceRegion')]",
-                "criteria": {
-                    "odata.type": "[parameters('type')]",
-                    "allOf": "[parameters('allOf')]"
-                },
-                "autoMitigate": "[parameters('autoMitigate')]",
-                "actions": "[parameters('actions')]"
-            }
-        }
-    ],
-    "outputs": {
-        "metricAlert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', parameters('metricAlertName')), '2018-03-01', 'Full')]"
-        }
+    "severity": {
+      "type": "int",
+      "allowedValues": [0, 1, 2, 3, 4],
+      "metadata": {
+        "description": "Severity of the Metric Alert"
+      }
+    },
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Metric Alert"
+      }
+    },
+    "scopes": {
+      "type": "array",
+      "metadata": {
+        "description": "Resource IDs that the Metric Alert is scoped to"
+      }
+    },
+    "evaluationFrequency": {
+      "type": "string",
+      "metadata": {
+        "description": "How often to evalute Metric (ISO 8601)"
+      }
+    },
+    "windowSize": {
+      "type": "string",
+      "metadata": {
+        "description": "Period of time to monitor (ISO 8601)"
+      }
+    },
+    "targetResourceType": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource type of the target resource(s)"
+      }
+    },
+    "targetResourceRegion": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Region of the target resource(s)"
+      }
+    },
+    "type": {
+      "type": "string",
+      "allowedValues": [
+        "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+        "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria"
+      ],
+      "metadata": {
+        "description": "Type of Alert criteria"
+      }
+    },
+    "allOf": {
+      "type": "array",
+      "metadata": {
+        "description": "Metric Criteria objects"
+      }
+    },
+    "autoMitigate": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Auto resolve alert"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "metadata": {
+        "description": "Action to take on Metric Alert (Action Group or Webhook)"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Metric Alert"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('metricAlertName')]",
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "location": "global",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[parameters('description')]",
+        "severity": "[parameters('severity')]",
+        "enabled": "[parameters('enabled')]",
+        "scopes": "[parameters('scopes')]",
+        "evaluationFrequency": "[parameters('evaluationFrequency')]",
+        "windowSize": "[parameters('windowSize')]",
+        "targetResourceType": "[parameters('targetResourceType')]",
+        "targetResourceRegion": "[parameters('targetResourceRegion')]",
+        "criteria": {
+          "odata.type": "[parameters('type')]",
+          "allOf": "[parameters('allOf')]"
+        },
+        "autoMitigate": "[parameters('autoMitigate')]",
+        "actions": "[parameters('actions')]"
+      }
+    }
+  ],
+  "outputs": {
+    "metricAlert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', parameters('metricAlertName')), '2018-03-01', 'Full')]"
+    }
+  }
 }

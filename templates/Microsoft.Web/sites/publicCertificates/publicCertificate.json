@@ -1,67 +1,59 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "certificateName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Public Certificate"
-            }
-        },
-        "appName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the App Service"
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "northeurope",
-                "westeurope"
-            ],
-            "metadata": {
-                "description": "The location to deploy the Public Certificate to"
-            }
-        },
-        "blobString": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Base-64 .cer certificate"
-            }
-        },
-        "publicCertificateLocation": {
-            "type": "string",
-            "defaultValue": "CurrentUserMy",
-            "allowedValues": [
-                "CurrentUserMy",
-                "LocalMachineMy",
-                "Unknown"
-            ],
-            "metadata": {
-                "description": "The Certificate Store to install the Certificate to"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "certificateName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Public Certificate"
+      }
     },
-    "variables": {
+    "appName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service"
+      }
     },
-    "resources": [
-        {
-            "name": "[concat(parameters('appName'), '/', parameters('certificateName'))]",
-            "type": "Microsoft.Web/sites/publicCertificates",
-            "apiVersion": "2016-03-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "blob": "[parameters('blobString')]",
-                "publicCertificateLocation": "[parameters('publicCertificateLocation')]"
-            }
-        }
-    ],
-    "outputs": {
-        "cert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Web/sites/publicCertificates', parameters('appName'), parameters('certificateName')), '2016-03-01', 'Full')]"
-        }
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Public Certificate to"
+      }
+    },
+    "blobString": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Base-64 .cer certificate"
+      }
+    },
+    "publicCertificateLocation": {
+      "type": "string",
+      "defaultValue": "CurrentUserMy",
+      "allowedValues": ["CurrentUserMy", "LocalMachineMy", "Unknown"],
+      "metadata": {
+        "description": "The Certificate Store to install the Certificate to"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('appName'), '/', parameters('certificateName'))]",
+      "type": "Microsoft.Web/sites/publicCertificates",
+      "apiVersion": "2016-03-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "blob": "[parameters('blobString')]",
+        "publicCertificateLocation": "[parameters('publicCertificateLocation')]"
+      }
+    }
+  ],
+  "outputs": {
+    "cert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Web/sites/publicCertificates', parameters('appName'), parameters('certificateName')), '2016-03-01', 'Full')]"
+    }
+  }
 }

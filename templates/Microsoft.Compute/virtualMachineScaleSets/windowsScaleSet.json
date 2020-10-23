@@ -12,10 +12,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Virtual Machine to"
       }
@@ -29,10 +26,7 @@
     "skuTier": {
       "type": "string",
       "defaultValue": "Standard",
-      "allowedValues": [
-        "Standard",
-        "Basic"
-      ],
+      "allowedValues": ["Standard", "Basic"],
       "metadata": {
         "description": "Specifies the tier of virtual machines in a scale set"
       }
@@ -77,10 +71,7 @@
     "upgradeMode": {
       "type": "string",
       "defaultValue": "Manual",
-      "allowedValues": [
-        "Manual",
-        "Automatic"
-      ],
+      "allowedValues": ["Manual", "Automatic"],
       "metadata": {
         "description": "Specifies the mode of an upgrade to virtual machines in the scale set"
       }
@@ -181,12 +172,7 @@
     "osDiskCaching": {
       "type": "string",
       "defaultValue": "",
-      "allowedValues": [
-        "",
-        "None",
-        "ReadOnly",
-        "ReadWrite"
-      ],
+      "allowedValues": ["", "None", "ReadOnly", "ReadWrite"],
       "metadata": {
         "description": "The caching option of the Virtual Machine OS disk (None, ReadOnly, ReadWrite), defaults to None for Standard storage, ReadOnly for Premium storage"
       }
@@ -194,11 +180,7 @@
     "osDiskCreateOption": {
       "type": "string",
       "defaultValue": "FromImage",
-      "allowedValues": [
-        "FromImage",
-        "Empty",
-        "Attach"
-      ],
+      "allowedValues": ["FromImage", "Empty", "Attach"],
       "metadata": {
         "description": "Specifies how the OS disk should be created"
       }
@@ -234,8 +216,7 @@
     },
     "dataDisks": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Specify Data Disks to attach to the Virtual Machine."
       }
@@ -315,10 +296,7 @@
     "nicPrivateIpAddressVersion": {
       "type": "string",
       "defaultValue": "IPv4",
-      "allowedValues": [
-        "IPv4",
-        "IPv6"
-      ],
+      "allowedValues": ["IPv4", "IPv6"],
       "metadata": {
         "description": "Specifies the IP Address version for the nic"
       }
@@ -326,11 +304,7 @@
     "priority": {
       "type": "string",
       "defaultValue": "Regular",
-      "allowedValues": [
-        "Regular",
-        "Low",
-        "Spot"
-      ],
+      "allowedValues": ["Regular", "Low", "Spot"],
       "metadata": {
         "description": "Specifies the priority for the virtual machines in the scale set."
       }
@@ -338,10 +312,7 @@
     "evictionPolicy": {
       "type": "string",
       "defaultValue": "Deallocate",
-      "allowedValues": [
-        "Deallocate",
-        "Delete"
-      ],
+      "allowedValues": ["Deallocate", "Delete"],
       "metadata": {
         "description": "Specifies the eviction policy for virtual machines in a Azure Spot scale set."
       }
@@ -391,18 +362,14 @@
     },
     "scaleInPolicy": {
       "type": "array",
-      "defaultValue": [
-        "Default"
-      ],
+      "defaultValue": ["Default"],
       "metadata": {
         "description": "The rules to be followed when scaling-in a virtual machine scale set. Allowed Values - Default, OldestVM, NewestVM"
       }
     },
     "zones": {
       "type": "array",
-      "defaultValue": [
-        "Primary"
-      ],
+      "defaultValue": ["Primary"],
       "metadata": {
         "description": "The virtual machine scale set zones. NOTE: Availability zones can only be set when you create the scale set."
       }
@@ -498,10 +465,10 @@
           "typeHandlerVersion": "1.0",
           "autoUpgradeMinorVersion": true,
           "settings": {
-              "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')]"
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')]"
           },
           "protectedSettings": {
-              "workspaceKey": "[listKeys(resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')),'2015-11-01-preview').primarySharedKey]"
+            "workspaceKey": "[listKeys(resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName')),'2015-11-01-preview').primarySharedKey]"
           }
         }
       },
@@ -583,9 +550,9 @@
           "networkProfile": {
             "networkInterfaceConfigurations": [
               {
-                "name": "[parameters('nicName')]", 
+                "name": "[parameters('nicName')]",
                 "properties": {
-                  "primary": true, 
+                  "primary": true,
                   "enableAcceleratedNetworking": "[parameters('nicEnableAcceleratedNetworking')]",
                   "enableIPForwarding": "[parameters('nicEnableIPForwarding')]",
                   "networkSecurityGroup": {
@@ -596,7 +563,7 @@
                   },
                   "ipConfigurations": [
                     {
-                      "name": "[parameters('nicIpConfigurationName')]", 
+                      "name": "[parameters('nicIpConfigurationName')]",
                       "properties": {
                         "subnet": {
                           "id": "[resourceId(parameters('nicNetworkSubscriptionId'), parameters('nicNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('nicVirtualNetworkName'), parameters('nicSubnetName'))]"

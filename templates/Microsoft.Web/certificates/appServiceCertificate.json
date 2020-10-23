@@ -1,107 +1,102 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "certName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Certificate"
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "northeurope",
-                "westeurope"
-            ],
-            "metadata": {
-                "description": "The location to deploy the Certificate to"
-            }
-        },
-        "hostNames": {
-            "type": "array",
-            "metadata": {
-                "description": "Host names of the certificate"
-            }
-        },
-        "password": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Password for the SSL Ceritficate"
-            }
-        },
-        "keyVaultSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "Subscription ID of Key Vault to get Certificate from"
-            }
-        },
-        "KeyVaultResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "Resource Group of Key Vault to get Certificate from"
-            }
-        },
-        "KeyVaultName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of Key Vault to get Certificate from"
-            }
-        },
-        "secretName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of Key Vault Secret to get Certificate"
-            }
-        },
-        "appServicePlanSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "Subscription ID of App Service Plan to link Certificate to"
-            }
-        },
-        "appServicePlanResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "Resource Group of App Service Plan to link Certificate to"
-            }
-        },
-        "appServicePlanName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of App Service Plan to link Certificate to"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Certificate"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "certName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Certificate"
+      }
     },
-    "variables": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Certificate to"
+      }
     },
-    "resources": [
-        {
-            "name": "[concat(parameters('certName'), '-', parameters('appServicePlanName'))]",
-            "type": "Microsoft.Web/certificates",
-            "apiVersion": "2019-08-01",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "hostNames": "[parameters('hostNames')]",
-                "password": "[parameters('password')]",
-                "keyVaultId": "[resourceId(parameters('keyVaultSubscriptionId'), parameters('keyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-                "keyVaultSecretName": "[parameters('secretName')]",
-                "serverFarmId": "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]"
-            }
-        }
-    ],
-    "outputs": {
+    "hostNames": {
+      "type": "array",
+      "metadata": {
+        "description": "Host names of the certificate"
+      }
+    },
+    "password": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the SSL Ceritficate"
+      }
+    },
+    "keyVaultSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID of Key Vault to get Certificate from"
+      }
+    },
+    "KeyVaultResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of Key Vault to get Certificate from"
+      }
+    },
+    "KeyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Key Vault to get Certificate from"
+      }
+    },
+    "secretName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Key Vault Secret to get Certificate"
+      }
+    },
+    "appServicePlanSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "Subscription ID of App Service Plan to link Certificate to"
+      }
+    },
+    "appServicePlanResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "Resource Group of App Service Plan to link Certificate to"
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of App Service Plan to link Certificate to"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Certificate"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('certName'), '-', parameters('appServicePlanName'))]",
+      "type": "Microsoft.Web/certificates",
+      "apiVersion": "2019-08-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "hostNames": "[parameters('hostNames')]",
+        "password": "[parameters('password')]",
+        "keyVaultId": "[resourceId(parameters('keyVaultSubscriptionId'), parameters('keyVaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "keyVaultSecretName": "[parameters('secretName')]",
+        "serverFarmId": "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]"
+      }
+    }
+  ],
+  "outputs": {}
 }

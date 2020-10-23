@@ -11,10 +11,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "Location of the Key Vault."
       }
@@ -35,10 +32,7 @@
     "skuName": {
       "type": "string",
       "defaultValue": "Standard",
-      "allowedValues": [
-        "Standard",
-        "Premium"
-      ],
+      "allowedValues": ["Standard", "Premium"],
       "metadata": {
         "description": "Specifies whether the Key Vault is a standard vault or a premium vault."
       }
@@ -67,10 +61,7 @@
     "createMode": {
       "type": "string",
       "defaultValue": "default",
-      "allowedValues": [
-        "default",
-        "recover"
-      ],
+      "allowedValues": ["default", "recover"],
       "metadata": {
         "description": "Specifies whether its a new Key Vault or one that is being recovered"
       }
@@ -78,26 +69,21 @@
     "bypass": {
       "type": "string",
       "defaultValue": "None",
-      "allowedValues": [
-        "None",
-        "AzureServices"
-      ],
+      "allowedValues": ["None", "AzureServices"],
       "metadata": {
         "description": "Specifies what traffic can bypass network ACLs."
       }
     },
     "ipRules": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "List of IP addresses to allow traffic from"
       }
     },
     "virtualNetworkRules": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "List of subnet IDs to allow traffic from"
       }

@@ -13,10 +13,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Storage Account to"
       }
@@ -60,18 +57,14 @@
     "accessTier": {
       "type": "string",
       "defaultValue": "Hot",
-      "allowedValues": [
-        "Hot",
-        "Cool"
-      ],
+      "allowedValues": ["Hot", "Cool"],
       "metadata": {
         "description": "Only for BlobStorage storage account kinds, define latency of data transfer"
       }
     },
     "corsRules": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Cross Origin Resource Sharing rules"
       }
@@ -99,8 +92,7 @@
       }
     }
   },
-  "variables": {
-  },
+  "variables": {},
   "resources": [
     {
       "name": "[parameters('storageAccountName')]",

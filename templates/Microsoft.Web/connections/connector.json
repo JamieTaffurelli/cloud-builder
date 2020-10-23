@@ -5,10 +5,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "Set the location for all resources, same location as the resource group"
       }
@@ -44,8 +41,7 @@
       }
     }
   },
-  "variables": {
-  },
+  "variables": {},
   "resources": [
     {
       "type": "Microsoft.Web/connections",

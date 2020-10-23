@@ -1,186 +1,178 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.1.0.0",
-    "parameters": {
-        "severity": {
-            "type": "int",
-            "allowedValues": [
-                0,
-                1,
-                2,
-                3,
-                4
-            ],
-            "metadata": {
-                "description": "Severity of the Metric Alert"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Metric Alert"
-            }
-        },
-        "appServicePlanSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "The Subscription ID of the App Service Plan to monitor"
-            }
-        },
-        "appServicePlanResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "The Resource Group of the App Service Plan to monitor"
-            }
-        },
-        "appServicePlanName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the App Service Plan to monitor"
-            }
-        },
-        "evaluationFrequency": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "How often to evalute Metric (ISO 8601)"
-            }
-        },
-        "windowSize": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "Period of time to monitor (ISO 8601)"
-            }
-        },
-        "appServicePlanRegion": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Region of the App Service Plan"
-            }
-        },
-        "cpuThreshold": {
-            "type": "string",
-            "defaultValue": "70",
-            "metadata": {
-                "description": "Threshold for CPU Percentage alert"
-            }
-        },
-        "memoryThreshold": {
-            "type": "string",
-            "defaultValue": "70",
-            "metadata": {
-                "description": "Threshold for Memory Percentage alert"
-            }
-        },
-        "autoMitigate": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Auto resolve alert"
-            }
-        },
-        "actions": {
-            "type": "array",
-            "metadata": {
-                "description": "Action to take on Metric Alert (Action Group or Webhook)"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Metric Alert"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.1.0.0",
+  "parameters": {
+    "severity": {
+      "type": "int",
+      "allowedValues": [0, 1, 2, 3, 4],
+      "metadata": {
+        "description": "Severity of the Metric Alert"
+      }
     },
-    "variables": {
-        "cpuMetricAlertName": "[concat(parameters('appServicePlanName'), '-static-cpu-alert')]",
-        "memoryMetricAlertName": "[concat(parameters('appServicePlanName'), '-static-memory-alert')]"
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Metric Alert"
+      }
     },
-    "resources": [
-        {
-            "name": "[variables('cpuMetricAlertName')]",
-            "type": "Microsoft.Insights/metricAlerts",
-            "apiVersion": "2018-03-01",
-            "location": "global",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[concat('Dynamic threshold alert for average CPU usage on', parameters('appServicePlanName'))]",
-                "severity": "[parameters('severity')]",
-                "enabled": "[parameters('enabled')]",
-                "scopes": [
-                    "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]"
-                ],
-                "evaluationFrequency": "[parameters('evaluationFrequency')]",
-                "windowSize": "[parameters('windowSize')]",
-                "targetResourceType": "Microsoft.Web/serverFarms",
-                "targetResourceRegion": "[parameters('appServicePlanRegion')]",
-                "criteria": {
-                    "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
-                    "allOf": [
-                        {
-                            "name": "CPU criterion",
-                            "metricName": "CpuPercentage",
-                            "dimensions": [
-                            ],
-                            "operator": "GreaterThan",
-                            "threshold": "[parameters('cpuThreshold')]",
-                            "timeAggregation": "Average"
-                        }
-                    ]
-                },
-                "autoMitigate": "[parameters('autoMitigate')]",
-                "actions": "[parameters('actions')]"
-            }
-        },
-        {
-            "name": "[variables('memoryMetricAlertName')]",
-            "type": "Microsoft.Insights/metricAlerts",
-            "apiVersion": "2018-03-01",
-            "location": "global",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[concat('Dynamic threshold alert for average Memory usage on', parameters('appServicePlanName'))]",
-                "severity": "[parameters('severity')]",
-                "enabled": "[parameters('enabled')]",
-                "scopes": [
-                    "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]"
-                ],
-                "evaluationFrequency": "[parameters('evaluationFrequency')]",
-                "windowSize": "[parameters('windowSize')]",
-                "targetResourceType": "Microsoft.Web/serverFarms",
-                "targetResourceRegion": "[parameters('appServicePlanRegion')]",
-                "criteria": {
-                    "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
-                    "allOf": [
-                        {
-                            "name": "Memory criterion",
-                            "metricName": "MemoryPercentage",
-                            "dimensions": [
-                            ],
-                            "operator": "GreaterThan",
-                            "threshold": "[parameters('memoryThreshold')]",
-                            "timeAggregation": "Average"
-                        }
-                    ]
-                },
-                "autoMitigate": "[parameters('autoMitigate')]",
-                "actions": "[parameters('actions')]"
-            }
-        }
-    ],
-    "outputs": {
-        "cpuMetricAlert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', variables('cpuMetricAlertName')), '2018-03-01', 'Full')]"
-        },
-        "memoryMetricAlert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', variables('memoryMetricAlertName')), '2018-03-01', 'Full')]"
-        }
+    "appServicePlanSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the App Service Plan to monitor"
+      }
+    },
+    "appServicePlanResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the App Service Plan to monitor"
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service Plan to monitor"
+      }
+    },
+    "evaluationFrequency": {
+      "type": "string",
+      "defaultValue": "PT5M",
+      "metadata": {
+        "description": "How often to evalute Metric (ISO 8601)"
+      }
+    },
+    "windowSize": {
+      "type": "string",
+      "defaultValue": "PT5M",
+      "metadata": {
+        "description": "Period of time to monitor (ISO 8601)"
+      }
+    },
+    "appServicePlanRegion": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Region of the App Service Plan"
+      }
+    },
+    "cpuThreshold": {
+      "type": "string",
+      "defaultValue": "70",
+      "metadata": {
+        "description": "Threshold for CPU Percentage alert"
+      }
+    },
+    "memoryThreshold": {
+      "type": "string",
+      "defaultValue": "70",
+      "metadata": {
+        "description": "Threshold for Memory Percentage alert"
+      }
+    },
+    "autoMitigate": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Auto resolve alert"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "metadata": {
+        "description": "Action to take on Metric Alert (Action Group or Webhook)"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Metric Alert"
+      }
     }
+  },
+  "variables": {
+    "cpuMetricAlertName": "[concat(parameters('appServicePlanName'), '-static-cpu-alert')]",
+    "memoryMetricAlertName": "[concat(parameters('appServicePlanName'), '-static-memory-alert')]"
+  },
+  "resources": [
+    {
+      "name": "[variables('cpuMetricAlertName')]",
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "location": "global",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[concat('Dynamic threshold alert for average CPU usage on', parameters('appServicePlanName'))]",
+        "severity": "[parameters('severity')]",
+        "enabled": "[parameters('enabled')]",
+        "scopes": [
+          "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]"
+        ],
+        "evaluationFrequency": "[parameters('evaluationFrequency')]",
+        "windowSize": "[parameters('windowSize')]",
+        "targetResourceType": "Microsoft.Web/serverFarms",
+        "targetResourceRegion": "[parameters('appServicePlanRegion')]",
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+          "allOf": [
+            {
+              "name": "CPU criterion",
+              "metricName": "CpuPercentage",
+              "dimensions": [],
+              "operator": "GreaterThan",
+              "threshold": "[parameters('cpuThreshold')]",
+              "timeAggregation": "Average"
+            }
+          ]
+        },
+        "autoMitigate": "[parameters('autoMitigate')]",
+        "actions": "[parameters('actions')]"
+      }
+    },
+    {
+      "name": "[variables('memoryMetricAlertName')]",
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "location": "global",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[concat('Dynamic threshold alert for average Memory usage on', parameters('appServicePlanName'))]",
+        "severity": "[parameters('severity')]",
+        "enabled": "[parameters('enabled')]",
+        "scopes": [
+          "[resourceId(parameters('appServicePlanSubscriptionId'), parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverFarms', parameters('appServicePlanName'))]"
+        ],
+        "evaluationFrequency": "[parameters('evaluationFrequency')]",
+        "windowSize": "[parameters('windowSize')]",
+        "targetResourceType": "Microsoft.Web/serverFarms",
+        "targetResourceRegion": "[parameters('appServicePlanRegion')]",
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+          "allOf": [
+            {
+              "name": "Memory criterion",
+              "metricName": "MemoryPercentage",
+              "dimensions": [],
+              "operator": "GreaterThan",
+              "threshold": "[parameters('memoryThreshold')]",
+              "timeAggregation": "Average"
+            }
+          ]
+        },
+        "autoMitigate": "[parameters('autoMitigate')]",
+        "actions": "[parameters('actions')]"
+      }
+    }
+  ],
+  "outputs": {
+    "cpuMetricAlert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', variables('cpuMetricAlertName')), '2018-03-01', 'Full')]"
+    },
+    "memoryMetricAlert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', variables('memoryMetricAlertName')), '2018-03-01', 'Full')]"
+    }
+  }
 }

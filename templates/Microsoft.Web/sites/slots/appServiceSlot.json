@@ -17,10 +17,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the App Service to"
       }
@@ -28,19 +25,14 @@
     "kind": {
       "type": "string",
       "defaultValue": "app",
-      "allowedValues": [
-        "app",
-        "functionapp",
-        "app,linux"
-      ],
+      "allowedValues": ["app", "functionapp", "app,linux"],
       "metadata": {
         "description": "Kind of App Service Plan"
       }
     },
     "hostNameSslStates": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Define SSL bindings for the App Service"
       }
@@ -95,32 +87,28 @@
     },
     "appSettings": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Application settings (key-value pairs)"
       }
     },
     "azureStorageAccounts": {
       "type": "object",
-      "defaultValue": {
-      },
+      "defaultValue": {},
       "metadata": {
         "description": "Linked Storage Accounts"
       }
     },
     "connectionStrings": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Connection string for app config"
       }
     },
     "handlerMappings": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Handler mappings for the app"
       }
@@ -183,8 +171,7 @@
     },
     "experiments": {
       "type": "object",
-      "defaultValue": {
-      },
+      "defaultValue": {},
       "metadata": {
         "description": "Defines routing behaviour for slots"
       }
@@ -205,8 +192,7 @@
     },
     "allowedExternalRedirectUrls": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "External redirect urls for logging in or out"
       }
@@ -248,16 +234,14 @@
     },
     "allowedAudiences": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Allowed IDs when validating JWTs issued by AAD"
       }
     },
     "additionalLoginParams": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Additional params to send to OpenID (key-value pairs)"
       }
@@ -320,8 +304,7 @@
     },
     "cors": {
       "type": "object",
-      "defaultValue": {
-      },
+      "defaultValue": {},
       "metadata": {
         "description": "Cross Origin Resource Sharing Settings"
       }
@@ -335,16 +318,14 @@
     },
     "ipSecurityRestrictions": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Network ACLs for main app"
       }
     },
     "scmIpSecurityRestrictions": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Network ACLs for associated scm app"
       }
@@ -359,12 +340,7 @@
     "diagnosticsLogsLevel": {
       "type": "string",
       "defaultValue": "Verbose",
-      "allowedValues": [
-        "Verbose",
-        "Information",
-        "Warning",
-        "Error"
-      ],
+      "allowedValues": ["Verbose", "Information", "Warning", "Error"],
       "metadata": {
         "description": "The degree of severity for diagnostic logs."
       }

@@ -1,126 +1,113 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.1.1.0",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.1.1.0",
+  "parameters": {
+    "policyAssignmentName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Policy Assignment you wish to create"
+      }
+    },
+    "displayName": {
+      "type": "string",
+      "metadata": {
+        "description": "The display name of the Policy Assignment you wish to create"
+      }
+    },
+    "policyDefinitionName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Policy Definition or Initiative you wish to assign to the Policy Assignment"
+      }
+    },
+    "policyDefinitionType": {
+      "type": "string",
+      "defaultValue": "Initiative",
+      "allowedValues": ["Initiative", "Standard"],
+      "metadata": {
+        "description": "The name of the Policy Definition or Initiative you wish to assign to the Policy Assignment"
+      }
+    },
+    "notScopes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The scopes to exclude from the Policy Assignment"
+      }
+    },
     "parameters": {
-        "policyAssignmentName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Policy Assignment you wish to create"
-            }
-        },
-        "displayName": {
-            "type": "string",
-            "metadata": {
-                "description": "The display name of the Policy Assignment you wish to create"
-            }
-        },
-        "policyDefinitionName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Policy Definition or Initiative you wish to assign to the Policy Assignment"
-            }
-        },
-        "policyDefinitionType": {
-            "type": "string",
-            "defaultValue": "Initiative",
-            "allowedValues": [
-                "Initiative",
-                "Standard"
-            ],
-            "metadata": {
-                "description": "The name of the Policy Definition or Initiative you wish to assign to the Policy Assignment"
-            }
-        },
-        "notScopes": {
-            "type": "array",
-            "defaultValue": [],
-            "metadata": {
-                "description": "The scopes to exclude from the Policy Assignment"
-            }
-        },
-        "parameters": {
-            "type": "object",
-            "metadata": {
-                "description": "The parameters for the Policy Rule of the Policy Assignment"
-            }
-        },
-        "description": {
-            "type": "string",
-            "metadata": {
-                "description": "The description of the Policy Assignment"
-            }
-        },
-        "metadata": {
-            "type": "object",
-            "metadata": {
-                "description": "The metadata of the Policy Assignment"
-            }
-        },
-        "enforcementMode": {
-            "type": "string",
-            "defaultValue": "Default",
-            "allowedValues": [
-                "Default",
-                "DoNotEnforce"
-            ],
-            "metadata": {
-                "description": "The enforcement mode of the Policy Assignment"
-            }
-        },
-        "skuName": {
-            "type": "string",
-            "defaultValue": "A1",
-            "allowedValues": [
-                "A0",
-                "A1"
-            ],
-            "metadata": {
-                "description": "The sku name of the Policy Assignment"
-            }
-        },
-        "skuTier": {
-            "type": "string",
-            "defaultValue": "Standard",
-            "allowedValues": [
-                "Free",
-                "Standard"
-            ],
-            "metadata": {
-                "description": "The sku  of the Policy Assignment"
-            }
-        },
-        "resourceGroupName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Specify to scope Policy Assignment to Resource Group"
-            }
-        }
+      "type": "object",
+      "metadata": {
+        "description": "The parameters for the Policy Rule of the Policy Assignment"
+      }
     },
-    "variables": {
-        "resourceType": "[if(equals(parameters('policyDefinitionType'), 'Initiative'), 'policySetDefinitions/', 'policyDefinitions/')]"
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "The description of the Policy Assignment"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('policyAssignmentName')]",
-            "type": "Microsoft.Authorization/policyAssignments",
-            "apiVersion": "2019-06-01",
-            "properties": {
-                "displayName": "[parameters('displayName')]",
-                "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/', variables('resourceType'), parameters('policyDefinitionName'))]",
-                "scope": "[if(empty(parameters('resourceGroupName')), subscription().id, concat(subscription().id, '/resourceGroups/', parameters('resourceGroupName')))]",
-                "notScopes": "[parameters('notScopes')]",
-                "parameters": "[parameters('parameters')]",
-                "description": "[parameters('description')]",
-                "metadata": "[parameters('metadata')]",
-                "enforcementMode": "[parameters('enforcementMode')]"
-            },
-            "sku": {
-                "name": "[parameters('skuName')]",
-                "tier": "[parameters('skuTier')]"
-            }
-        }
-    ],
-    "outputs": {
+    "metadata": {
+      "type": "object",
+      "metadata": {
+        "description": "The metadata of the Policy Assignment"
+      }
+    },
+    "enforcementMode": {
+      "type": "string",
+      "defaultValue": "Default",
+      "allowedValues": ["Default", "DoNotEnforce"],
+      "metadata": {
+        "description": "The enforcement mode of the Policy Assignment"
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "A1",
+      "allowedValues": ["A0", "A1"],
+      "metadata": {
+        "description": "The sku name of the Policy Assignment"
+      }
+    },
+    "skuTier": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": ["Free", "Standard"],
+      "metadata": {
+        "description": "The sku  of the Policy Assignment"
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify to scope Policy Assignment to Resource Group"
+      }
     }
+  },
+  "variables": {
+    "resourceType": "[if(equals(parameters('policyDefinitionType'), 'Initiative'), 'policySetDefinitions/', 'policyDefinitions/')]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('policyAssignmentName')]",
+      "type": "Microsoft.Authorization/policyAssignments",
+      "apiVersion": "2019-06-01",
+      "properties": {
+        "displayName": "[parameters('displayName')]",
+        "policyDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/', variables('resourceType'), parameters('policyDefinitionName'))]",
+        "scope": "[if(empty(parameters('resourceGroupName')), subscription().id, concat(subscription().id, '/resourceGroups/', parameters('resourceGroupName')))]",
+        "notScopes": "[parameters('notScopes')]",
+        "parameters": "[parameters('parameters')]",
+        "description": "[parameters('description')]",
+        "metadata": "[parameters('metadata')]",
+        "enforcementMode": "[parameters('enforcementMode')]"
+      },
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('skuTier')]"
+      }
+    }
+  ],
+  "outputs": {}
 }
