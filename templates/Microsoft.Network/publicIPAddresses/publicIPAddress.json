@@ -1,125 +1,125 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "publicIPName": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80,
-            "metadata": {
-                "description": "The name of the Public IP that you wish to create."
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [ "northeurope", "westeurope" ],
-            "metadata": {
-                "description": "The location to deploy the Public IP to"
-            }
-        },
-        "sku": {
-            "type": "string",
-            "defaultValue": "Standard",
-            "allowedValues": [ "Basic", "Standard" ],
-            "metadata": {
-                "description": "The SKU of the Public IP"
-            }
-        },
-        "publicIpAllocationMethod": {
-            "type": "string",
-            "defaultValue": "static",
-            "allowedValues": [ "static", "dynamic" ],
-            "metadata": {
-                "description": "Method of IP allocation when requested (static or dynamic)"
-            }
-        },
-        "publicIPAddressVersion": {
-            "type": "string",
-            "defaultValue": "IPv4",
-            "allowedValues": [ "IPv4", "IPv6" ],
-            "metadata": {
-                "description": "Specifies IPv4 or IPv6 IP address"
-            }
-        },
-        "domainNameLabel": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique DNS Name"
-            }
-        },
-        "dnsSettings": {
-            "type": "object",
-            "defaultValue": {},
-            "metadata": {
-                "description": "Domain name label, fqdn and reverse fqdn"
-            }
-        },
-        "ipTags": {
-            "type": "array",
-            "defaultValue": [],
-            "metadata": {
-                "description": "List of tags for Public IP address"
-            }
-        },
-        "ipAddress": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Specify if allocation is static"
-            }
-        },
-        "idleTimeoutInMinutes": {
-            "type": "int",
-            "defaultValue": 4,
-            "minValue": 4,
-            "maxValue": 30,
-            "metadata": {
-                "description": "Idle timeout for inbound originated flow"
-            }
-        },
-        "zones": {
-            "type": "array",
-            "defaultValue": [],
-            "metadata": {
-                "description": "Specify Availability Zones"
-            }
-        },
-        "tags": {
-            "type": "object"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "publicIPName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "metadata": {
+        "description": "The name of the Public IP that you wish to create."
+      }
     },
-    "variables": {
-        "domainNameLabel": {
-            "domainNameLabel": "[parameters('domainNameLabel')]"
-        },
-        "dnsSettings": "[union(variables('domainNameLabel'), parameters('dnsSettings'))]"
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Public IP to"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('publicIPName')]",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2020-05-01",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('tags')]",
-            "sku": {
-                "name": "[parameters('sku')]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
-                "publicIPAddressVersion": "[parameters('publicIPAddressVersion')]",
-                "dnsSettings": "[variables('dnsSettings')]",
-                "ipTags": "[parameters('ipTags')]",
-                "ipAddress": "[parameters('ipAddress')]",
-                "idleTimeoutInMinutes": "[parameters('idleTimeoutInMinutes')]"
-            },
-            "zones": "[parameters('zones')]"
-        }
-    ],
-    "outputs": {
-        "publicIP": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName')), '2020-05-01', 'Full')]"
-        }
+    "sku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": ["Basic", "Standard"],
+      "metadata": {
+        "description": "The SKU of the Public IP"
+      }
+    },
+    "publicIpAllocationMethod": {
+      "type": "string",
+      "defaultValue": "static",
+      "allowedValues": ["static", "dynamic"],
+      "metadata": {
+        "description": "Method of IP allocation when requested (static or dynamic)"
+      }
+    },
+    "publicIPAddressVersion": {
+      "type": "string",
+      "defaultValue": "IPv4",
+      "allowedValues": ["IPv4", "IPv6"],
+      "metadata": {
+        "description": "Specifies IPv4 or IPv6 IP address"
+      }
+    },
+    "domainNameLabel": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique DNS Name"
+      }
+    },
+    "dnsSettings": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Domain name label, fqdn and reverse fqdn"
+      }
+    },
+    "ipTags": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of tags for Public IP address"
+      }
+    },
+    "ipAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Specify if allocation is static"
+      }
+    },
+    "idleTimeoutInMinutes": {
+      "type": "int",
+      "defaultValue": 4,
+      "minValue": 4,
+      "maxValue": 30,
+      "metadata": {
+        "description": "Idle timeout for inbound originated flow"
+      }
+    },
+    "zones": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specify Availability Zones"
+      }
+    },
+    "tags": {
+      "type": "object"
     }
+  },
+  "variables": {
+    "domainNameLabel": {
+      "domainNameLabel": "[parameters('domainNameLabel')]"
+    },
+    "dnsSettings": "[union(variables('domainNameLabel'), parameters('dnsSettings'))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('publicIPName')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-05-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]",
+        "publicIPAddressVersion": "[parameters('publicIPAddressVersion')]",
+        "dnsSettings": "[variables('dnsSettings')]",
+        "ipTags": "[parameters('ipTags')]",
+        "ipAddress": "[parameters('ipAddress')]",
+        "idleTimeoutInMinutes": "[parameters('idleTimeoutInMinutes')]"
+      },
+      "zones": "[parameters('zones')]"
+    }
+  ],
+  "outputs": {
+    "publicIP": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName')), '2020-05-01', 'Full')]"
+    }
+  }
 }

@@ -1,424 +1,413 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.6.0",
-    "parameters": {
-        "templateStorageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "The storage account to pull templates from"
-            }
-        },
-        "templatesSas": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The SAS token for then storage account to pull templates from"
-            }
-        },
-        "appGatewayNames": {
-            "type": "array",
-            "metadata": {
-                "description": "The names of the App Gateways to monitor"
-            }
-        },
-        "region": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Region of the App Gateways"
-            }
-        },
-        "logAnalyticsWorkspaceLocation": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Location of Log Anaytics Workspace to query"
-            }
-        },
-        "logAnalyticsResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "The Resource Group of the Log Anaytics Workspace to query"
-            }
-        },
-        "logAnalyticsName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Log Anaytics Workspace to query"
-            }
-        },
-        "severity": {
-            "type": "int",
-            "allowedValues": [
-                0,
-                1,
-                2,
-                3,
-                4
-            ],
-            "metadata": {
-                "description": "Severity of the Alert"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Metric Alert"
-            }
-        },
-        "evaluationFrequency": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "How often to evalute Metric Alerts (ISO 8601)"
-            }
-        },
-        "windowSize": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "Period of time to monitor for Metric Alerts (ISO 8601)"
-            }
-        },
-        "frequencyInMinutes": {
-            "type": "int",
-            "defaultValue": 5,
-            "metadata": {
-                "description": "How often to run Scheduled Query Rules"
-            }
-        },
-        "timeWindowInMinutes": {
-            "type": "int",
-            "defaultValue": 5,
-            "metadata": {
-                "description": "Time period in which to run Scheduled Query Rules"
-            }
-        },
-        "alertSensitivity": {
-            "type": "string",
-            "defaultValue": "High",
-            "allowedValues": [
-                "High",
-                "Medium",
-                "Low"
-            ],
-            "metadata": {
-                "description": "Sensitivity of alert for dynamic threshold"
-            }
-        },
-        "numberOfEvaluationPeriods": {
-            "type": "string",
-            "defaultValue": "4",
-            "metadata": {
-                "description": "Number of time periods for algorithm to analyse"
-            }
-        },
-        "minFailingPeriodsToAlert": {
-            "type": "string",
-            "defaultValue": "3",
-            "metadata": {
-                "description": "Number of periods to fail threshold before alert is triggered"
-            }
-        },
-        "autoMitigate": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Auto resolve alert"
-            }
-        },
-        "actionGroupIds": {
-            "type": "array",
-            "metadata": {
-                "description": "Resource IDs of Action Groups to invoke"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Metric Alert"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.6.0",
+  "parameters": {
+    "templateStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The storage account to pull templates from"
+      }
     },
-    "variables": {
-        "metricAlertActions": {
-            "copy": [
-                {
-                    "name": "metricAlertActions",
-                    "count": "[length(parameters('actionGroupIds'))]",
-                    "input": {
-                        "actionGroupId": "[parameters('actionGroupIds')[copyIndex('metricAlertActions')]]"
-                    }
-                }
-            ]
-        },
-        "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
-        "metricAlertBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/metricAlerts/')]",
-        "scheduledQueryRuleBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/scheduledQueryRules/')]",
-        "appGatewayFailedRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayFailedRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
-        "appGatewayTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
-        "appGatewayUnhealthyHostTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayUnhealthyHostMetricAlert.1.0.1.0.json', parameters('templatesSas'))]",
-        "appGatewayHttpReturnCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayHttpReturnCodeRule.1.0.3.0.json', parameters('templatesSas'))]",
-        "appGatewayWafViolationCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayWafViolationRule.1.0.1.0.json', parameters('templatesSas'))]"
+    "templatesSas": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The SAS token for then storage account to pull templates from"
+      }
     },
-    "resources": [
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-failed-request-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appGatewayFailedRequestTemplateUrl')]",
-                    "contentVersion": "1.0.3.0"
-                },
-                "parameters": {
-                    "appGatewayName": {
-                        "value": "[parameters('appGatewayNames')[copyIndex()]]"
-                    },
-                    "appGatewayRegion": {
-                        "value": "[parameters('region')]"
-                    },
-                    "enabled": {
-                        "value": "[parameters('enabled')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "evaluationFrequency": {
-                        "value": "[parameters('evaluationFrequency')]"
-                    },
-                    "windowSize": {
-                        "value": "[parameters('windowSize')]"
-                    },
-                    "alertSensitivity": {
-                        "value": "[parameters('alertSensitivity')]"
-                    },
-                    "numberOfEvaluationPeriods": {
-                        "value": "[parameters('numberOfEvaluationPeriods')]"
-                    },
-                    "minFailingPeriodsToAlert": {
-                        "value": "[parameters('minFailingPeriodsToAlert')]"
-                    },
-                    "autoMitigate": {
-                        "value": "[parameters('autoMitigate')]"
-                    },
-                    "actions": {
-                        "value": "[variables('metricAlertActions').metricAlertActions]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appGatewayFailedRequestLoop",
-                "count": "[length(parameters('appGatewayNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-total-request-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appGatewayTotalRequestTemplateUrl')]",
-                    "contentVersion": "1.0.3.0"
-                },
-                "parameters": {
-                    "appGatewayName": {
-                        "value": "[parameters('appGatewayNames')[copyIndex()]]"
-                    },
-                    "appGatewayRegion": {
-                        "value": "[parameters('region')]"
-                    },
-                    "enabled": {
-                        "value": "[parameters('enabled')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "evaluationFrequency": {
-                        "value": "[parameters('evaluationFrequency')]"
-                    },
-                    "windowSize": {
-                        "value": "[parameters('windowSize')]"
-                    },
-                    "alertSensitivity": {
-                        "value": "[parameters('alertSensitivity')]"
-                    },
-                    "numberOfEvaluationPeriods": {
-                        "value": "[parameters('numberOfEvaluationPeriods')]"
-                    },
-                    "minFailingPeriodsToAlert": {
-                        "value": "[parameters('minFailingPeriodsToAlert')]"
-                    },
-                    "autoMitigate": {
-                        "value": "[parameters('autoMitigate')]"
-                    },
-                    "actions": {
-                        "value": "[variables('metricAlertActions').metricAlertActions]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appGatewayTotalRequestLoop",
-                "count": "[length(parameters('appGatewayNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-unhealthy-host-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appGatewayUnhealthyHostTemplateUrl')]",
-                    "contentVersion": "1.0.1.0"
-                },
-                "parameters": {
-                    "appGatewayName": {
-                        "value": "[parameters('appGatewayNames')[copyIndex()]]"
-                    },
-                    "appGatewayRegion": {
-                        "value": "[parameters('region')]"
-                    },
-                    "enabled": {
-                        "value": "[parameters('enabled')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "evaluationFrequency": {
-                        "value": "[parameters('evaluationFrequency')]"
-                    },
-                    "windowSize": {
-                        "value": "[parameters('windowSize')]"
-                    },
-                    "autoMitigate": {
-                        "value": "[parameters('autoMitigate')]"
-                    },
-                    "actions": {
-                        "value": "[variables('metricAlertActions').metricAlertActions]"
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appGatewayUnhealthyHostLoop",
-                "count": "[length(parameters('appGatewayNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-http-return-code-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appGatewayHttpReturnCodeTemplateUrl')]",
-                    "contentVersion": "1.0.3.0"
-                },
-                "parameters": {
-                    "appGatewayName": {
-                        "value": "[parameters('appGatewayNames')[copyIndex()]]"
-                    },
-                    "location": {
-                        "value": "[parameters('logAnalyticsWorkspaceLocation')]"
-                    },
-                    "enabled": {
-                        "value": "[string(parameters('enabled'))]"
-                    },
-                    "dataSourceResourceGroupName": {
-                        "value": "[parameters('logAnalyticsResourceGroupName')]"
-                    },
-                    "dataSourceName": {
-                        "value": "[parameters('logAnalyticsName')]"
-                    },
-                    "frequencyInMinutes": {
-                        "value": "[parameters('frequencyInMinutes')]"
-                    },
-                    "timeWindowInMinutes": {
-                        "value": "[parameters('timeWindowInMinutes')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "aznsAction": {
-                        "value": {
-                            "actionGroup": "[parameters('actionGroupIds')]",
-                            "emailSubject": "[concat(parameters('appGatewayNames')[copyIndex()], ' is returning http errors')]"
-                        }
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appGatewayHttpCodeLoop",
-                "count": "[length(parameters('appGatewayNames'))]"
-            }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-05-01",
-            "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-waf-violation-alert')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('appGatewayWafViolationCodeTemplateUrl')]",
-                    "contentVersion": "1.0.1.0"
-                },
-                "parameters": {
-                    "appGatewayName": {
-                        "value": "[parameters('appGatewayNames')[copyIndex()]]"
-                    },
-                    "location": {
-                        "value": "[parameters('logAnalyticsWorkspaceLocation')]"
-                    },
-                    "enabled": {
-                        "value": "[string(parameters('enabled'))]"
-                    },
-                    "dataSourceResourceGroupName": {
-                        "value": "[parameters('logAnalyticsResourceGroupName')]"
-                    },
-                    "dataSourceName": {
-                        "value": "[parameters('logAnalyticsName')]"
-                    },
-                    "frequencyInMinutes": {
-                        "value": "[parameters('frequencyInMinutes')]"
-                    },
-                    "timeWindowInMinutes": {
-                        "value": "[parameters('timeWindowInMinutes')]"
-                    },
-                    "severity": {
-                        "value": "[parameters('severity')]"
-                    },
-                    "aznsAction": {
-                        "value": {
-                            "actionGroup": "[parameters('actionGroupIds')]",
-                            "emailSubject": "[concat(parameters('appGatewayNames')[copyIndex()], ' is showing waf violations')]"
-                        }
-                    },
-                    "tags": {
-                        "value": "[parameters('tags')]"
-                    }
-                }
-            },
-            "copy": {
-                "name": "appGatewayWafViolationLoop",
-                "count": "[length(parameters('appGatewayNames'))]"
-            }
-        }
-    ],
-    "outputs": {
+    "appGatewayNames": {
+      "type": "array",
+      "metadata": {
+        "description": "The names of the App Gateways to monitor"
+      }
+    },
+    "region": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Region of the App Gateways"
+      }
+    },
+    "logAnalyticsWorkspaceLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location of Log Anaytics Workspace to query"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Anaytics Workspace to query"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Anaytics Workspace to query"
+      }
+    },
+    "severity": {
+      "type": "int",
+      "allowedValues": [0, 1, 2, 3, 4],
+      "metadata": {
+        "description": "Severity of the Alert"
+      }
+    },
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Metric Alert"
+      }
+    },
+    "evaluationFrequency": {
+      "type": "string",
+      "defaultValue": "PT5M",
+      "metadata": {
+        "description": "How often to evalute Metric Alerts (ISO 8601)"
+      }
+    },
+    "windowSize": {
+      "type": "string",
+      "defaultValue": "PT5M",
+      "metadata": {
+        "description": "Period of time to monitor for Metric Alerts (ISO 8601)"
+      }
+    },
+    "frequencyInMinutes": {
+      "type": "int",
+      "defaultValue": 5,
+      "metadata": {
+        "description": "How often to run Scheduled Query Rules"
+      }
+    },
+    "timeWindowInMinutes": {
+      "type": "int",
+      "defaultValue": 5,
+      "metadata": {
+        "description": "Time period in which to run Scheduled Query Rules"
+      }
+    },
+    "alertSensitivity": {
+      "type": "string",
+      "defaultValue": "High",
+      "allowedValues": ["High", "Medium", "Low"],
+      "metadata": {
+        "description": "Sensitivity of alert for dynamic threshold"
+      }
+    },
+    "numberOfEvaluationPeriods": {
+      "type": "string",
+      "defaultValue": "4",
+      "metadata": {
+        "description": "Number of time periods for algorithm to analyse"
+      }
+    },
+    "minFailingPeriodsToAlert": {
+      "type": "string",
+      "defaultValue": "3",
+      "metadata": {
+        "description": "Number of periods to fail threshold before alert is triggered"
+      }
+    },
+    "autoMitigate": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Auto resolve alert"
+      }
+    },
+    "actionGroupIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Resource IDs of Action Groups to invoke"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Metric Alert"
+      }
     }
+  },
+  "variables": {
+    "metricAlertActions": {
+      "copy": [
+        {
+          "name": "metricAlertActions",
+          "count": "[length(parameters('actionGroupIds'))]",
+          "input": {
+            "actionGroupId": "[parameters('actionGroupIds')[copyIndex('metricAlertActions')]]"
+          }
+        }
+      ]
+    },
+    "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
+    "metricAlertBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/metricAlerts/')]",
+    "scheduledQueryRuleBaseUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.Insights/scheduledQueryRules/')]",
+    "appGatewayFailedRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayFailedRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
+    "appGatewayTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
+    "appGatewayUnhealthyHostTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayUnhealthyHostMetricAlert.1.0.1.0.json', parameters('templatesSas'))]",
+    "appGatewayHttpReturnCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayHttpReturnCodeRule.1.0.3.0.json', parameters('templatesSas'))]",
+    "appGatewayWafViolationCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayWafViolationRule.1.0.1.0.json', parameters('templatesSas'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-failed-request-alert')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('appGatewayFailedRequestTemplateUrl')]",
+          "contentVersion": "1.0.3.0"
+        },
+        "parameters": {
+          "appGatewayName": {
+            "value": "[parameters('appGatewayNames')[copyIndex()]]"
+          },
+          "appGatewayRegion": {
+            "value": "[parameters('region')]"
+          },
+          "enabled": {
+            "value": "[parameters('enabled')]"
+          },
+          "severity": {
+            "value": "[parameters('severity')]"
+          },
+          "evaluationFrequency": {
+            "value": "[parameters('evaluationFrequency')]"
+          },
+          "windowSize": {
+            "value": "[parameters('windowSize')]"
+          },
+          "alertSensitivity": {
+            "value": "[parameters('alertSensitivity')]"
+          },
+          "numberOfEvaluationPeriods": {
+            "value": "[parameters('numberOfEvaluationPeriods')]"
+          },
+          "minFailingPeriodsToAlert": {
+            "value": "[parameters('minFailingPeriodsToAlert')]"
+          },
+          "autoMitigate": {
+            "value": "[parameters('autoMitigate')]"
+          },
+          "actions": {
+            "value": "[variables('metricAlertActions').metricAlertActions]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "appGatewayFailedRequestLoop",
+        "count": "[length(parameters('appGatewayNames'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-total-request-alert')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('appGatewayTotalRequestTemplateUrl')]",
+          "contentVersion": "1.0.3.0"
+        },
+        "parameters": {
+          "appGatewayName": {
+            "value": "[parameters('appGatewayNames')[copyIndex()]]"
+          },
+          "appGatewayRegion": {
+            "value": "[parameters('region')]"
+          },
+          "enabled": {
+            "value": "[parameters('enabled')]"
+          },
+          "severity": {
+            "value": "[parameters('severity')]"
+          },
+          "evaluationFrequency": {
+            "value": "[parameters('evaluationFrequency')]"
+          },
+          "windowSize": {
+            "value": "[parameters('windowSize')]"
+          },
+          "alertSensitivity": {
+            "value": "[parameters('alertSensitivity')]"
+          },
+          "numberOfEvaluationPeriods": {
+            "value": "[parameters('numberOfEvaluationPeriods')]"
+          },
+          "minFailingPeriodsToAlert": {
+            "value": "[parameters('minFailingPeriodsToAlert')]"
+          },
+          "autoMitigate": {
+            "value": "[parameters('autoMitigate')]"
+          },
+          "actions": {
+            "value": "[variables('metricAlertActions').metricAlertActions]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "appGatewayTotalRequestLoop",
+        "count": "[length(parameters('appGatewayNames'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-unhealthy-host-alert')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('appGatewayUnhealthyHostTemplateUrl')]",
+          "contentVersion": "1.0.1.0"
+        },
+        "parameters": {
+          "appGatewayName": {
+            "value": "[parameters('appGatewayNames')[copyIndex()]]"
+          },
+          "appGatewayRegion": {
+            "value": "[parameters('region')]"
+          },
+          "enabled": {
+            "value": "[parameters('enabled')]"
+          },
+          "severity": {
+            "value": "[parameters('severity')]"
+          },
+          "evaluationFrequency": {
+            "value": "[parameters('evaluationFrequency')]"
+          },
+          "windowSize": {
+            "value": "[parameters('windowSize')]"
+          },
+          "autoMitigate": {
+            "value": "[parameters('autoMitigate')]"
+          },
+          "actions": {
+            "value": "[variables('metricAlertActions').metricAlertActions]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "appGatewayUnhealthyHostLoop",
+        "count": "[length(parameters('appGatewayNames'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-http-return-code-alert')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('appGatewayHttpReturnCodeTemplateUrl')]",
+          "contentVersion": "1.0.3.0"
+        },
+        "parameters": {
+          "appGatewayName": {
+            "value": "[parameters('appGatewayNames')[copyIndex()]]"
+          },
+          "location": {
+            "value": "[parameters('logAnalyticsWorkspaceLocation')]"
+          },
+          "enabled": {
+            "value": "[string(parameters('enabled'))]"
+          },
+          "dataSourceResourceGroupName": {
+            "value": "[parameters('logAnalyticsResourceGroupName')]"
+          },
+          "dataSourceName": {
+            "value": "[parameters('logAnalyticsName')]"
+          },
+          "frequencyInMinutes": {
+            "value": "[parameters('frequencyInMinutes')]"
+          },
+          "timeWindowInMinutes": {
+            "value": "[parameters('timeWindowInMinutes')]"
+          },
+          "severity": {
+            "value": "[parameters('severity')]"
+          },
+          "aznsAction": {
+            "value": {
+              "actionGroup": "[parameters('actionGroupIds')]",
+              "emailSubject": "[concat(parameters('appGatewayNames')[copyIndex()], ' is returning http errors')]"
+            }
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "appGatewayHttpCodeLoop",
+        "count": "[length(parameters('appGatewayNames'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[concat(parameters('appGatewayNames')[copyIndex()], '-waf-violation-alert')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('appGatewayWafViolationCodeTemplateUrl')]",
+          "contentVersion": "1.0.1.0"
+        },
+        "parameters": {
+          "appGatewayName": {
+            "value": "[parameters('appGatewayNames')[copyIndex()]]"
+          },
+          "location": {
+            "value": "[parameters('logAnalyticsWorkspaceLocation')]"
+          },
+          "enabled": {
+            "value": "[string(parameters('enabled'))]"
+          },
+          "dataSourceResourceGroupName": {
+            "value": "[parameters('logAnalyticsResourceGroupName')]"
+          },
+          "dataSourceName": {
+            "value": "[parameters('logAnalyticsName')]"
+          },
+          "frequencyInMinutes": {
+            "value": "[parameters('frequencyInMinutes')]"
+          },
+          "timeWindowInMinutes": {
+            "value": "[parameters('timeWindowInMinutes')]"
+          },
+          "severity": {
+            "value": "[parameters('severity')]"
+          },
+          "aznsAction": {
+            "value": {
+              "actionGroup": "[parameters('actionGroupIds')]",
+              "emailSubject": "[concat(parameters('appGatewayNames')[copyIndex()], ' is showing waf violations')]"
+            }
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "appGatewayWafViolationLoop",
+        "count": "[length(parameters('appGatewayNames'))]"
+      }
+    }
+  ],
+  "outputs": {}
 }

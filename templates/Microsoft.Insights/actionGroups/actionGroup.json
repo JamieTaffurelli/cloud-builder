@@ -23,80 +23,70 @@
     },
     "emailReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Email details for the Action Group"
       }
     },
     "smsReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "SMS details for the Action Group"
       }
     },
     "webhookReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Web hook details for the Action Group"
       }
     },
     "itsmReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Service Desk details for the Action Group"
       }
     },
     "azureAppPushReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "App push details for the Action Group"
       }
     },
     "automationRunbookReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Automation Account Runbook details for the Action Group"
       }
     },
     "voiceReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Phone call details for the Action Group"
       }
     },
     "logicAppReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Logic App details for the Action Group"
       }
     },
     "azureFunctionReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Function App details for the Action Group"
       }
     },
     "armRoleReceivers": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "RBAC role details for the Action Group"
       }
@@ -108,8 +98,7 @@
       }
     }
   },
-  "variables": {
-  },
+  "variables": {},
   "resources": [
     {
       "name": "[parameters('actionGroupName')]",

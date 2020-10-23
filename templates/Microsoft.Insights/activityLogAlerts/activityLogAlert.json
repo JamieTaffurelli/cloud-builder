@@ -1,75 +1,74 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.0",
-    "parameters": {
-        "activityLogAlertName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Activity Log Alert to deploy"
-            }
-        },
-        "description": {
-            "type": "string",
-            "metadata": {
-                "description": "The description of the Activity Log Alert"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Activity Log Alert"
-            }
-        },
-        "scopes": {
-            "type": "array",
-            "metadata": {
-                "description": "Resource IDs that the Activity Log Alert is scoped to"
-            }
-        },
-        "allOf": {
-            "type": "array",
-            "metadata": {
-                "description": "List of Activity Log Alert conditions"
-            }
-        },
-        "actions": {
-            "type": "object",
-            "metadata": {
-                "description": "Action to take on Activity Log Alert (Action Group or Webhook)"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Activity Log Alert"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.1.0",
+  "parameters": {
+    "activityLogAlertName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Activity Log Alert to deploy"
+      }
     },
-    "variables": {
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "The description of the Activity Log Alert"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('activityLogAlertName')]",
-            "type": "Microsoft.Insights/activityLogAlerts",
-            "apiVersion": "2017-04-01",
-            "location": "global",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[parameters('description')]",
-                "enabled": "[parameters('enabled')]",
-                "scopes": "[parameters('scopes')]",
-                "condition": {
-                    "allOf": "[parameters('allOf')]"
-                },
-                "actions": "[parameters('actions')]"
-            }
-        }
-    ],
-    "outputs": {
-        "metricAlert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/activityLogAlerts', parameters('activityLogAlertName')), '2017-04-01', 'Full')]"
-        }
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Activity Log Alert"
+      }
+    },
+    "scopes": {
+      "type": "array",
+      "metadata": {
+        "description": "Resource IDs that the Activity Log Alert is scoped to"
+      }
+    },
+    "allOf": {
+      "type": "array",
+      "metadata": {
+        "description": "List of Activity Log Alert conditions"
+      }
+    },
+    "actions": {
+      "type": "object",
+      "metadata": {
+        "description": "Action to take on Activity Log Alert (Action Group or Webhook)"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Activity Log Alert"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('activityLogAlertName')]",
+      "type": "Microsoft.Insights/activityLogAlerts",
+      "apiVersion": "2017-04-01",
+      "location": "global",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[parameters('description')]",
+        "enabled": "[parameters('enabled')]",
+        "scopes": "[parameters('scopes')]",
+        "condition": {
+          "allOf": "[parameters('allOf')]"
+        },
+        "actions": "[parameters('actions')]"
+      }
+    }
+  ],
+  "outputs": {
+    "metricAlert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/activityLogAlerts', parameters('activityLogAlertName')), '2017-04-01', 'Full')]"
+    }
+  }
 }

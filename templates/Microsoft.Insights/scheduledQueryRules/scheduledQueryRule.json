@@ -1,161 +1,150 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.0",
-    "parameters": {
-        "scheduledQueryRuleName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the Scheduled Query Rule to deploy"
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "northeurope",
-                "westeurope"
-            ],
-            "metadata": {
-                "description": "The location to deploy the Scheduled Query Rule to"
-            }
-        },
-        "description": {
-            "type": "string",
-            "metadata": {
-                "description": "The description of the Scheduled Query Rule"
-            }
-        },
-        "enabled": {
-            "type": "string",
-            "defaultValue": "true",
-            "metadata": {
-                "description": "Enable or Disable the Metric Alert"
-            }
-        },
-        "query": {
-            "type": "string",
-            "metadata": {
-                "description": "The query to run"
-            }
-        },
-        "authorizedResources": {
-            "type": "array",
-            "defaultValue": [
-            ],
-            "metadata": {
-                "description": "List of resources referred to in query (for cross workspace queries)"
-            }
-        },
-        "dataSourceSubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "The Subscription ID of the data source to query"
-            }
-        },
-        "dataSourceResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "The Resource Group of the data source to query"
-            }
-        },
-        "dataSourceType": {
-            "type": "string",
-            "defaultValue": "Microsoft.OperationalInsights/workspaces",
-            "allowedValues": [
-                "Microsoft.OperationalInsights/workspaces",
-                "Microsoft.Insights/components"
-            ],
-            "metadata": {
-                "description": "The type of data source to query"
-            }
-        },
-        "dataSourceName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the data source to query"
-            }
-        },
-        "frequencyInMinutes": {
-            "type": "int",
-            "metadata": {
-                "description": "How often to run the query"
-            }
-        },
-        "timeWindowInMinutes": {
-            "type": "int",
-            "metadata": {
-                "description": "Time period in which to query data"
-            }
-        },
-        "severity": {
-            "type": "int",
-            "allowedValues": [
-                0,
-                1,
-                2,
-                3,
-                4
-            ],
-            "metadata": {
-                "description": "Severity of the Scheduled Query Rule"
-            }
-        },
-        "aznsAction": {
-            "type": "object",
-            "metadata": {
-                "description": "Action object: actionGroup, emailSubject, customWebhookPayload"
-            }
-        },
-        "trigger": {
-            "type": "object",
-            "metadata": {
-                "description": "Trigger object: thresholdOperator, threshold and metric object"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Scheduled Query Rule"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.1.0",
+  "parameters": {
+    "scheduledQueryRuleName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Scheduled Query Rule to deploy"
+      }
     },
-    "variables": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Scheduled Query Rule to"
+      }
     },
-    "resources": [
-        {
-            "name": "[parameters('scheduledQueryRuleName')]",
-            "type": "Microsoft.Insights/scheduledQueryRules",
-            "apiVersion": "2018-04-16",
-            "location": "[parameters('location')]",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[parameters('description')]",
-                "enabled": "[parameters('enabled')]",
-                "source": {
-                    "query": "[parameters('query')]",
-                    "authorizedResources": "[parameters('authorizedResources')]",
-                    "dataSourceId": "[resourceId(parameters('dataSourcesubscriptionId'), parameters('dataSourceResourceGroupName'), parameters('dataSourceType'), parameters('dataSourceName'))]",
-                    "queryType": "ResultCount"
-                },
-                "schedule": {
-                    "frequencyInMinutes": "[parameters('frequencyInMinutes')]",
-                    "timeWindowInMinutes": "[parameters('timeWindowInMinutes')]"
-                },
-                "action": {
-                    "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
-                    "severity": "[parameters('severity')]",
-                    "aznsAction": "[parameters('aznsAction')]",
-                    "trigger": "[parameters('trigger')]"
-                }
-            }
-        }
-    ],
-    "outputs": {
-        "scheduledQueryRule": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/scheduledQueryRules', parameters('scheduledQueryRuleName')), '2018-04-16', 'Full')]"
-        }
+    "description": {
+      "type": "string",
+      "metadata": {
+        "description": "The description of the Scheduled Query Rule"
+      }
+    },
+    "enabled": {
+      "type": "string",
+      "defaultValue": "true",
+      "metadata": {
+        "description": "Enable or Disable the Metric Alert"
+      }
+    },
+    "query": {
+      "type": "string",
+      "metadata": {
+        "description": "The query to run"
+      }
+    },
+    "authorizedResources": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of resources referred to in query (for cross workspace queries)"
+      }
+    },
+    "dataSourceSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the data source to query"
+      }
+    },
+    "dataSourceResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the data source to query"
+      }
+    },
+    "dataSourceType": {
+      "type": "string",
+      "defaultValue": "Microsoft.OperationalInsights/workspaces",
+      "allowedValues": [
+        "Microsoft.OperationalInsights/workspaces",
+        "Microsoft.Insights/components"
+      ],
+      "metadata": {
+        "description": "The type of data source to query"
+      }
+    },
+    "dataSourceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the data source to query"
+      }
+    },
+    "frequencyInMinutes": {
+      "type": "int",
+      "metadata": {
+        "description": "How often to run the query"
+      }
+    },
+    "timeWindowInMinutes": {
+      "type": "int",
+      "metadata": {
+        "description": "Time period in which to query data"
+      }
+    },
+    "severity": {
+      "type": "int",
+      "allowedValues": [0, 1, 2, 3, 4],
+      "metadata": {
+        "description": "Severity of the Scheduled Query Rule"
+      }
+    },
+    "aznsAction": {
+      "type": "object",
+      "metadata": {
+        "description": "Action object: actionGroup, emailSubject, customWebhookPayload"
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "metadata": {
+        "description": "Trigger object: thresholdOperator, threshold and metric object"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Scheduled Query Rule"
+      }
     }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('scheduledQueryRuleName')]",
+      "type": "Microsoft.Insights/scheduledQueryRules",
+      "apiVersion": "2018-04-16",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[parameters('description')]",
+        "enabled": "[parameters('enabled')]",
+        "source": {
+          "query": "[parameters('query')]",
+          "authorizedResources": "[parameters('authorizedResources')]",
+          "dataSourceId": "[resourceId(parameters('dataSourcesubscriptionId'), parameters('dataSourceResourceGroupName'), parameters('dataSourceType'), parameters('dataSourceName'))]",
+          "queryType": "ResultCount"
+        },
+        "schedule": {
+          "frequencyInMinutes": "[parameters('frequencyInMinutes')]",
+          "timeWindowInMinutes": "[parameters('timeWindowInMinutes')]"
+        },
+        "action": {
+          "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+          "severity": "[parameters('severity')]",
+          "aznsAction": "[parameters('aznsAction')]",
+          "trigger": "[parameters('trigger')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "scheduledQueryRule": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/scheduledQueryRules', parameters('scheduledQueryRuleName')), '2018-04-16', 'Full')]"
+    }
+  }
 }

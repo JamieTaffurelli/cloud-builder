@@ -1,163 +1,152 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.3.0",
-    "parameters": {
-        "severity": {
-            "type": "int",
-            "allowedValues": [
-                0,
-                1,
-                2,
-                3,
-                4
-            ],
-            "metadata": {
-                "description": "Severity of the Metric Alert"
-            }
-        },
-        "enabled": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Enable or Disable the Metric Alert"
-            }
-        },
-        "appGatewaySubscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().subscriptionId]",
-            "metadata": {
-                "description": "The Subscription ID of the App Service to monitor"
-            }
-        },
-        "appGatewayResourceGroupName": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "The Resource Group of the App Service to monitor"
-            }
-        },
-        "appGatewayName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the App Service to monitor"
-            }
-        },
-        "evaluationFrequency": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "How often to evalute Metric (ISO 8601)"
-            }
-        },
-        "windowSize": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "Period of time to monitor (ISO 8601)"
-            }
-        },
-        "appGatewayRegion": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Region of the App Service"
-            }
-        },
-        "alertSensitivity": {
-            "type": "string",
-            "defaultValue": "High",
-            "allowedValues": [
-                "High",
-                "Medium",
-                "Low"
-            ],
-            "metadata": {
-                "description": "Sensitivity of alert for dynamic threshold"
-            }
-        },
-        "numberOfEvaluationPeriods": {
-            "type": "string",
-            "defaultValue": "4",
-            "metadata": {
-                "description": "Number of time periods for algorithm to analyse"
-            }
-        },
-        "minFailingPeriodsToAlert": {
-            "type": "string",
-            "defaultValue": "3",
-            "metadata": {
-                "description": "Number of periods to fail threshold before alert is triggered"
-            }
-        },
-        "autoMitigate": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Auto resolve alert"
-            }
-        },
-        "actions": {
-            "type": "array",
-            "metadata": {
-                "description": "Action to take on Metric Alert (Action Group or Webhook)"
-            }
-        },
-        "tags": {
-            "type": "object",
-            "metadata": {
-                "description": "Tags to apply to Metric Alert"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.3.0",
+  "parameters": {
+    "severity": {
+      "type": "int",
+      "allowedValues": [0, 1, 2, 3, 4],
+      "metadata": {
+        "description": "Severity of the Metric Alert"
+      }
     },
-    "variables": {
-        "appGatewayFailedRequestAlertName": "[concat(parameters('appGatewayName'), '-dynamic-failed-request-alert')]"
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable or Disable the Metric Alert"
+      }
     },
-    "resources": [
-        {
-            "name": "[variables('appGatewayFailedRequestAlertName')]",
-            "type": "Microsoft.Insights/metricAlerts",
-            "apiVersion": "2018-03-01",
-            "location": "global",
-            "tags": "[parameters('tags')]",
-            "properties": {
-                "description": "[concat('Dynamic threshold alert for failed requests on', parameters('appGatewayName'))]",
-                "severity": "[parameters('severity')]",
-                "enabled": "[parameters('enabled')]",
-                "scopes": [
-                    "[resourceId(parameters('appGatewaySubscriptionId'), parameters('appGatewayResourceGroupName'), 'Microsoft.Network/applicationGateways', parameters('appGatewayName'))]"
-                ],
-                "evaluationFrequency": "[parameters('evaluationFrequency')]",
-                "windowSize": "[parameters('windowSize')]",
-                "targetResourceType": "Microsoft.Network/applicationGateways",
-                "targetResourceRegion": "[parameters('appGatewayRegion')]",
-                "criteria": {
-                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
-                    "allOf": [
-                        {
-                            "criterionType": "DynamicThresholdCriterion",
-                            "name": "Failed request criterion",
-                            "metricName": "FailedRequests",
-                            "dimensions": [
-                            ],
-                            "operator": "GreaterThan",
-                            "alertSensitivity": "[parameters('alertSensitivity')]",
-                            "failingPeriods": {
-                                "numberOfEvaluationPeriods": "[parameters('numberOfEvaluationPeriods')]",
-                                "minFailingPeriodsToAlert": "[parameters('minFailingPeriodsToAlert')]"
-                            },
-                            "timeAggregation": "Total"
-                        }
-                    ]
-                },
-                "autoMitigate": "[parameters('autoMitigate')]",
-                "actions": "[parameters('actions')]"
-            }
-        }
-    ],
-    "outputs": {
-        "metricAlert": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', variables('appGatewayFailedRequestAlertName')), '2018-03-01', 'Full')]"
-        }
+    "appGatewaySubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the App Service to monitor"
+      }
+    },
+    "appGatewayResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the App Service to monitor"
+      }
+    },
+    "appGatewayName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the App Service to monitor"
+      }
+    },
+    "evaluationFrequency": {
+      "type": "string",
+      "defaultValue": "PT5M",
+      "metadata": {
+        "description": "How often to evalute Metric (ISO 8601)"
+      }
+    },
+    "windowSize": {
+      "type": "string",
+      "defaultValue": "PT5M",
+      "metadata": {
+        "description": "Period of time to monitor (ISO 8601)"
+      }
+    },
+    "appGatewayRegion": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Region of the App Service"
+      }
+    },
+    "alertSensitivity": {
+      "type": "string",
+      "defaultValue": "High",
+      "allowedValues": ["High", "Medium", "Low"],
+      "metadata": {
+        "description": "Sensitivity of alert for dynamic threshold"
+      }
+    },
+    "numberOfEvaluationPeriods": {
+      "type": "string",
+      "defaultValue": "4",
+      "metadata": {
+        "description": "Number of time periods for algorithm to analyse"
+      }
+    },
+    "minFailingPeriodsToAlert": {
+      "type": "string",
+      "defaultValue": "3",
+      "metadata": {
+        "description": "Number of periods to fail threshold before alert is triggered"
+      }
+    },
+    "autoMitigate": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Auto resolve alert"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "metadata": {
+        "description": "Action to take on Metric Alert (Action Group or Webhook)"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Metric Alert"
+      }
     }
+  },
+  "variables": {
+    "appGatewayFailedRequestAlertName": "[concat(parameters('appGatewayName'), '-dynamic-failed-request-alert')]"
+  },
+  "resources": [
+    {
+      "name": "[variables('appGatewayFailedRequestAlertName')]",
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "location": "global",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "description": "[concat('Dynamic threshold alert for failed requests on', parameters('appGatewayName'))]",
+        "severity": "[parameters('severity')]",
+        "enabled": "[parameters('enabled')]",
+        "scopes": [
+          "[resourceId(parameters('appGatewaySubscriptionId'), parameters('appGatewayResourceGroupName'), 'Microsoft.Network/applicationGateways', parameters('appGatewayName'))]"
+        ],
+        "evaluationFrequency": "[parameters('evaluationFrequency')]",
+        "windowSize": "[parameters('windowSize')]",
+        "targetResourceType": "Microsoft.Network/applicationGateways",
+        "targetResourceRegion": "[parameters('appGatewayRegion')]",
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+          "allOf": [
+            {
+              "criterionType": "DynamicThresholdCriterion",
+              "name": "Failed request criterion",
+              "metricName": "FailedRequests",
+              "dimensions": [],
+              "operator": "GreaterThan",
+              "alertSensitivity": "[parameters('alertSensitivity')]",
+              "failingPeriods": {
+                "numberOfEvaluationPeriods": "[parameters('numberOfEvaluationPeriods')]",
+                "minFailingPeriodsToAlert": "[parameters('minFailingPeriodsToAlert')]"
+              },
+              "timeAggregation": "Total"
+            }
+          ]
+        },
+        "autoMitigate": "[parameters('autoMitigate')]",
+        "actions": "[parameters('actions')]"
+      }
+    }
+  ],
+  "outputs": {
+    "metricAlert": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Insights/metricAlerts', variables('appGatewayFailedRequestAlertName')), '2018-03-01', 'Full')]"
+    }
+  }
 }

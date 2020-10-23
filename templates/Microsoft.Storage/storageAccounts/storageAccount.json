@@ -13,10 +13,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Storage Account to"
       }
@@ -76,16 +73,14 @@
     },
     "virtualNetworkRules": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Allow or Deny traffic from subnets, allowed properties are: subnetId (resource ID of subnet) and action (Allow or Deny, defaults to defaultAction)"
       }
     },
     "ipRules": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Allow or Deny traffic from an IP or CIDR range, allowed properties are: value (must be IPv4) and action (Allow or Deny, defaults to defaultAction)"
       }
@@ -93,18 +88,14 @@
     "accessTier": {
       "type": "string",
       "defaultValue": "Hot",
-      "allowedValues": [
-        "Hot",
-        "Cool"
-      ],
+      "allowedValues": ["Hot", "Cool"],
       "metadata": {
         "description": "Only for BlobStorage storage account kinds, define latency of data transfer"
       }
     },
     "corsRules": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "Cross Origin Resource Sharing rules"
       }

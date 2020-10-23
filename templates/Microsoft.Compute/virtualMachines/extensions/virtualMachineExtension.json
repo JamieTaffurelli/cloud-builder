@@ -17,10 +17,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Virtual Machine Extension to"
       }
@@ -52,16 +49,14 @@
     },
     "settings": {
       "type": "object",
-      "defaultValue": {
-      },
+      "defaultValue": {},
       "metadata": {
         "description": "Unencrypted settings for the extension"
       }
     },
     "protectedSettings": {
       "type": "secureobject",
-      "defaultValue": {
-      },
+      "defaultValue": {},
       "metadata": {
         "description": "Encrypted settings for the extension"
       }

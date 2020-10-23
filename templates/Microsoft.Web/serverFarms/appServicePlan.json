@@ -11,10 +11,7 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
-      "allowedValues": [
-        "northeurope",
-        "westeurope"
-      ],
+      "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the App Service Plan to"
       }
@@ -22,12 +19,7 @@
     "kind": {
       "type": "string",
       "defaultValue": "Windows",
-      "allowedValues": [
-        "Windows",
-        "Linux",
-        "FunctionApp",
-        "Elastic"
-      ],
+      "allowedValues": ["Windows", "Linux", "FunctionApp", "Elastic"],
       "metadata": {
         "description": "Kind of App Service Plan workers"
       }
@@ -69,11 +61,7 @@
     "skuSize": {
       "type": "string",
       "defaultValue": "Small",
-      "allowedValues": [
-        "Small",
-        "Medium",
-        "Large"
-      ],
+      "allowedValues": ["Small", "Medium", "Large"],
       "metadata": {
         "description": "The size of the workers: 1 CPU 1.75 GB RAM, 2 CPU 3.5 GB RAM, 4 CPU 7 GB RAM"
       }

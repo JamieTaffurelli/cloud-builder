@@ -1,39 +1,39 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "roleDefinitionGuid": {
-            "type": "string",
-            "metadata": {
-                "description": "The guid of the role you wish to apply"
-            }
-        },
-        "principalGuid": {
-            "type": "string",
-            "metadata": {
-                "description": "The object ID of the AAD object you wish to give the role"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "roleDefinitionGuid": {
+      "type": "string",
+      "metadata": {
+        "description": "The guid of the role you wish to apply"
+      }
     },
-    "variables": {
-        "name": "[guid(resourceGroup().Id, parameters('roleDefinitionGuid'), parameters('principalGuid'))]",
-        "roleDefinitionId": "[concat(subscription().Id, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('roleDefinitionGuid'))]"
-    },
-    "resources": [
-        {
-            "name": "[variables('name')]",
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2019-04-01-preview",
-            "properties": {
-                "roleDefinitionId": "[variables('roleDefinitionId')]",
-                "principalId": "[parameters('principalGuid')]"
-            }
-        }
-    ],
-    "outputs": {
-        "roleAssignment": {
-            "type": "object",
-            "value": "[reference(resourceId('Microsoft.Authorization/roleAssignments', variables('name')), '2019-04-01-preview', 'Full')]"
-        }
+    "principalGuid": {
+      "type": "string",
+      "metadata": {
+        "description": "The object ID of the AAD object you wish to give the role"
+      }
     }
+  },
+  "variables": {
+    "name": "[guid(resourceGroup().Id, parameters('roleDefinitionGuid'), parameters('principalGuid'))]",
+    "roleDefinitionId": "[concat(subscription().Id, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('roleDefinitionGuid'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('name')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2019-04-01-preview",
+      "properties": {
+        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "principalId": "[parameters('principalGuid')]"
+      }
+    }
+  ],
+  "outputs": {
+    "roleAssignment": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Authorization/roleAssignments', variables('name')), '2019-04-01-preview', 'Full')]"
+    }
+  }
 }
