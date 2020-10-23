@@ -88,7 +88,7 @@ Describe "Key Vault Parameter Validation" {
             $json.parameters.skuName | should not be $null
         }
 
-        It "protocol parameter is of type string" {
+        It "sku parameter is of type string" {
 
             $json.parameters.skuName.type | should be "string"
         }
