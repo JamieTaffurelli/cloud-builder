@@ -118,7 +118,7 @@ Describe "Event Hub Namespace Parameter Validation" {
         }
     }
 
-    Context "intervalInSeconds Validation" {
+    Context "sizeLimitInBytes Validation" {
 
         It "Has sizeLimitInBytes parameter" {
 
