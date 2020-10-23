@@ -4,6 +4,7 @@ $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "inte
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath $cmdletFile -Resolve)
 . (Join-Path -Path $internalCmdletDirectory -ChildPath "Set-AzureBuilderTemplateFilePathWithVersion.ps1" -Resolve)
 . (Join-Path -Path $internalCmdletDirectory -ChildPath "Set-AzureBuilderConfigurationFilePathWithVersion.ps1" -Resolve)
+. (Join-Path -Path $internalCmdletDirectory -ChildPath "Set-AzureBuilderScriptFilePathWithVersion.ps1" -Resolve)
 
 Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
@@ -13,6 +14,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
     New-Item -Path "TestDrive:\templates" -Name "template3.json" -ItemType "File"
     New-Item -Path "TestDrive:\templates" -Name "template4.json" -ItemType "File"
     New-Item -Path "TestDrive:\templates" -Name "configuration.ps1" -ItemType "File"
+    New-Item -Path "TestDrive:\templates" -Name "runbook.ps1" -ItemType "File"
 
     Context "Parameter Validation" { 
 
@@ -147,6 +149,20 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
 
             Assert-MockCalled -CommandName Set-AzureBuilderConfigurationFilePathWithVersion -Times 1 -Scope It -Exactly -ParameterFilter { $Path -eq "TestDrive:\templates\configuration.ps1" }
             Assert-MockCalled -CommandName Set-AzureBuilderConfigurationFilePathWithVersion -Times 1 -Scope It -Exactly
+        }
+
+        It "Use Script when specified" {
+
+            Mock -CommandName Get-ChildItem -MockWith { @(@{ FullName = "TestDrive:\templates\runbook.ps1" }) } -Verifiable
+            Mock -CommandName Set-AzureBuilderScriptFilePathWithVersion -MockWith { "TestDrive:\templates\runbook.1.0.0.ps1" } -ParameterFilter { $Path -eq "TestDrive:\templates\runbook.ps1" } -Verifiable
+            Mock -CommandName Copy-Item -MockWith { } -Verifiable
+            Mock -CommandName New-Item -MockWith { } -Verifiable
+            Mock -CommandName Test-Path -MockWith { $false } -ParameterFilter { $Path -eq "TestDrive:\versioned\runbook.1.0.0.ps1" } -Verifiable
+
+            Copy-AzureBuilderFilesWithVersion -SearchFolder "TestDrive:\templates" -OutputFolder "TestDrive:\versioned" -FileType "Script" | should be $null
+
+            Assert-MockCalled -CommandName Set-AzureBuilderScriptFilePathWithVersion -Times 1 -Scope It -Exactly -ParameterFilter { $Path -eq "TestDrive:\templates\runbook.ps1" }
+            Assert-MockCalled -CommandName Set-AzureBuilderScriptFilePathWithVersion -Times 1 -Scope It -Exactly
         }
     }
 }
