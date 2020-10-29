@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.7.0",
+  "contentVersion": "2.0.0.0",
   "parameters": {
     "templateStorageAccountName": {
       "type": "string",
@@ -149,7 +149,7 @@
     "appServiceHttpReturnCodeTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceHttpReturnCodeMetricAlert.1.0.5.0.json', parameters('templatesSas'))]",
     "appServiceTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
     "appServiceResponseTimeTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceResponseTimeMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
-    "appServiceHttpReturnCodeRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appServiceHttpReturnCodeRule.1.0.0.0.json', parameters('templatesSas'))]"
+    "appServiceHttpReturnCodeRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appServiceHttpReturnCodeRule.2.0.0.0.json', parameters('templatesSas'))]"
   },
   "resources": [
     {
@@ -322,7 +322,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('appServiceHttpReturnCodeRuleTemplateUrl')]",
-          "contentVersion": "1.0.0.0"
+          "contentVersion": "2.0.0.0"
         },
         "parameters": {
           "appServiceName": {
