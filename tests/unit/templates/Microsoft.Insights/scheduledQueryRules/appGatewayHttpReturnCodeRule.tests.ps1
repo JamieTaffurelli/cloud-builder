@@ -44,6 +44,34 @@ Describe "App Gateway HTTP Return Code Rule Parameter Validation" {
         }
     }
 
+    Context "failurePercentage Validation" {
+
+        It "Has failurePercentage parameter" {
+
+            $json.parameters.failurePercentage | should not be $null
+        }
+
+        It "failurePercentage parameter is of type int" {
+
+            $json.parameters.failurePercentage.type | should be "int"
+        }
+
+        It "failurePercentage parameter default value is 0" {
+
+            $json.parameters.failurePercentage.defaultValue | should be 0
+        }
+
+        It "failurePercentage parameter minimum value is 0" {
+
+            $json.parameters.failurePercentage.minValue | should be 0
+        }
+
+        It "failurePercentage parameter maximum value is 100" {
+
+            $json.parameters.failurePercentage.maxValue | should be 100
+        }
+    }
+
     Context "enabled Validation" {
 
         It "Has enabled parameter" {
@@ -190,24 +218,6 @@ Describe "App Gateway HTTP Return Code Rule Parameter Validation" {
         It "aznsAction parameter is mandatory" {
 
             ($json.parameters.aznsAction.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "threshold Validation" {
-
-        It "Has threshold parameter" {
-
-            $json.parameters.threshold | should not be $null
-        }
-
-        It "threshold parameter is of type string" {
-
-            $json.parameters.threshold.type | should be "string"
-        }
-
-        It "threshold parameter default value is 0" {
-
-            $json.parameters.threshold.defaultValue | should be "0"
         }
     }
 

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.3.0",
+  "contentVersion": "2.0.0.0",
   "parameters": {
     "appGatewayName": {
       "type": "string",
@@ -14,6 +14,15 @@
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Scheduled Query Rule to"
+      }
+    },
+    "failurePercentage": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 100,
+      "metadata": {
+        "description": "Percentage of failed requests to requests before alerting"
       }
     },
     "enabled": {
@@ -70,13 +79,6 @@
         "description": "Action object: actionGroup, emailSubject, customWebhookPayload"
       }
     },
-    "threshold": {
-      "type": "string",
-      "defaultValue": "0",
-      "metadata": {
-        "description": "Number of results (greater than) before alert is triggered"
-      }
-    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -86,7 +88,7 @@
   },
   "variables": {
     "queryName": "[concat(parameters('appGatewayName'), '-http-return-code-rule')]",
-    "query": "[concat('AzureDiagnostics | where ResourceProvider == \"MICROSOFT.NETWORK\" and Category == \"ApplicationGatewayAccessLog\" and Resource == \"', toUpper(parameters('appGatewayName')), '\" | where httpStatus_d >= 400')]"
+    "query": "[concat('let appGatewayRequests = AzureDiagnostics | where Category == \"ApplicationGatewayAccessLog\" and Resource == \"', toUpper(parameters('appGatewayName')), '\"; let requestCount = appGatewayRequests | summarize appGatewayRequestCount = count() | extend output = \"output\"; appGatewayRequests | where httpStatus_d >= 400 | summarize failedRequestCount = count() | extend output = \"output\" | join requestCount on output | project failurePercent = (100 * todouble(failedRequestCount) / todouble(appGatewayRequestCount)) | where failurePercent > ', parameters('failurePercentage'))]"
   },
   "resources": [
     {
@@ -113,7 +115,7 @@
           "aznsAction": "[parameters('aznsAction')]",
           "trigger": {
             "thresholdOperator": "GreaterThan",
-            "threshold": "[parameters('threshold')]"
+            "threshold": "1"
           }
         }
       }
