@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.0.0.0",
+  "contentVersion": "2.0.2.0",
   "parameters": {
     "appServiceName": {
       "type": "string",
@@ -88,7 +88,7 @@
   },
   "variables": {
     "queryName": "[concat(parameters('appServiceName'), '-http-return-code-rule')]",
-    "query": "[concat('let appServiceRequests = AppServiceHTTPLogs | where _ResourceId contains', toUpper(parameters('appServiceName')), '; let requestCount = AppServiceHTTPLogs | summarize appRequestCount = count() | extend output = \"output\"; AppServiceHTTPLogs | where ScStatus >= 400 | summarize failedRequestCount = count() | extend output = \"output\" | join requestCount on output | project failurePercent = (100 * todouble(failedRequestCount) / todouble(appRequestCount)) | where failurePercent > ', parameters('failurePercentage'))]"
+    "query": "[concat('let appServiceRequests = AppServiceHTTPLogs | where _ResourceId contains \"', toUpper(parameters('appServiceName')), '\"; let requestCount = AppServiceHTTPLogs | summarize appRequestCount = count() | extend output = \"output\"; AppServiceHTTPLogs | where ScStatus >= 400 | summarize failedRequestCount = count() | extend output = \"output\" | join requestCount on output | project failurePercent = (100 * todouble(failedRequestCount) / todouble(appRequestCount)) | where failurePercent > ', parameters('failurePercentage'))]"
   },
   "resources": [
     {
@@ -115,7 +115,7 @@
           "aznsAction": "[parameters('aznsAction')]",
           "trigger": {
             "thresholdOperator": "GreaterThan",
-            "threshold": "1"
+            "threshold": "0"
           }
         }
       }

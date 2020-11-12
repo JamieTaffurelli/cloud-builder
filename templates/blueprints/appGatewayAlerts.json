@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.0.0.0",
+  "contentVersion": "2.0.1.0",
   "parameters": {
     "templateStorageAccountName": {
       "type": "string",
@@ -167,8 +167,8 @@
     "appGatewayFailedRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayFailedRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
     "appGatewayTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
     "appGatewayUnhealthyHostTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayUnhealthyHostMetricAlert.1.0.1.0.json', parameters('templatesSas'))]",
-    "appGatewayHttpReturnCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayHttpReturnCodeRule.2.0.0.0.json', parameters('templatesSas'))]",
-    "appGatewayWafViolationCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayWafViolationRule.2.0.0.0.json', parameters('templatesSas'))]"
+    "appGatewayHttpReturnCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayHttpReturnCodeRule.2.0.1.0.json', parameters('templatesSas'))]",
+    "appGatewayWafViolationCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayWafViolationRule.2.0.1.0.json', parameters('templatesSas'))]"
   },
   "resources": [
     {
@@ -332,7 +332,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('appGatewayHttpReturnCodeTemplateUrl')]",
-          "contentVersion": "2.0.0.0"
+          "contentVersion": "2.0.1.0"
         },
         "parameters": {
           "appGatewayName": {
@@ -386,7 +386,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('appGatewayWafViolationCodeTemplateUrl')]",
-          "contentVersion": "2.0.0.0"
+          "contentVersion": "2.0.1.0"
         },
         "parameters": {
           "appGatewayName": {
