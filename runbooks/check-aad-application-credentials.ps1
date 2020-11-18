@@ -1,7 +1,6 @@
-
 <#PSScriptInfo
 
-.VERSION 0.3.0
+.VERSION 1.1.0
 
 .GUID 3e9cc084-703b-496f-b508-ced49bb46061
 
@@ -27,11 +26,13 @@ param
     $ExcludeTags
 )
 
+$ErrorActionPreference = "Stop"
+
 Write-Output "Getting automation connection AzureRunAsConnection"
 $connection = Get-AutomationConnection -Name AzureRunAsConnection
 
 Write-Output "Authenticating with AzureRunAsConnection"
-Connect-AzureAD -Tenant $connection.TenantID -ApplicationId $connection.ApplicationID -CertificateThumbprint $connection.CertificateThumbprint -ErrorAction "Stop"
+Connect-AzureAD -Tenant $connection.TenantID -ApplicationId $connection.ApplicationID -CertificateThumbprint $connection.CertificateThumbprint
 
 Write-Output "Getting application details"
 $apps = Get-AzureADApplication -All $true
