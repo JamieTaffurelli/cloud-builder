@@ -80,8 +80,8 @@
     },
     "osDiskSizeInGB": {
       "type": "int",
-      "defaultValue": 127,
-      "minValue": 127,
+      "defaultValue": 32,
+      "minValue": 32,
       "maxValue": 2048,
       "metadata": {
         "description": "Size of the OS, maximum size of 2048"

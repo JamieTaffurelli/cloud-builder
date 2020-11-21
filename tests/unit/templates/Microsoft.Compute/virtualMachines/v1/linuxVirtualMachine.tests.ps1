@@ -241,12 +241,12 @@ Describe "Linux Virtual Machine Parameter Validation" {
 
         It "osDiskSizeInGB parameter default value is 127" {
 
-            $json.parameters.osDiskSizeInGB.defaultValue | should be 127
+            $json.parameters.osDiskSizeInGB.defaultValue | should be 32
         }
 
         It "osDiskSizeInGB parameter minimum value is 127" {
 
-            $json.parameters.osDiskSizeInGB.minValue | should be 127
+            $json.parameters.osDiskSizeInGB.minValue | should be 32
         }
 
         It "osDiskSizeInGB parameter maximum value is 2048" {
