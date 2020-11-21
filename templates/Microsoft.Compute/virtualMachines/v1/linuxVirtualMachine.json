@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.2.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "vmName": {
       "type": "string",
@@ -80,8 +80,8 @@
     },
     "osDiskSizeInGB": {
       "type": "int",
-      "defaultValue": 127,
-      "minValue": 127,
+      "defaultValue": 32,
+      "minValue": 32,
       "maxValue": 2048,
       "metadata": {
         "description": "Size of the OS, maximum size of 2048"

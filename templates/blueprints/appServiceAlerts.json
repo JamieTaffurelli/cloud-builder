@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.0.0.0",
+  "contentVersion": "2.0.3.0",
   "parameters": {
     "templateStorageAccountName": {
       "type": "string",
@@ -124,6 +124,15 @@
         "description": "Resource IDs of Action Groups to invoke"
       }
     },
+    "httpFailurePercentage": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 100,
+      "metadata": {
+        "description": "Percentage of HTTP response codes of 400 or greater before alerting"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -149,7 +158,7 @@
     "appServiceHttpReturnCodeTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceHttpReturnCodeMetricAlert.1.0.5.0.json', parameters('templatesSas'))]",
     "appServiceTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
     "appServiceResponseTimeTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appServiceResponseTimeMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
-    "appServiceHttpReturnCodeRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appServiceHttpReturnCodeRule.2.0.0.0.json', parameters('templatesSas'))]"
+    "appServiceHttpReturnCodeRuleTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appServiceHttpReturnCodeRule.2.0.2.0.json', parameters('templatesSas'))]"
   },
   "resources": [
     {
@@ -322,7 +331,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('appServiceHttpReturnCodeRuleTemplateUrl')]",
-          "contentVersion": "2.0.0.0"
+          "contentVersion": "2.0.2.0"
         },
         "parameters": {
           "appServiceName": {
@@ -354,6 +363,9 @@
               "actionGroup": "[parameters('actionGroupIds')]",
               "emailSubject": "[concat(parameters('appServiceNames')[copyIndex()], ' is returning http errors')]"
             }
+          },
+          "failurePercentage": {
+            "value": "[parameters('httpFailurePercentage')]"
           },
           "tags": {
             "value": "[parameters('tags')]"
