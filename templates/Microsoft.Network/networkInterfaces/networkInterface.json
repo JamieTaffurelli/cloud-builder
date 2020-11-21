@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.1.0.0",
+  "contentVersion": "2.0.0.0",
   "parameters": {
     "nicName": {
       "type": "string",
@@ -18,59 +18,10 @@
         "description": "The location to deploy the Network Interface to"
       }
     },
-    "ipConfigurationName": {
-      "type": "string",
-      "defaultValue": "ipconfig1",
+    "ipConfigurations": {
+      "type": "array",
       "metadata": {
-        "description": "The name of the IP configuration"
-      }
-    },
-    "privateIpAllocationMethod": {
-      "type": "string",
-      "defaultValue": "static",
-      "allowedValues": ["static", "dynamic"],
-      "metadata": {
-        "description": "Method of IP allocation when requested (static or dynamic)"
-      }
-    },
-    "privateIPAddress": {
-      "type": "string",
-      "metadata": {
-        "description": "IP address to assign to IP configuration"
-      }
-    },
-    "subnetName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of subnet to allocate Network Interface to."
-      }
-    },
-    "virtualNetworkName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of Virtual Network to allocate Network Interface to."
-      }
-    },
-    "subnetResourceGroup": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().name]",
-      "metadata": {
-        "description": "Resource Group of subnet to allocate Network Interface to."
-      }
-    },
-    "subnetSubscriptionId": {
-      "type": "string",
-      "defaultValue": "[subscription().subscriptionId]",
-      "metadata": {
-        "description": "Subscription ID of subnet to allocate Network Interface to."
-      }
-    },
-    "privateIpAddressVersion": {
-      "type": "string",
-      "defaultValue": "IPv4",
-      "allowedValues": ["IPv4", "IPv6"],
-      "metadata": {
-        "description": "Specifies IPv4 or IPv6 IP address"
+        "description": "IP configurations for the Network Interface"
       }
     },
     "dnsServers": {
@@ -127,30 +78,58 @@
     }
   },
   "variables": {
-    "dnsServers": "[if(empty(parameters('dnsServers')), json('[\"AzureProvidedDNS\"]'), parameters('dnsServers'))]"
+    "ipConfigurationsProperties": {
+      "copy": [
+        {
+          "name": "ipConfigurationsProperties",
+          "count": "[length(parameters('ipConfigurations'))]",
+          "input": {
+              "privateIPAllocationMethod": "[if(contains(parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')], 'privateIPAllocationMethod'), parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].privateIPAllocationMethod, 'Static')]",
+              "privateIPAddress": "[if(contains(parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')], 'privateIPAddress'), parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].privateIPAddress, json('null'))]",
+              "subnet": {
+                "id": "[resourceId(if(contains(parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')], 'subnetSubscriptionId'), parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].subnetSubscriptionId, subscription().subscriptionId), if(contains(parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')], 'subnetResourceGroupName'), parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].subnetResourceGroupName, resourceGroup().name), 'Microsoft.Network/virtualNetworks/subnets', parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].virtualNetworkName, parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].subnetName)]"
+              },
+              "primary": "[if(contains(parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')], 'isPrimary'), parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].isPrimary, json('true'))]",
+              "privateIPAddressVersion": "[if(contains(parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')], 'privateIPAddressVersion'), parameters('ipConfigurations')[copyIndex('ipConfigurationsProperties')].privateIPAddressVersion, 'IPv4')]"
+          }
+        }
+      ]
+    },
+    "publicIps": {
+      "copy": [
+        {
+          "name": "publicIps",
+          "count": "[length(parameters('ipConfigurations'))]",
+          "input": {
+            "publicIPAddress": {
+              "id": "[if(contains(parameters('ipConfigurations')[copyIndex('publicIps')], 'publicIpAddressName'), resourceId(if(contains(parameters('ipConfigurations')[copyIndex('publicIps')], 'publicIpAddressSubscriptionId'), parameters('ipConfigurations')[copyIndex('publicIps')].publicIpAddressSubscriptionId, subscription().subscriptionId), if(contains(parameters('ipConfigurations')[copyIndex('publicIps')], 'publicIpAddressResourceGroupName'), parameters('ipConfigurations')[copyIndex('publicIps')].publicIpAddressResourceGroupName, resourceGroup().name), 'Microsoft.Network/publicIPAddresses', parameters('ipConfigurations')[copyIndex('publicIps')].publicIpAddressName), '')]"
+            }
+          }
+        }
+      ]
+    },
+    "ipConfigurationsPublic": {
+      "copy": [
+        {
+          "name": "ipConfigurationsPublic",
+          "count": "[length(parameters('ipConfigurations'))]",
+          "input": {
+            "name": "[parameters('ipConfigurations')[copyIndex('ipConfigurationsPublic')].name]",
+            "properties": "[if(equals(variables('publicIps').publicIps[copyIndex('ipConfigurationsPublic')].publicIPAddress.id, ''), variables('ipConfigurationsProperties').ipConfigurationsProperties[copyIndex('ipConfigurationsPublic')], union(variables('ipConfigurationsProperties').ipConfigurationsProperties[copyIndex('ipConfigurationsPublic')], variables('publicIps').publicIps[copyIndex('ipConfigurationsPublic')]))]"
+          }
+        }
+      ]
+    }
   },
   "resources": [
     {
       "name": "[parameters('nicName')]",
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2018-11-01",
+      "apiVersion": "2020-06-01",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
-        "ipConfigurations": [
-          {
-            "name": "[parameters('ipConfigurationName')]",
-            "properties": {
-              "privateIPAllocationMethod": "[parameters('privateIPAllocationMethod')]",
-              "privateIPAddress": "[parameters('privateIpAddress')]",
-              "subnet": {
-                "id": "[resourceId(parameters('subnetSubscriptionId'), parameters('subnetResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
-              },
-              "primary": true,
-              "privateIPAddressVersion": "[parameters('privateIpAddressVersion')]"
-            }
-          }
-        ],
+        "ipConfigurations": "[variables('ipConfigurationsPublic').ipConfigurationsPublic]",
         "dnsSettings": {
           "dnsServers": "[parameters('dnsServers')]",
           "internalDnsNameLabel": "[if(empty(parameters('internalDnsNameLabel')), json('null'), parameters('internalDnsNameLabel'))]",
@@ -166,7 +145,7 @@
   "outputs": {
     "networkInterface": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2018-11-01', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2020-06-01', 'Full')]"
     }
   }
 }
