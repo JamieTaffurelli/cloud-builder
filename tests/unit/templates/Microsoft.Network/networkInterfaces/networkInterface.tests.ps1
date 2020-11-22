@@ -55,149 +55,21 @@ Describe "Network Interface Parameter Validation" {
         }
     }
 
-    Context "ipConfigurationName Validation" {
+    Context "ipConfigurations Validation" {
 
-        It "Has ipConfigurationName parameter" {
+        It "Has ipConfigurations parameter" {
 
-            $json.parameters.ipConfigurationName | should not be $null
+            $json.parameters.ipConfigurations | should not be $null
         }
 
-        It "ipConfigurationName parameter is of type string" {
+        It "ipConfigurations parameter is of type array" {
 
-            $json.parameters.ipConfigurationName.type | should be "string"
+            $json.parameters.ipConfigurations.type | should be "array"
         }
 
-        It "ipConfigurationName parameter default value is ipconfig1" {
+        It "ipConfigurations parameter is mandatory" {
 
-            $json.parameters.ipConfigurationName.defaultValue | should be "ipconfig1"
-        }
-    }
-
-    Context "privateIpAllocationMethod Validation" {
-
-        It "Has privateIpAllocationMethod parameter" {
-
-            $json.parameters.privateIpAllocationMethod | should not be $null
-        }
-
-        It "privateIpAllocationMethod parameter is of type string" {
-
-            $json.parameters.privateIpAllocationMethod.type | should be "string"
-        }
-
-        It "privateIpAllocationMethod parameter default value is static" {
-
-            $json.parameters.privateIpAllocationMethod.defaultValue | should be "static"
-        }
-
-        It "privateIpAllocationMethod parameter allowed values are static, dynamic" {
-
-            (Compare-Object -ReferenceObject $json.parameters.privateIpAllocationMethod.allowedValues -DifferenceObject @("static", "dynamic")).Length | should be 0
-        }
-    }
-
-    Context "subnetName Validation" {
-
-        It "Has subnetName parameter" {
-
-            $json.parameters.subnetName | should not be $null
-        }
-
-        It "subnetName parameter is of type string" {
-
-            $json.parameters.subnetName.type | should be "string"
-        }
-
-        It "subnetName parameter is mandatory" {
-
-            ($json.parameters.subnetName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "virtualNetworkName Validation" {
-
-        It "Has virtualNetworkName parameter" {
-
-            $json.parameters.virtualNetworkName | should not be $null
-        }
-
-        It "virtualNetworkName parameter is of type string" {
-
-            $json.parameters.virtualNetworkName.type | should be "string"
-        }
-
-        It "virtualNetworkName parameter is mandatory" {
-
-            ($json.parameters.virtualNetworkName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "subnetResourceGroup Validation" {
-
-        It "Has subnetResourceGroup parameter" {
-
-            $json.parameters.subnetResourceGroup | should not be $null
-        }
-
-        It "subnetResourceGroup parameter is of type string" {
-
-            $json.parameters.subnetResourceGroup.type | should be "string"
-        }
-
-        It "subnetSubscriptionId parameter is mandatory" {
-
-            ($json.parameters.subnetResourceGroup.defaultValue) | should be "[resourceGroup().name]"
-        }
-
-        It "subnetSubscriptionId parameter is mandatory" {
-
-            ($json.parameters.subnetSubscriptionId.defaultValue) | should be "[subscription().subscriptionId]"
-        }
-    }
-
-    Context "privateIpAddressVersion Validation" {
-
-        It "Has privateIpAddressVersion parameter" {
-
-            $json.parameters.privateIpAddressVersion | should not be $null
-        }
-
-        It "privateIpAddressVersion parameter is of type string" {
-
-            $json.parameters.privateIpAddressVersion.type | should be "string"
-        }
-
-        It "privateIpAddressVersion parameter default value is IPv4" {
-
-            $json.parameters.privateIpAddressVersion.defaultValue | should be "IPv4"
-        }
-
-        It "privateIpAddressVersion parameter allowed values are IPv4, IPv6" {
-
-            (Compare-Object -ReferenceObject $json.parameters.privateIpAddressVersion.allowedValues -DifferenceObject @("IPv4", "IPv6")).Length | should be 0
-        }
-    }
-
-    Context "privateIpAddressVersion Validation" {
-
-        It "Has privateIpAddressVersion parameter" {
-
-            $json.parameters.privateIpAddressVersion | should not be $null
-        }
-
-        It "privateIpAddressVersion parameter is of type string" {
-
-            $json.parameters.privateIpAddressVersion.type | should be "string"
-        }
-
-        It "privateIpAddressVersion parameter default value is IPv4" {
-
-            $json.parameters.privateIpAddressVersion.defaultValue | should be "IPv4"
-        }
-
-        It "privateIpAddressVersion parameter allowed values are IPv4, IPv6" {
-
-            (Compare-Object -ReferenceObject $json.parameters.privateIpAddressVersion.allowedValues -DifferenceObject @("IPv4", "IPv6")).Length | should be 0
+            ($json.parameters.ipConfigurations.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -358,9 +230,9 @@ Describe "Network Interface Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-11-01" {
+        It "apiVersion value is 2020-06-01" {
 
-            $json.resources.apiVersion | should be "2018-11-01"
+            $json.resources.apiVersion | should be "2020-06-01"
         }
     }
 }
@@ -376,7 +248,7 @@ Describe "Network Interface Output Validation" {
 
         It "Uses full reference for Network Interface" {
 
-            $json.outputs.networkInterface.value | should be "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2018-11-01', 'Full')]"
+            $json.outputs.networkInterface.value | should be "[reference(resourceId('Microsoft.Network/networkInterfaces', parameters('nicName')), '2020-06-01', 'Full')]"
         }
     }
 }
