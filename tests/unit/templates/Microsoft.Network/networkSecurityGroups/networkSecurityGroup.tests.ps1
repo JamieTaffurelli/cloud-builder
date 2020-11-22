@@ -156,9 +156,9 @@ Describe "Network Security Group Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-11-01" {
+        It "apiVersion value is 2020-06-01" {
 
-            $nsg.apiVersion | should be "2018-11-01"
+            $nsg.apiVersion | should be "2020-06-01"
         }
     }
 
@@ -191,7 +191,7 @@ Describe "Network Security Group Output Validation" {
 
         It "Uses full reference for Network Security Group" {
 
-            $json.outputs.networkSecurityGroup.value | should be "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')), '2018-11-01', 'Full')]"
+            $json.outputs.networkSecurityGroup.value | should be "[reference(resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName')), '2020-06-01', 'Full')]"
         }
     }
 }
