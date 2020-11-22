@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.1.0.0",
+  "contentVersion": "1.3.0.0",
   "parameters": {
     "logAnalyticsName": {
       "type": "string",
@@ -15,22 +15,58 @@
         "Free",
         "Standard",
         "Premium",
-        "Unlimited",
         "PerNode",
         "PerGB2018",
-        "Standalone"
+        "Standalone",
+        "CapacityReservation"
       ],
       "metadata": {
         "description": "The sku of the Log Analytics Workspace that you wish to create."
       }
     },
+    "capacityReservationLevel": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "The amount of capacity to reserve in GB, intervals of 100"
+      }
+    },
     "retentionInDays": {
       "type": "int",
       "defaultValue": 400,
-      "minValue": 10,
+      "minValue": 30,
       "maxValue": 730,
       "metadata": {
         "description": "The amount of time to retain logs for, if sku is unlimited then this value will be ignored and unlimited retention will be set."
+      }
+    },
+    "dailyQuotaGB": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Limit the daily amount of data written to Log Analytics"
+      }
+    },
+    "publicNetworkAccessForIngestion": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "The network access type for accessing Log Analytics ingestion"
+      }
+    },
+    "publicNetworkAccessForQuery": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "The network access type for accessing Log Analytics query"
       }
     },
     "tags": {
@@ -38,7 +74,17 @@
     }
   },
   "variables": {
+    "skuName": {
+      "name": "[parameters('sku')]"
+    },
+    "capacityReservation": {
+      "capacityReservationLevel": "[parameters('capacityReservationLevel')]"
+    },
+    "sku": "[if(equals(parameters('sku'), 'CapacityReservation'), union(variables('skuName'), variables('capacityReservation')), variables('skuName'))]",
     "retentionInDays": "[if(equals(parameters('sku'), 'Unlimited'), -1, parameters('retentionInDays'))]",
+    "workspaceCapping": {
+      "dailyQuotaGB": "[parameters('dailyQuotaGB')]"
+    },
     "solutions": [
       "ADAssessment",
       "ADReplication",
@@ -90,14 +136,15 @@
     {
       "name": "[parameters('logAnalyticsName')]",
       "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2015-11-01-preview",
+      "apiVersion": "2020-08-01",
       "location": "westeurope",
       "tags": "[parameters('tags')]",
       "properties": {
-        "sku": {
-          "name": "[parameters('sku')]"
-        },
-        "retentionInDays": "[variables('retentionInDays')]"
+        "sku": "[variables('sku')]",
+        "retentionInDays": "[variables('retentionInDays')]",
+        "workspaceCapping": "[if(equals(parameters('dailyQuotaGB'), ''), json('{}'), variables('workspaceCapping'))]",
+        "publicNetworkAccessForIngestion": "[parameters('publicNetworkAccessForIngestion')]",
+        "publicNetworkAccessForQuery": "[parameters('publicNetworkAccessForQuery')]"
       }
     },
     {
@@ -119,13 +166,13 @@
         "name": "solutions",
         "count": "[length(variables('solutions'))]"
       },
-      "dependsOn": ["[parameters('logAnalyticsName')]"]
+      "dependsOn": [ "[parameters('logAnalyticsName')]" ]
     }
   ],
   "outputs": {
     "logAnalytics": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2015-11-01-preview', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2020-08-01', 'Full')]"
     }
   }
 }

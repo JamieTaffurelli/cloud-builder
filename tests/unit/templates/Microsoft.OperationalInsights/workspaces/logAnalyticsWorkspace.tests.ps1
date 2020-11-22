@@ -39,9 +39,27 @@ Describe "Log Analytics Workspace Parameter Validation" {
             $json.parameters.sku.defaultValue | should be "PerGB2018"
         }
 
-        It "sku parameter allowed values are Free, Standard, Premium, Unlimited, PerNode, PerGB2018, Standalone" {
+        It "sku parameter allowed values are Free, Standard, Premium, PerNode, PerGB2018, Standalone, CapacityReservation" {
 
-            (Compare-Object -ReferenceObject $json.parameters.sku.allowedValues -DifferenceObject @("Free", "Standard", "Premium", "Unlimited", "PerNode", "PerGB2018", "Standalone")).Length | should be 0
+            (Compare-Object -ReferenceObject $json.parameters.sku.allowedValues -DifferenceObject @("Free", "Standard", "Premium", "PerNode", "PerGB2018", "Standalone", "CapacityReservation")).Length | should be 0
+        }
+    }
+
+    Context "capacityReservationLevel Validation" {
+
+        It "Has capacityReservationLevel parameter" {
+
+            $json.parameters.capacityReservationLevel | should not be $null
+        }
+
+        It "capacityReservationLevel parameter is of type int" {
+
+            $json.parameters.capacityReservationLevel.type | should be "int"
+        }
+
+        It "capacityReservationLevel parameter default value is 0" {
+
+            $json.parameters.capacityReservationLevel.defaultValue | should be 0
         }
     }
 
@@ -62,14 +80,96 @@ Describe "Log Analytics Workspace Parameter Validation" {
             $json.parameters.retentionInDays.defaultValue | should be 400
         }
 
-        It "retentionInDays parameter minimum value is 10" {
+        It "retentionInDays parameter minimum value is 30" {
 
-            $json.parameters.retentionInDays.minValue | should be 10
+            $json.parameters.retentionInDays.minValue | should be 30
         }
 
         It "retentionInDays parameter maximum value is 730" {
 
             $json.parameters.retentionInDays.maxValue | should be 730
+        }
+    }
+
+    Context "dailyQuotaGB Validation" {
+
+        It "Has dailyQuotaGB parameter" {
+
+            $json.parameters.dailyQuotaGB | should not be $null
+        }
+
+        It "dailyQuotaGB parameter is of type string" {
+
+            $json.parameters.dailyQuotaGB.type | should be "string"
+        }
+
+        It "dailyQuotaGB parameter default value is an empty string" {
+
+            $json.parameters.dailyQuotaGB.defaultValue | should be ([String]::Empty)
+        }
+    }
+
+    Context "publicNetworkAccessForIngestion Validation" {
+
+        It "Has publicNetworkAccessForIngestion parameter" {
+
+            $json.parameters.publicNetworkAccessForIngestion | should not be $null
+        }
+
+        It "publicNetworkAccessForIngestion parameter is of type string" {
+
+            $json.parameters.publicNetworkAccessForIngestion.type | should be "string"
+        }
+
+        It "publicNetworkAccessForIngestion parameter default value is Enabled" {
+
+            $json.parameters.publicNetworkAccessForIngestion.defaultValue | should be "Enabled"
+        }
+
+        It "publicNetworkAccessForIngestion parameter allowed values are Enabled, Disabled" {
+
+            (Compare-Object -ReferenceObject $json.parameters.publicNetworkAccessForIngestion.allowedValues -DifferenceObject @("Enabled", "Disabled")).Length | should be 0
+        }
+    }
+
+    Context "publicNetworkAccessForQuery Validation" {
+
+        It "Has publicNetworkAccessForQuery parameter" {
+
+            $json.parameters.publicNetworkAccessForQuery | should not be $null
+        }
+
+        It "publicNetworkAccessForQuery parameter is of type string" {
+
+            $json.parameters.publicNetworkAccessForQuery.type | should be "string"
+        }
+
+        It "publicNetworkAccessForQuery parameter default value is Enabled" {
+
+            $json.parameters.publicNetworkAccessForQuery.defaultValue | should be "Enabled"
+        }
+
+        It "publicNetworkAccessForQuery parameter allowed values are Enabled, Disabled" {
+
+            (Compare-Object -ReferenceObject $json.parameters.publicNetworkAccessForQuery.allowedValues -DifferenceObject @("Enabled", "Disabled")).Length | should be 0
+        }
+    }
+
+    Context "tags Validation" {
+
+        It "Has tags parameter" {
+
+            $json.parameters.tags | should not be $null
+        }
+
+        It "tags parameter is of type object" {
+
+            $json.parameters.tags.type | should be "object"
+        }
+
+        It "tags parameter is mandatory" {
+
+            ($json.parameters.tags.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 }
@@ -88,9 +188,9 @@ Describe "Log Analytics Workspace Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2015-11-01-preview" {
+        It "apiVersion value is 2020-08-01" {
 
-            $workspace.apiVersion | should be "2015-11-01-preview"
+            $workspace.apiVersion | should be "2020-08-01"
         }
     }
 
@@ -114,7 +214,7 @@ Describe "Log Analytics Workspace Output Validation" {
 
         It "Uses full reference for Log Analytics Workspace" {
 
-            $json.outputs.logAnalytics.value | should be "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2015-11-01-preview', 'Full')]"
+            $json.outputs.logAnalytics.value | should be "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName')), '2020-08-01', 'Full')]"
         }
     }
 }
