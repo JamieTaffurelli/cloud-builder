@@ -144,7 +144,7 @@ Describe "Automation Account Job Schedule Output Validation" {
 
         It "Uses full reference for Automation Account Job Schedule" {
 
-            $json.outputs.jobSchedule.value | should be "[reference(resourceId('Microsoft.Automation/automationAccounts/jobSchedules', parameters('automationAccountName'), guid(concat(parameters('runbookName'), '-', parameters('scheduleName')))), '2015-10-31', 'Full')]"
+            $json.outputs.jobSchedule.value | should be "[reference(resourceId('Microsoft.Automation/automationAccounts/jobSchedules', parameters('automationAccountName'), guid(concat(parameters('runbookName'), '-', parameters('runbookVersion'), '-', parameters('scheduleName')))), '2015-10-31', 'Full')]"
         }
     }
 }
