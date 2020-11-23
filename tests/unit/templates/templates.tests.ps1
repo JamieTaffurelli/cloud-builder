@@ -63,9 +63,9 @@ Describe "Template Validation" -Tag @("AllTemplates") {
                 $validParameterSchemas -contains $arm.'$schema' | should be $true
             }
 
-            It "${parameterPath} has a resource block" {
+            It "${parameterPath} has a parameters block" {
 
-                ($arm.PSObject.Properties.Name -contains "resources") | should be $true
+                ($arm.PSObject.Properties.Name -contains "parameters") | should be $true
             }
         }
     }
