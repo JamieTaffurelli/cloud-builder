@@ -19,7 +19,7 @@ jobs:
           pwsh: false
           workingDirectory: "$(System.DefaultWorkingDirectory)"
 
-      - task: Pester.PesterRunner.Pester-Task.Pester@10
+      - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
         inputs:
           scriptFolder: '$(System.DefaultWorkingDirectory)\tests\*'
