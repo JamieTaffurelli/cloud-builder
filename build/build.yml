@@ -18,6 +18,7 @@ jobs:
           ignoreLASTEXITCODE: false
           pwsh: false
           workingDirectory: "$(System.DefaultWorkingDirectory)"
+
       - task: Pester@10
         inputs:
           scriptFolder: '$(System.DefaultWorkingDirectory)\tests\*'
@@ -25,13 +26,8 @@ jobs:
           CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
           usePSCore: False
           CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
-      #- task: cca5462b-887d-4617-bf3f-dcf0d3c622e9@9
-       # displayName: "Run Unit Tests"
-        #inputs:
-         # resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
-         # codeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
-         # codeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
-         # run32Bit: false
+          PesterVersion: 'OtherVersion'
+          preferredPesterVersion: '4.9.0'
 
       - task: PublishTestResults@2
         displayName: "Publish Test Results"
