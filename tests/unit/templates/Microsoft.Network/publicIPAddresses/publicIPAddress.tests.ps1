@@ -224,6 +224,73 @@ Describe "Public IP Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "diagnosticsEnabled variable is true" {
+
+            $json.variables.diagnosticsEnabled | should be $true
+        }
+
+        It "diagnosticsRetentionInDays is 365" {
+
+            $json.variables.diagnosticsRetentionInDays | should be 365
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -245,11 +312,14 @@ Describe "Public IP Parameter Validation" {
 
 Describe "Public IP Resource Validation" {
 
+    $publicIp = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Network/publicIPAddresses" }
+    $diagnostics = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
+
     Context "type Validation" {
 
         It "type value is Microsoft.Network/publicIPAddresses" {
 
-            $json.resources.type | should be "Microsoft.Network/publicIPAddresses"
+            $publicIp.type | should be "Microsoft.Network/publicIPAddresses"
         }
     }
 
@@ -257,7 +327,30 @@ Describe "Public IP Resource Validation" {
 
         It "apiVersion value is 2020-05-01" {
 
-            $json.resources.apiVersion | should be "2020-05-01"
+            $publicIp.apiVersion | should be "2020-05-01"
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is /providers/diagnosticSettings" {
+
+            $diagnostics.type | should be "/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $diagnostics.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to AllMetrics" {
+
+            $diagnostics.properties.metrics.category | should be "AllMetrics"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $diagnostics.properties.logs.category -DifferenceObject @("DDoSProtectionNotifications", "DDoSMitigationFlowLogs", "DDoSMitigationReports")).Length | should be 0
         }
     }
 }
