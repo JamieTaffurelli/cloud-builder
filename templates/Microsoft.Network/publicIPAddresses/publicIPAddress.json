@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "publicIPName": {
       "type": "string",
@@ -85,6 +85,26 @@
         "description": "Specify Availability Zones"
       }
     },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
     "tags": {
       "type": "object"
     }
@@ -93,7 +113,9 @@
     "domainNameLabel": {
       "domainNameLabel": "[parameters('domainNameLabel')]"
     },
-    "dnsSettings": "[union(variables('domainNameLabel'), parameters('dnsSettings'))]"
+    "dnsSettings": "[union(variables('domainNameLabel'), parameters('dnsSettings'))]",
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
@@ -113,7 +135,56 @@
         "ipAddress": "[parameters('ipAddress')]",
         "idleTimeoutInMinutes": "[parameters('idleTimeoutInMinutes')]"
       },
-      "zones": "[parameters('zones')]"
+      "zones": "[parameters('zones')]",
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "DDoSProtectionNotifications",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "DDoSMitigationFlowLogs",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "DDoSMitigationReports",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+          ]
+        }
+      ]
     }
   ],
   "outputs": {
