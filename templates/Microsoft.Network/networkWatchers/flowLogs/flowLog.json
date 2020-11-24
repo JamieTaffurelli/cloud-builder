@@ -1,0 +1,165 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "flowLogName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Flow Log that you wish to create."
+      }
+    },
+    "networkWatcherName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Network Watcher that you wish to monitor the Flow Log"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Network Watcher to"
+      }
+    },
+    "nsgSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the NSG to to monitor"
+      }
+    },
+    "nsgResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the NSG to to monitor"
+      }
+    },
+    "nsgName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the NSG to to monitor"
+      }
+    },
+    "storageAccountSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Storage Account to send logs to"
+      }
+    },
+    "storageAccountResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Storage Account to send logs to"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Storage Account to send logs to"
+      }
+    },
+    "enabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable the Flow Log"
+      }
+    },
+    "retentionInDays": {
+      "type": "int",
+      "defaultValue": 90,
+      "minValue": 1,
+      "maxValue": 90,
+      "metadata": {
+        "description": "The number of days to retain logs"
+      }
+    },
+    "logAnalyticsId": {
+      "type": "string",
+      "metadata": {
+        "description": "The GUID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "trafficAnalyticsInterval": {
+      "type": "int",
+      "defaultValue": 10,
+      "allowedValues": [10, 60],
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('networkWatcherName'), '/', parameters('flowLogName'))]",
+      "type": "Microsoft.Network/networkWatchers/flowLogs",
+      "apiVersion": "2020-06-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "targetResourceId": "[resourceId(parameters('nsgSubscriptionId'), parameters('nsgResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]",
+        "storageId": "[resourceId(parameters('storageAccountSubscriptionId'), parameters('storageAccountResourceGroupName'), 'Microsoft.Storage/storageAccount', parameters('storageAccountName'))]",
+        "enabled": "[parameters('enabled')]",
+        "retentionPolicy": {
+          "days": "[parameters('retentionInDays')]",
+          "enabled": true
+        },
+        "format": {
+          "type": "JSON",
+          "version": 2
+        },
+        "flowAnalyticsConfiguration": {
+          "networkWatcherFlowAnalyticsConfiguration": {
+            "enabled": true,
+            "workspaceId": "[parameters('logAnalyticsId')]",
+            "workspaceRegion": "[parameters('logAnalyticsLocation')]",
+            "workspaceResourceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationInsights/workspaces', parameters('logAnalyticsName'))]",
+            "trafficAnalyticsInterval": "[parameters('trafficAnalyticsInterval')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "flowLog": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.Network/networkWatchers/flowLogs', parameters('networkWatcherName'), parameters('flowLogName')), '2020-06-01', 'Full')]"
+    }
+  }
+}
