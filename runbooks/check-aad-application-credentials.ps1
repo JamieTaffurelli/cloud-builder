@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.1.0
+.VERSION 1.1.1
 
 .GUID 3e9cc084-703b-496f-b508-ced49bb46061
 
@@ -53,7 +53,7 @@ foreach($app in $apps)
             if($key.EndDate -lt (Get-Date).AddDays($DaysBeforeExpiry))
             {
                 $errCount++
-                Write-Error (($message) -f $app.DisplayName, $app.ObjectId, $key.KeyId, $key.EndDate.ToString("dd/MM/yyyy"), "less", $DaysBeforeExpiry)
+                Write-Error (($message) -f $app.DisplayName, $app.ObjectId, $key.KeyId, $key.EndDate.ToString("dd/MM/yyyy"), "less", $DaysBeforeExpiry) -ErrorAction 'Continue'
             }
             else 
             {
