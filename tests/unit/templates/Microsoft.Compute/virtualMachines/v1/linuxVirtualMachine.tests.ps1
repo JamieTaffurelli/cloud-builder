@@ -239,7 +239,7 @@ Describe "Linux Virtual Machine Parameter Validation" {
             $json.parameters.osDiskSizeInGB.type | should be "int"
         }
 
-        It "osDiskSizeInGB parameter default value is 127" {
+        It "osDiskSizeInGB parameter default value is 32" {
 
             $json.parameters.osDiskSizeInGB.defaultValue | should be 32
         }
