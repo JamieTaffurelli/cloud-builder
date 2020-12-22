@@ -1,0 +1,357 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clusterName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the AKS cluster to create"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": [ "northeurope", "westeurope" ],
+      "metadata": {
+        "description": "The location to deploy the AKS cluster to"
+      }
+    },
+    "kubernetesVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Version of Kubernetes to run"
+      }
+    },
+    "dnsPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "DNS prefix of nodes"
+      }
+    },
+    "agentPoolProfiles": {
+      "type": "array",
+      "metadata": {
+        "description": "System and user agent pools"
+      }
+    },
+    "adminUserName": {
+      "type": "string",
+      "defaultValue": "kubemonkey",
+      "metadata": {
+        "description": "Admin username on VMs"
+      }
+    },
+    "keyData": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SSH public key for authentication"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for authentication"
+      }
+    },
+    "licenseType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [ "None", "Windows_Server" ],
+      "metadata": {
+        "description": "Enable Azure Hybrid Benefit"
+      }
+    },
+    "servicePrincipalProfile": {
+      "type": "secureobject",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Service Principal client ID and secret for cluster to use for manipulating Azure APIs"
+      }
+    },
+    "addOnProfiles": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Profile of managed cluster add-on"
+      }
+    },
+    "podIdentityEnabled": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable pod identity add-on"
+      }
+    },
+    "userAssignedIdentities": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "User assigned pod identity settings"
+      }
+    },
+    "userAssignedIdentityExceptions": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "User assigned pod identity exception settings"
+      }
+    },
+    "nodeResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource Group to deploy nodes to"
+      }
+    },
+    "enableRBAC": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Kubernetes RBAC"
+      }
+    },
+    "networkProfile": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Profile of network configuration"
+      }
+    },
+    "enableManagedAad": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Kubernetes RBAC"
+      }
+    },
+    "enableAzureRBAC": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable Kubernetes RBAC"
+      }
+    },
+    "adminGroupObjectIDs": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Enable Kubernetes RBAC"
+      }
+    },
+    "autoScalerProfile": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Parameters to be applied to the cluster-autoscaler when enabled"
+      }
+    },
+    "authorizedIPRanges": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Authorized IP Ranges to kubernetes API server"
+      }
+    },
+    "enablePrivateCluster": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Kubernetes RBAC"
+      }
+    },
+    "privateDNSZone": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enable Kubernetes RBAC"
+      }
+    },
+    "tier": {
+      "type": "string",
+      "defaultValue": "Free",
+      "allowedValues": [ "Free", "Paid" ],
+      "metadata": {
+        "description": "Tier of a managed cluster SKU"
+      }
+    },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {
+    "omsagent": {
+      "omsagent": {
+        "enabled": true,
+        "config": {
+          "logAnalyticsWorkspaceResourceID": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+        }
+      }
+    },
+    "addonProfiles": "[union(parameters('addonProfiles'), variables('omsagent'))]",
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 365
+  },
+  "resources": [
+    {
+      "name": "[parameters('clusterName')]",
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2020-11-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "kubernetesVersion": "[parameters('kubernetesVersion')]",
+        "dnsPrefix": "[parameters('dnsPrefix')]",
+        "agentPoolProfiles": "[parameters('agentPoolProfiles')]",
+        "linuxProfile": {
+          "adminUsername": "[parameters('adminUsername')]",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "[parameters('keyData')]"
+              }
+            ]
+          }
+        },
+        "windowsProfile": {
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "licenseType": "[parameters('licenseType')]"
+        },
+        "servicePrincipalProfile": "[parameters('servicePrincipalProfile')]",
+        "addonProfiles": "[variables('addonProfiles')]",
+        "podIdentityProfile": {
+          "enabled": "[parameters('podIdentityEnabled')]",
+          "userAssignedIdentities": "[parameters('userAssignedIdentities')]",
+          "userAssignedIdentityExceptions": "[parameters('userAssignedIdentityExceptions')]"
+        },
+        "nodeResourceGroup": "[parameters('nodeResourceGroup')]",
+        "enableRBAC": "[parameters('enableRBAC')]",
+        "networkProfile": "[parameters('networkProfile')]",
+        "aadProfile": {
+          "managed": "[parameters('enableManagedAad')]",
+          "enableAzureRBAC": "[parameters('enableAzureRBAC')]",
+          "adminGroupObjectIDs": "[parameters('adminGroupObjectIDs')]"
+        },
+        "autoScalerProfile": "[parameters('autoScalerProfile')]",
+        "apiServerAccessProfile": {
+          "authorizedIPRanges": "[parameters('authorizedIPRanges')]",
+          "enablePrivateCluster": "[parameters('enablePrivateCluster')]",
+          "privateDNSZone": "[parameters('privateDNSZone')]"
+        }
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "sku": {
+        "name": "Basic",
+        "tier": "[parameters('tier')]"
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "AllMetrics",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "kube-apiserver",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "kube-audit",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "kube-audit-admin",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "kube-controller-manager",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "kube-scheduler",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "cluster-autoscaler",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "guard",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.ContainerService/managedClusters/', parameters('clusterName'))]"
+          ]
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "cluster": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-11-01', 'Full')]"
+    }
+  }
+}
