@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "registryName": {
       "type": "string",
@@ -222,7 +222,7 @@
             "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
           },
           "dependsOn": [
-            "[concat('Microsoft.Web/Sites/', parameters('registryName'))]"
+            "[concat('Microsoft.ContainerRegistry/registries/', parameters('registryName'))]"
           ]
         }
       ]
