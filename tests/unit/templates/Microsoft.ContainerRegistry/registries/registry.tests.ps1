@@ -57,9 +57,9 @@ Describe "Container Registry Parameter Validation" {
             $json.parameters.sku.type | should be "string"
         }
 
-        It "sku parameter default value is Standard" {
+        It "sku parameter default value is Basic" {
 
-            $json.parameters.sku.defaultValue | should be "Premium"
+            $json.parameters.sku.defaultValue | should be "Basic"
         }
 
         It "sku parameter allowed values are Basic, Standard, Premium" {
@@ -134,9 +134,9 @@ Describe "Container Registry Parameter Validation" {
             $json.parameters.quarantinePolicy.type | should be "string"
         }
 
-        It "quarantinePolicy parameter default value is Enabled" {
+        It "quarantinePolicy parameter default value is Disabled" {
 
-            $json.parameters.quarantinePolicy.defaultValue | should be "Enabled"
+            $json.parameters.quarantinePolicy.defaultValue | should be "Disabled"
         }
 
         It "quarantinePolicy parameter allowed values are Enabled, Disabled" {
@@ -157,9 +157,9 @@ Describe "Container Registry Parameter Validation" {
             $json.parameters.trustPolicy.type | should be "string"
         }
 
-        It "trustPolicy parameter default value is Enabled" {
+        It "trustPolicy parameter default value is Disabled" {
 
-            $json.parameters.trustPolicy.defaultValue | should be "Enabled"
+            $json.parameters.trustPolicy.defaultValue | should be "Disabled"
         }
 
         It "trustPolicy parameter allowed values are Enabled, Disabled" {
@@ -180,9 +180,9 @@ Describe "Container Registry Parameter Validation" {
             $json.parameters.retentionDays.type | should be "int"
         }
 
-        It "retentionDays parameter default value is 365" {
+        It "retentionDays parameter default value is 0" {
 
-            $json.parameters.retentionDays.defaultValue | should be 365
+            $json.parameters.retentionDays.defaultValue | should be 0
         }
 
         It "retentionDays parameter is minValue is 0" {
@@ -208,9 +208,9 @@ Describe "Container Registry Parameter Validation" {
             $json.parameters.retentionPolicy.type | should be "string"
         }
 
-        It "retentionPolicy parameter default value is Enabled" {
+        It "retentionPolicy parameter default value is Disabled" {
 
-            $json.parameters.retentionPolicy.defaultValue | should be "Enabled"
+            $json.parameters.retentionPolicy.defaultValue | should be "Disabled"
         }
 
         It "retentionPolicy parameter allowed values are Enabled, Disabled" {
@@ -231,9 +231,9 @@ Describe "Container Registry Parameter Validation" {
             $json.parameters.dataEndpointEnabled.type | should be "bool"
         }
 
-        It "dataEndpointEnabled parameter default value is true" {
+        It "dataEndpointEnabled parameter default value is false" {
 
-            $json.parameters.dataEndpointEnabled.defaultValue | should be $true
+            $json.parameters.dataEndpointEnabled.defaultValue | should be $false
         }
     }
 
