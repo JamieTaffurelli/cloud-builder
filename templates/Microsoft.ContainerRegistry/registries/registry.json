@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.1.0",
+  "contentVersion": "1.0.2.0",
   "parameters": {
     "registryName": {
       "type": "string",
@@ -18,7 +18,7 @@
     },
     "sku": {
       "type": "string",
-      "defaultValue": "Premium",
+      "defaultValue": "Basic",
       "allowedValues": ["Basic", "Standard", "Premium"],
       "metadata": {
         "description": "The sku of the Container Registry"
@@ -35,54 +35,54 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Allow or Deny traffic from subnets, allowed properties are: subnetId (resource ID of subnet) and action (Allow or Deny, defaults to defaultAction)"
+        "description": "Allow or Deny traffic from subnets, allowed properties are: subnetId (resource ID of subnet) and action (Allow or Deny, defaults to defaultAction). Premium SKU must be enabled"
       }
     },
     "ipRules": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "Allow or Deny traffic from an IP or CIDR range, allowed properties are: value (must be IPv4) and action (Allow or Deny, defaults to defaultAction)"
+        "description": "Allow or Deny traffic from an IP or CIDR range, allowed properties are: value (must be IPv4) and action (Allow or Deny, defaults to defaultAction). Premium SKU must be enabled"
       }
     },
     "quarantinePolicy": {
       "type": "string",
-      "defaultValue": "Enabled",
+      "defaultValue": "Disabled",
       "allowedValues": ["Enabled", "Disabled"],
       "metadata": {
-        "description": "Enable or Disable container quarantine"
+        "description": "Enable or Disable container quarantine. Premium SKU must be enabled. Premium SKU must be enabled"
       }
     },
     "trustPolicy": {
       "type": "string",
-      "defaultValue": "Enabled",
+      "defaultValue": "Disabled",
       "allowedValues": ["Enabled", "Disabled"],
       "metadata": {
-        "description": "Enable or Disable purging of untagged manifest"
+        "description": "Enable or Disable purging of untagged manifest. Premium SKU must be enabled"
       }
     },
     "retentionDays": {
       "type": "int",
-      "defaultValue": 365,
+      "defaultValue": 0,
       "minValue": 0,
       "maxValue": 365,
       "metadata": {
-        "description": "number of days before deleting untagged manifests"
+        "description": "number of days before deleting untagged manifests. Premium SKU must be enabled"
       }
     },
     "retentionPolicy": {
       "type": "string",
-      "defaultValue": "Enabled",
+      "defaultValue": "Disabled",
       "allowedValues": ["Enabled", "Disabled"],
       "metadata": {
-        "description": "Enable or Disable the retention policy"
+        "description": "Enable or Disable the retention policy. Premium SKU must be enabled"
       }
     },
     "dataEndpointEnabled": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
-        "description": "Enable FQDN of container registry"
+        "description": "Enable FQDN of container registry. Premium SKU must be enabled"
       }
     },
     "publicNetworkAccess": {
@@ -90,7 +90,7 @@
       "defaultValue": "Disabled",
       "allowedValues": ["Enabled", "Disabled"],
       "metadata": {
-        "description": "Enable or Disable public access to Container Registry"
+        "description": "Enable or Disable public access to Container Registry. Premium SKU must be enabled"
       }
     },
     "logAnalyticsSubscriptionId": {
@@ -146,6 +146,26 @@
         }
       ]
     },
+    "premiumNetworkRuleSet": {
+      "defaultAction": "[variables('defaultAction')]",
+      "virtualNetworkRules": "[variables('virtualNetworkRules')]",
+      "ipRules": "[variables('ipRules')]"
+    },
+    "networkRuleSet": "[if(equals(parameters('sku'), 'Premium'), variables('premiumNetworkRuleSet'), json('{}'))]",
+    "premiumPolicies": {
+      "quarantinePolicy": {
+        "status": "[parameters('quarantinePolicy')]"
+      },
+      "trustPolicy": {
+        "type": "Notary",
+        "status": "[parameters('trustPolicy')]"
+      },
+      "retentionPolicy": {
+        "days": "[parameters('retentionDays')]",
+        "status": "[parameters('retentionPolicy')]"
+      }
+    },
+    "policies": "[if(equals(parameters('sku'), 'Premium'), variables('premiumPolicies'), json('{}'))]",
     "diagnosticsEnabled": true,
     "diagnosticsRetentionInDays": 365
   },
@@ -164,24 +184,8 @@
       },
       "properties": {
         "adminUserEnabled": "[parameters('adminUserEnabled')]",
-        "networkRuleSet": {
-          "defaultAction": "[variables('defaultAction')]",
-          "virtualNetworkRules": "[variables('virtualNetworkRules')]",
-          "ipRules": "[variables('ipRules')]"
-        },
-        "policies": {
-          "quarantinePolicy": {
-            "status": "[parameters('quarantinePolicy')]"
-          },
-          "trustPolicy": {
-            "type": "Notary",
-            "status": "[parameters('trustPolicy')]"
-          },
-          "retentionPolicy": {
-            "days": "[parameters('retentionDays')]",
-            "status": "[parameters('retentionPolicy')]"
-          }
-        },
+        "networkRuleSet": "[variables('networkRuleSet')]",
+        "policies": "[variables('policies')]",
         "dataEndpointEnabled": "[parameters('dataEndpointEnabled')]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
       },
