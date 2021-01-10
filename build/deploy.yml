@@ -47,7 +47,7 @@ jobs:
                 errorActionPreference: "stop"
                 failOnStderr: false
                 ignoreLASTEXITCODE: false
-                pwsh: false
+                pwsh: true
                 workingDirectory: "$(System.DefaultWorkingDirectory)"
 
             - task: AzureResourceGroupDeployment@2
