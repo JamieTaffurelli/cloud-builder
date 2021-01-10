@@ -1,5 +1,5 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
-$templateFolderPath = Split-Path -Path ($testPath -replace [regex]::Escape("tests\unit"), [String]::Empty) -Parent
+$templateFolderPath = Split-Path -Path ($testPath -replace "tests(\\|\/)unit(\\|\/)", [String]::Empty) -Parent
 $armTemplatePaths = (Get-ChildItem -Path $templateFolderPath -Recurse -File -Filter "*.json").FullName | Where-Object {$_ -notlike "*.configdata.*"}
 
 Describe "Template Validation" -Tag @("AllTemplates") {
