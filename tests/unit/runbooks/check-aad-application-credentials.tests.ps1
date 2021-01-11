@@ -1,5 +1,5 @@
 $runbookFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
-$runbookDirectory = $PSScriptRoot -Replace "tests(\\|\/)unit(\\|\/)", ""
+$runbookDirectory = $PSScriptRoot -Replace [Regex]::Escape(("tests{0}unit{1}" -f [IO.Path]::DirectorySeparatorChar, [IO.Path]::DirectorySeparatorChar)), ""
 
 function Get-AutomationConnection
 {

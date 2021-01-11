@@ -1,5 +1,5 @@
 $cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
-$interfaceCmdletDirectory = $PSScriptRoot -Replace "tests(\\|\/)unit(\\|\/)", "module"
+$interfaceCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape(("tests{0}unit" -f [IO.Path]::DirectorySeparatorChar)), "module"
 $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "internal"
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath $cmdletFile -Resolve)
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath "Test-AzureBuilderBlobItem.ps1" -Resolve)
@@ -128,7 +128,7 @@ Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
             @("TestDrive:\blob1.txt", (Get-Item -Path "TestDrive:\blob2.txt")) | Copy-AzureBuilderBlobItem -StorageAccountName "storageaccount" -ContainerName "storagecontainer" -Blob "storage/blob.txt" -AuthMethod "OAuth" | Out-Null
 
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq "TestDrive:\blob1.txt" }
-            Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq "${TestDrive}\blob2.txt" }
+            Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 1 -Scope It -Exactly -ParameterFilter { $File -eq ("${TestDrive}{0}blob2.txt" -f [IO.Path]::DirectorySeparatorChar) }
             Assert-MockCalled -CommandName Set-AzStorageBlobContent -Times 2 -Scope It -Exactly
         }
     }

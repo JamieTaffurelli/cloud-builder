@@ -1,5 +1,5 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
-$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace "tests(\\|\/)unit(\\|\/)", [String]::Empty
+$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [Regex]::Escape(("tests{0}unit{1}" -f [IO.Path]::DirectorySeparatorChar, [IO.Path]::DirectorySeparatorChar)), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
 Describe "App Service Slot Parameter Validation" {
@@ -1096,7 +1096,8 @@ Describe "App Service Slot Resource Validation" {
 
         It "requestTracingExpirationTime is 9999-12-31T23:59:00Z" {
 
-            $json.resources.properties.siteconfig.requestTracingExpirationTime | should be "9999-12-31T23:59:00Z"
+            $requestTracingExpirationTime = [DateTime] $json.resources.properties.siteconfig.requestTracingExpirationTime
+            $requestTracingExpirationTime.ToString("yyyy-MM-ddTHH:mm:ssZ") | should be ([DateTime]::MaxValue.ToString("yyyy-MM-ddTHH:mm:00Z"))
         }
     }
 

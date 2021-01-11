@@ -1,5 +1,5 @@
 $cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
-$interfaceCmdletDirectory = $PSScriptRoot -Replace "tests(\\|\/)unit", "module"
+$interfaceCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape(("tests{0}unit" -f [IO.Path]::DirectorySeparatorChar)), "module"
 $internalCmdletDirectory = $interfaceCmdletDirectory -Replace "interface", "internal"
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath $cmdletFile -Resolve)
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath "Test-AzureBuilderBlobItem.ps1" -Resolve)
