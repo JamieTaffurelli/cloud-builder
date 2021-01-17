@@ -5,15 +5,30 @@ jobs:
   - job:
     timeoutInMinutes: 120
     pool:
-      name: ${{ parameters.poolName }}
+      #name: ${{ parameters.poolName }}
+      vmImage: ${{ parameters.poolName }}
     steps:
+
+      - task: PowerShell@2	
+        displayName: "Install Required PowerShell Modules"	
+        inputs:	
+          targetType: "filePath"	
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
+          arguments: '@("az", "AzureAD")'	
+          errorActionPreference: "stop"	
+          failOnStderr: false	
+          ignoreLASTEXITCODE: false	
+          pwsh: false	
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
+
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
         inputs:
           scriptFolder: '$(System.DefaultWorkingDirectory)\tests\*'
           resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
           CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
-          usePSCore: true
+          #usePSCore: true
+          usePSCore: false
           CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
           PesterVersion: 'OtherVersion'
           preferredPesterVersion: '4.10.1'
@@ -40,7 +55,8 @@ jobs:
   - job:
     timeoutInMinutes: 120
     pool:
-      name: ${{ parameters.poolName }}
+      #name: ${{ parameters.poolName }}
+      vmImage: ${{ parameters.poolName }}
     steps:
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
@@ -51,7 +67,8 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          pwsh: true
+          #pwsh: true
+          pwsh: false
 
       - task: AzSKARMTemplateChecker@1
         displayName: "Run AzSK ARM Template Checker"
@@ -70,7 +87,8 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          pwsh: true
+          #pwsh: true
+          pwsh: false
           workingDirectory: "$(System.DefaultWorkingDirectory)"
 
       - task: PowerShell@2
@@ -81,7 +99,8 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          pwsh: true
+          #pwsh: true
+          pwsh: false
 
       - task: PowerShell@2
         displayName: "Version DSC Configurations"
@@ -92,7 +111,8 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          pwsh: true
+          #pwsh: true
+          pwsh: false
 
       - task: PowerShell@2
         displayName: "Version Runbooks"
@@ -103,7 +123,8 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          pwsh: true
+          #pwsh: true
+          pwsh: false
 
       - task: PublishPipelineArtifact@1
         displayName: "Publish ARM Templates (Pipeline)"

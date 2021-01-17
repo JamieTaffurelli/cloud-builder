@@ -9,7 +9,8 @@ parameters:
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
     pool:
-      name: ${{ parameters.poolName }}
+      #name: ${{ parameters.poolName }}
+      vmImage: ${{ parameters.poolName }}
       workspace:
         clean: all
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -47,7 +48,8 @@ jobs:
                 errorActionPreference: "stop"
                 failOnStderr: false
                 ignoreLASTEXITCODE: false
-                pwsh: true
+                #pwsh: true
+                pwsh: false
                 workingDirectory: "$(System.DefaultWorkingDirectory)"
 
             - task: AzureResourceGroupDeployment@2
