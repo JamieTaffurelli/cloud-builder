@@ -1,5 +1,5 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
-$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
+$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [Regex]::Escape(("tests{0}unit{1}" -f [IO.Path]::DirectorySeparatorChar, [IO.Path]::DirectorySeparatorChar)), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 Describe "Storage Account Parameter Validation" {
 
@@ -54,29 +54,6 @@ Describe "Storage Account Parameter Validation" {
         }
     }
 
-    Context "kind Validation" {
-
-        It "Has kind parameter" {
-
-            $json.parameters.kind | should not be $null
-        }
-
-        It "kind parameter is of type string" {
-
-            $json.parameters.kind.type | should be "string"
-        }
-
-        It "kind parameter default value is StorageV2" {
-
-            $json.parameters.kind.defaultValue | should be "StorageV2"
-        }
-
-        It "kind parameter allowed values are Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage" {
-
-            (Compare-Object -ReferenceObject $json.parameters.kind.allowedValues -DifferenceObject @("Storage", "StorageV2", "BlobStorage", "FileStorage", "BlockBlobStorage")).Length | should be 0
-        }
-    }
-
     Context "skuName Validation" {
 
         It "Has skuName parameter" {
@@ -115,29 +92,6 @@ Describe "Storage Account Parameter Validation" {
         It "customDomainName parameter default value is an empty string" {
 
             $json.parameters.customDomainName.defaultValue | should be ([String]::Empty)
-        }
-    }
-
-    Context "accessTier Validation" {
-
-        It "Has accessTier parameter" {
-
-            $json.parameters.accessTier | should not be $null
-        }
-
-        It "accessTier parameter is of type string" {
-
-            $json.parameters.accessTier.type | should be "string"
-        }
-
-        It "accessTier parameter default value is Hot" {
-
-            $json.parameters.accessTier.defaultValue | should be "Hot"
-        }
-
-        It "accessTier parameter allowed values are Hot, Cold" {
-
-            (Compare-Object -ReferenceObject $json.parameters.accessTier.allowedValues -DifferenceObject @("Hot", "Cool")).Length | should be 0
         }
     }
 
@@ -205,6 +159,60 @@ Describe "Storage Account Parameter Validation" {
         }
     }
 
+    Context "logAnalyticsSubscriptionId Validation" {
+
+        It "Has logAnalyticsSubscriptionId parameter" {
+
+            $json.parameters.logAnalyticsSubscriptionId | should not be $null
+        }
+
+        It "logAnalyticsSubscriptionId parameter is of type string" {
+
+            $json.parameters.logAnalyticsSubscriptionId.type | should be "string"
+        }
+
+        It "logAnalyticsSubscriptionId parameter default value is [subscription().subscriptionId]" {
+
+            $json.parameters.logAnalyticsSubscriptionId.defaultValue | should be "[subscription().subscriptionId]"
+        }
+    }
+
+    Context "logAnalyticsResourceGroupName Validation" {
+
+        It "Has logAnalyticsResourceGroupName parameter" {
+
+            $json.parameters.logAnalyticsResourceGroupName | should not be $null
+        }
+
+        It "logAnalyticsResourceGroupName parameter is of type string" {
+
+            $json.parameters.logAnalyticsResourceGroupName.type | should be "string"
+        }
+
+        It "logAnalyticsResourceGroupName parameter default value is [resourceGroup().name]" {
+
+            $json.parameters.logAnalyticsResourceGroupName.defaultValue | should be "[resourceGroup().name]"
+        }
+    }
+
+    Context "logAnalyticsName Validation" {
+
+        It "Has logAnalyticsName parameter" {
+
+            $json.parameters.logAnalyticsName | should not be $null
+        }
+
+        It "logAnalyticsName parameter is of type string" {
+
+            $json.parameters.logAnalyticsName.type | should be "string"
+        }
+
+        It "logAnalyticsName parameter is mandatory" {
+
+            ($json.parameters.logAnalyticsName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -228,6 +236,12 @@ Describe "Storage Account Resource Validation" {
 
     $storageAccount = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Storage/storageAccounts" }
     $blobService = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Storage/storageAccounts/blobServices" }
+    $atpSetting = $json.resources.resources | Where-Object { $PSItem.type -eq "providers/advancedThreatProtectionSettings" }
+    $diagnosticSetting = $json.resources.resources | Where-Object { $PSItem.type -eq "/providers/diagnosticSettings" }
+    $blobDiagnosticSetting = $json.resources.resources | Where-Object { $PSItem.type -eq "blobServices/providers/diagnosticSettings" }
+    $tableDiagnosticSetting = $json.resources.resources | Where-Object { $PSItem.type -eq "tableServices/providers/diagnosticSettings" }
+    $fileDiagnosticSetting = $json.resources.resources | Where-Object { $PSItem.type -eq "fileServices/providers/diagnosticSettings" }
+    $queueDiagnosticSetting = $json.resources.resources | Where-Object { $PSItem.type -eq "queueServices/providers/diagnosticSettings" }
 
     Context "type Validation" {
 
@@ -239,12 +253,11 @@ Describe "Storage Account Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2018-11-01" {
+        It "apiVersion value is 2019-06-01" {
 
-            $storageAccount.apiVersion | should be "2018-11-01"
+            $storageAccount.apiVersion | should be "2019-06-01"
         }
     }
-
 
     Context "Encryption at rest Validation" {
 
@@ -267,16 +280,134 @@ Describe "Storage Account Resource Validation" {
         }
     }
 
+    Context "TLS Version Validation" {
+
+        It "minimumTlsVersion is TLS1_2" {
+
+            $storageAccount.properties.minimumTlsVersion | should be "TLS1_2"
+        }
+    }
+
     Context "Advanced Threat Protection Validation" {
 
         It "ATP Resource exists" {
 
-            $storageAccount.resources.type | should be "providers/advancedThreatProtectionSettings"
+            $atpSetting.type | should be "providers/advancedThreatProtectionSettings"
         }
 
         It "ATP is enabled" {
 
-            $storageAccount.resources.properties.isEnabled | should be $true
+            $atpSetting.properties.isEnabled | should be $true
+        }
+    }
+
+    Context "Diagnostic Settings Validation" {
+
+        It "type value is /providers/diagnosticSettings" {
+
+            $diagnosticSetting.type | should be "/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $diagnosticSetting.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to Transaction" {
+
+            $diagnosticSetting.properties.metrics.category | should be "Transaction"
+        }
+    }
+
+    Context "Blob Diagnostic Settings Validation" {
+
+        It "type value is blobServices/providers/diagnosticSettings" {
+
+            $blobDiagnosticSetting.type | should be "blobServices/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $blobDiagnosticSetting.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to Transaction" {
+
+            $blobDiagnosticSetting.properties.metrics.category | should be "Transaction"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $blobDiagnosticSetting.properties.logs.category -DifferenceObject @("StorageRead", "StorageWrite", "StorageDelete")).Length | should be 0
+        }
+    }
+
+    Context "Table Diagnostic Settings Validation" {
+
+        It "type value is tableServices/providers/diagnosticSettings" {
+
+            $tableDiagnosticSetting.type | should be "tableServices/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $tableDiagnosticSetting.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to Transaction" {
+
+            $tableDiagnosticSetting.properties.metrics.category | should be "Transaction"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $tableDiagnosticSetting.properties.logs.category -DifferenceObject @("StorageRead", "StorageWrite", "StorageDelete")).Length | should be 0
+        }
+    }
+
+    Context "File Diagnostic Settings Validation" {
+
+        It "type value is fileServices/providers/diagnosticSettings" {
+
+            $fileDiagnosticSetting.type | should be "fileServices/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $fileDiagnosticSetting.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to Transaction" {
+
+            $fileDiagnosticSetting.properties.metrics.category | should be "Transaction"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $fileDiagnosticSetting.properties.logs.category -DifferenceObject @("StorageRead", "StorageWrite", "StorageDelete")).Length | should be 0
+        }
+    }
+
+    Context "Queue Diagnostic Settings Validation" {
+
+        It "type value is blobServices/providers/diagnosticSettings" {
+
+            $queueDiagnosticSetting.type | should be "queueServices/providers/diagnosticSettings"
+        }
+
+        It "apiVersion value is 2015-07-01" {
+
+            $queueDiagnosticSetting.apiVersion | should be "2015-07-01"
+        }
+
+        It "Metrics category is set to Transaction" {
+
+            $queueDiagnosticSetting.properties.metrics.category | should be "Transaction"
+        }
+
+        It "All logs are enabled" {
+
+            (Compare-Object -ReferenceObject $queueDiagnosticSetting.properties.logs.category -DifferenceObject @("StorageRead", "StorageWrite", "StorageDelete")).Length | should be 0
         }
     }
 

@@ -1,5 +1,5 @@
 $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name -Resolve
-$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [regex]::Escape("tests\unit"), [String]::Empty
+$armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [Regex]::Escape(("tests{0}unit{1}" -f [IO.Path]::DirectorySeparatorChar, [IO.Path]::DirectorySeparatorChar)), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
 Describe "Automation Account Schedule Parameter Validation" {
@@ -90,7 +90,9 @@ Describe "Automation Account Schedule Parameter Validation" {
 
         It "expiryTime parameter default value is 9999-12-31T23:59:00+00:00" {
 
-            $json.parameters.expiryTime.defaultValue | should be "9999-12-31T23:59:00+00:00"
+            $defaultValue = [DateTime] $json.parameters.expiryTime.defaultValue
+            $defaultValue.ToString("yyyy-MM-ddTHH:mm:00+00:00") | should be ([DateTime]::MaxValue.ToString("yyyy-MM-ddTHH:mm:00+00:00"))
+
         }
     }
 

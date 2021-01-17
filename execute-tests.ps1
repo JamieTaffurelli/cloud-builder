@@ -9,5 +9,5 @@ param
 
 Invoke-Pester `
     -Script @{ Path = "${PSScriptRoot}\tests\*"; Parameters = @{ ResourceGroupName = $ResourceGroupName } } `
-    -EnableExit `
-    -Show "Failed"
+    -EnableExit
+    

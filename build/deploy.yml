@@ -9,6 +9,7 @@ parameters:
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
     pool:
+      #name: ${{ parameters.poolName }}
       vmImage: ${{ parameters.poolName }}
       workspace:
         clean: all
@@ -47,6 +48,7 @@ jobs:
                 errorActionPreference: "stop"
                 failOnStderr: false
                 ignoreLASTEXITCODE: false
+                #pwsh: true
                 pwsh: false
                 workingDirectory: "$(System.DefaultWorkingDirectory)"
 

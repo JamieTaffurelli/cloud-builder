@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.2.0.0",
+  "contentVersion": "2.0.0.0",
   "parameters": {
     "storageAccountName": {
       "type": "string",
@@ -16,20 +16,6 @@
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Storage Account to"
-      }
-    },
-    "kind": {
-      "type": "string",
-      "defaultValue": "StorageV2",
-      "allowedValues": [
-        "Storage",
-        "StorageV2",
-        "BlobStorage",
-        "FileStorage",
-        "BlockBlobStorage"
-      ],
-      "metadata": {
-        "description": "Type of Storage Account to deploy"
       }
     },
     "skuName": {
@@ -85,12 +71,18 @@
         "description": "Allow or Deny traffic from an IP or CIDR range, allowed properties are: value (must be IPv4) and action (Allow or Deny, defaults to defaultAction)"
       }
     },
-    "accessTier": {
-      "type": "string",
-      "defaultValue": "Hot",
-      "allowedValues": ["Hot", "Cool"],
+    "routingPreference": {
+      "type": "object",
+      "defaultValue": {},
       "metadata": {
-        "description": "Only for BlobStorage storage account kinds, define latency of data transfer"
+        "description": "Information about the network routing choice opted by the user for data transfer"
+      }
+    },
+    "allowBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Allow or disallow public access to all blobs or containers in the storage account"
       }
     },
     "corsRules": {
@@ -114,6 +106,26 @@
       "defaultValue": true,
       "metadata": {
         "description": "Enable auto snapshot of blobs"
+      }
+    },
+    "logAnalyticsSubscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The Subscription ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The Resource Group of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics Workspace to send diagnostics to"
       }
     },
     "tags": {
@@ -148,18 +160,23 @@
           }
         }
       ]
-    }
+    },
+    "diagnosticsEnabled": true,
+    "diagnosticsRetentionInDays": 365
   },
   "resources": [
     {
       "name": "[parameters('storageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2018-11-01",
-      "kind": "[parameters('kind')]",
+      "apiVersion": "2019-06-01",
+      "kind": "StorageV2",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
         "name": "[parameters('skuName')]"
+      },
+      "identity": {
+        "type": "SystemAssigned"
       },
       "properties": {
         "customDomain": {
@@ -172,6 +189,12 @@
             },
             "blob": {
               "enabled": true
+            },
+            "table": {
+              "enabled": true
+            },
+            "queue": {
+              "enabled": true
             }
           },
           "keySource": "Microsoft.Storage"
@@ -183,7 +206,9 @@
           "defaultAction": "Deny"
         },
         "supportsHttpsTrafficOnly": true,
-        "accessTier": "[if(equals(parameters('kind'),'BlobStorage'), parameters('accessTier'), json('null'))]"
+        "routingPreference": "[parameters('routingPreference')]",
+        "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+        "minimumTlsVersion": "TLS1_2"
       },
       "resources": [
         {
@@ -195,6 +220,215 @@
           },
           "dependsOn": [
             "[resourceId('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-07-01",
+          "type": "/providers/diagnosticSettings",
+          "name": "Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "Transaction",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-07-01",
+          "type": "blobServices/providers/diagnosticsettings",
+          "name": "default/Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "Transaction",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "StorageRead",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageWrite",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageDelete",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-07-01",
+          "type": "tableServices/providers/diagnosticsettings",
+          "name": "default/Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "Transaction",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "StorageRead",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageWrite",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageDelete",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-07-01",
+          "type": "fileServices/providers/diagnosticsettings",
+          "name": "default/Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "Transaction",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "StorageRead",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageWrite",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageDelete",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+          ]
+        },
+        {
+          "apiVersion": "2015-07-01",
+          "type": "queueServices/providers/diagnosticsettings",
+          "name": "default/Microsoft.Insights/service",
+          "properties": {
+            "metrics": [
+              {
+                "category": "Transaction",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "logs": [
+              {
+                "category": "StorageRead",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageWrite",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              },
+              {
+                "category": "StorageDelete",
+                "enabled": "[variables('diagnosticsEnabled')]",
+                "retentionPolicy": {
+                  "enabled": "[variables('diagnosticsEnabled')]",
+                  "days": "[variables('diagnosticsRetentionInDays')]"
+                }
+              }
+            ],
+            "workspaceId": "[resourceId(parameters('logAnalyticsSubscriptionId'), parameters('logAnalyticsResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsName'))]"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
           ]
         }
       ]

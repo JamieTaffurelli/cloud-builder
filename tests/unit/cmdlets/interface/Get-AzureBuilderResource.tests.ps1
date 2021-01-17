@@ -1,5 +1,5 @@
 $cmdletFile = $MyInvocation.MyCommand.Name -Replace ".tests", ""
-$interfaceCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape("tests\unit"), "module"
+$interfaceCmdletDirectory = $PSScriptRoot -Replace [Regex]::Escape(("tests{0}unit" -f [IO.Path]::DirectorySeparatorChar)), "module"
 . (Join-Path -Path $interfaceCmdletDirectory -ChildPath $cmdletFile -Resolve)
 
 Describe "$(Split-Path -Path $PSCommandPath -Leaf)" {
