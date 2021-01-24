@@ -24,7 +24,7 @@ jobs:
     displayName: 'Test and Publish'
     timeoutInMinutes: 120
     pool:
-      vmImage: ${{ parameters.poolName }}
+      name: 'pool1'
     dependsOn:
     - 'DeployACI'
     steps:
