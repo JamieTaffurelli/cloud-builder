@@ -20,7 +20,7 @@ jobs:
           location: "West Europe"
           csmFile: "$(System.DefaultWorkingDirectory)/scripts/arm/aci-ado-agent.json"
           overrideParameters: '-templatesSas $(templates-sas) -adoPat $(PAT) -logAnalyticsKey $(logAnalyticsKey)'
-          deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
+          deploymentName: "$(Build.DefinitionName)-$(Build.BuildNumber)"
 
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
