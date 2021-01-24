@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Container Group you wish to create"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": ["northeurope", "westeurope"],
+      "metadata": {
+        "description": "The location to deploy the Container Group to"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": ["Standard", "Dedicated"],
+      "metadata": {
+        "description": "The sku of the Container Group"
+      }
+    },
+    "containers": {
+      "type": "array",
+      "metadata": {
+        "description": "Containers to deploy to the Container Group"
+      }
+    },
+    "imageRegistryCredentials": {
+      "type": "secureObject",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Credentials for private container registries, must have an 'array' property"
+      }
+    },
+    "restartPolicy": {
+      "type": "string",
+      "defaultValue": "OnFailure",
+      "allowedValues": [ "Always", "OnFailure", "Never"],
+      "metadata": {
+        "description": "Restart policy for all containers within the container group"
+      }
+    },
+    "osType": {
+      "type": "string",
+      "defaultValue": "Linux",
+      "allowedValues": ["Windows", "Linux"],
+      "metadata": {
+        "description": "The operating system type required by the containers in the container group."
+      }
+    },
+    "volumes": {
+      "type": "secureObject",
+      "defaultValue": {
+          "array": []
+      },
+      "metadata": {
+        "description": "The list of volumes that can be mounted by containers in this container group. Must have an 'array' property"
+      }
+    },
+    "logAnalyticsId": {
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the Log Analytics Workspace to send diagnostics to"
+      }
+    },
+    "logAnalyticsWorkspaceKey": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The workspace key for log analytics"
+      }
+    },
+    "initContainers": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The init containers for a container group."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "metadata": {
+        "description": "Tags to apply to Container Group"
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "name": "[parameters('containerGroupName')]",
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2019-12-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "containers": "[parameters('containers')]",
+        "imageRegistryCredentials": "[parameters('imageRegistryCredentials').array]",
+        "restartPolicy": "[parameters('restartPolicy')]",
+        "osType": "[parameters('osType')]",
+        "volumes": "[parameters('volumes').array]",
+        "diagnostics": {
+          "logAnalytics": {
+            "workspaceId": "[parameters('logAnalyticsId')]",
+            "workspaceKey": "[parameters('logAnalyticsWorkspaceKey')]"
+          }
+        },
+        "sku": "[parameters('sku')]",
+        "initContainers": "[parameters('initContainers')]"
+      }
+    }
+  ],
+  "outputs": {
+    "containerGroup": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('containerGroupName')), '2019-12-01', 'Full')]"
+    }
+  }
+}
