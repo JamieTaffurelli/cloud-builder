@@ -9,7 +9,7 @@ parameters:
 jobs:
   - deployment: Deploy_Resources_Upload_Templates
     pool:
-      vmImage: ${{ parameters.hostedPoolName }}
+      vmImage: ${{ parameters.poolName }}
       workspace:
         clean: all
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -21,18 +21,23 @@ jobs:
             - download: current
               displayName: Download ARM Templates
               artifact: templates
+
             - download: current
               displayName: Download Scripts
               artifact: scripts
+
             - download: current
               displayName: Download Module
               artifact: module
+
             - download: current
               displayName: Download DSC
               artifact: dsc
+
             - download: current
               displayName: Download Runbooks
               artifact: runbooks
+
             - task: PowerShell@2
               displayName: "Install Required PowerShell Modules"
               inputs:
@@ -44,6 +49,7 @@ jobs:
                 ignoreLASTEXITCODE: false
                 pwsh: false
                 workingDirectory: "$(System.DefaultWorkingDirectory)"
+
             - task: AzureResourceGroupDeployment@2
               displayName: "Deploy Resources"
               inputs:
@@ -53,6 +59,7 @@ jobs:
                 csmFile: "$(Pipeline.Workspace)/scripts/arm/templates-storage-account.json"
                 csmParametersFile: ${{ parameters.armParametersFile }}
                 deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
+
             - task: AzurePowerShell@4
               displayName: "Upload Templates to Storage Account"
               inputs:
@@ -60,6 +67,7 @@ jobs:
                 ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
                 ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "templates" -SearchPath "$(Pipeline.Workspace)/templates/" -ModulePath "$(Pipeline.Workspace)\module\AzureBuilder.psd1"'
                 azurePowerShellVersion: LatestVersion
+
             - task: AzurePowerShell@4
               displayName: "Upload DSC Resources to Storage Account"
               inputs:
@@ -67,6 +75,7 @@ jobs:
                 ScriptPath: "$(Pipeline.Workspace)/scripts/upload-files.ps1"
                 ScriptArguments: '-StorageAccountName ${{ parameters.storageAccountName }} -ContainerName "dsc" -SearchPath "$(Pipeline.Workspace)/dsc/" -ModulePath "$(Pipeline.Workspace)/module/AzureBuilder.psd1"'
                 azurePowerShellVersion: LatestVersion
+
             - task: AzurePowerShell@4
               displayName: "Upload Runbooks Resources to Storage Account"
               inputs:

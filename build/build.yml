@@ -1,33 +1,25 @@
 parameters:
   poolName: ""
-  azureSubscription: "rg1"
-  resourceGroupName: "rg1"
 
 jobs:
-  - job: DeployACI
-    displayName: 'Deploy ACI'
-    pool:
-      vmImage: ${{ parameters.hostedPoolName }}
-    variables: 
-    - group: 'Shared'
-    steps:
-      - task: AzureResourceGroupDeployment@2
-        displayName: "Deploy ACI"
-        inputs:
-          azureSubscription: ${{ parameters.azureSubscription }}
-          resourceGroupName: ${{ parameters.resourceGroupName }}
-          location: "West Europe"
-          csmFile: "$(System.DefaultWorkingDirectory)/scripts/arm/aci-ado-agent.json"
-          overrideParameters: '-templatesSas $(templates-sas) -adoPat $(PAT) -logAnalyticsKey $(logAnalyticsKey)'
-          deploymentName: "$(Build.DefinitionName)-$(Build.BuildNumber)"
-  - job: Publish
-    displayName: 'Test and Publish'
+  - job:
     timeoutInMinutes: 120
     pool:
-      name: ${{ parameters.aciPoolName }}
-    dependsOn:
-    - 'DeployACI'
+      vmImage: ${{ parameters.poolName }}
     steps:
+
+      - task: PowerShell@2	
+        displayName: "Install Required PowerShell Modules"	
+        inputs:	
+          targetType: "filePath"	
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
+          arguments: '@("az", "AzureAD")'	
+          errorActionPreference: "stop"	
+          failOnStderr: false	
+          ignoreLASTEXITCODE: false	
+          pwsh: false	
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
+
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
         inputs:
@@ -38,6 +30,7 @@ jobs:
           CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
           PesterVersion: 'OtherVersion'
           preferredPesterVersion: '4.10.1'
+
       - task: PublishTestResults@2
         displayName: "Publish Test Results"
         inputs:
@@ -48,6 +41,7 @@ jobs:
           failTaskOnFailedTests: true
           publishRunAttachments: true
         condition: always()
+
       - task: PublishCodeCoverageResults@1
         displayName: "Publish Code Coverage"
         inputs:
@@ -55,6 +49,12 @@ jobs:
           summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
           failIfCoverageEmpty: true
         condition: always()
+
+  - job:
+    timeoutInMinutes: 120
+    pool:
+      vmImage: ${{ parameters.poolName }}
+    steps:
       - task: PowerShell@2
         displayName: "Exclude Unscannable ARM Templates"
         inputs:
@@ -65,6 +65,7 @@ jobs:
           failOnStderr: false
           ignoreLASTEXITCODE: false
           pwsh: false
+
       - task: AzSKARMTemplateChecker@1
         displayName: "Run AzSK ARM Template Checker"
         inputs:
@@ -72,6 +73,19 @@ jobs:
           skipControlsFromFile: '$(System.DefaultWorkingDirectory)\azsk-control-exceptions.csv'
           excludeFiles: "$(ExclusionTemplates)"
           disableAutoUpdate: false
+
+      - task: PowerShell@2
+        displayName: "Install Required PowerShell Modules"
+        inputs:
+          targetType: "filePath"
+          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
+          arguments: '@("az")'
+          errorActionPreference: "stop"
+          failOnStderr: false
+          ignoreLASTEXITCODE: false
+          pwsh: false
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
+
       - task: PowerShell@2
         displayName: "Version ARM Templates"
         inputs:
@@ -81,6 +95,7 @@ jobs:
           failOnStderr: false
           ignoreLASTEXITCODE: false
           pwsh: false
+
       - task: PowerShell@2
         displayName: "Version DSC Configurations"
         inputs:
@@ -91,6 +106,7 @@ jobs:
           failOnStderr: false
           ignoreLASTEXITCODE: false
           pwsh: false
+
       - task: PowerShell@2
         displayName: "Version Runbooks"
         inputs:
@@ -101,12 +117,14 @@ jobs:
           failOnStderr: false
           ignoreLASTEXITCODE: false
           pwsh: false
+
       - task: PublishPipelineArtifact@1
         displayName: "Publish ARM Templates (Pipeline)"
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)\templates'
           artifact: "templates"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
       - task: CopyFiles@2
         displayName: "Copy Scripts to Staging Directory"
         inputs:
@@ -117,12 +135,14 @@ jobs:
           overWrite: true
           flattenFolders: false
         condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
       - task: PublishPipelineArtifact@1
         displayName: "Publish Scripts (Pipeline)"
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)\scripts'
           artifact: "scripts"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
       - task: CopyFiles@2
         displayName: "Copy Module to Staging Directory"
         inputs:
@@ -133,12 +153,14 @@ jobs:
           overWrite: true
           flattenFolders: false
         condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
       - task: PublishPipelineArtifact@1
         displayName: "Publish Module (Pipeline)"
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)\module'
           artifact: "module"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
       - task: CopyFiles@2
         displayName: "Copy Template Tests to Staging Directory"
         inputs:
@@ -149,12 +171,14 @@ jobs:
           overWrite: true
           flattenFolders: false
         condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
       - task: PublishPipelineArtifact@1
         displayName: "Publish Template Tests (Pipeline)"
         inputs:
           targetPath: '$(Build.ArtifactStagingDirectory)\tests'
           artifact: "tests"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
       - task: CopyFiles@2
         displayName: "Copy DSC Resources to Staging Directory"
         inputs:
@@ -167,6 +191,7 @@ jobs:
           overWrite: true
           flattenFolders: false
         condition: "and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))"
+
       - task: PublishBuildArtifacts@1
         displayName: "Publish DSC Resources (Build)"
         inputs:
@@ -174,6 +199,7 @@ jobs:
           artifactName: "dsc"
           publishLocation: "Container"
         condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
       - task: PublishBuildArtifacts@1
         displayName: "Publish Runbooks Resources (Build)"
         inputs:
