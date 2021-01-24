@@ -26,7 +26,7 @@ jobs:
     pool:
       poolName: 'pool1'
     dependsOn:
-    - 'Deploy ACI'
+    - 'DeployACI'
     steps:
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
