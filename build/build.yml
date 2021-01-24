@@ -7,7 +7,7 @@ jobs:
   - job: DeployACI
     displayName: 'Deploy ACI'
     pool:
-      vmImage: ${{ parameters.poolName }}
+      vmImage: ${{ parameters.hostedPoolName }}
     variables: 
     - group: 'Shared'
     steps:
@@ -24,7 +24,7 @@ jobs:
     displayName: 'Test and Publish'
     timeoutInMinutes: 120
     pool:
-      name: 'pool1'
+      name: ${{ parameters.aciPoolName }}
     dependsOn:
     - 'DeployACI'
     steps:

@@ -9,13 +9,12 @@ stages:
     jobs:
       - template: build.yml
         parameters:
-          #poolName: "pool1"
-          poolName: "windows-latest"
+          aciPoolName: "pool1"
+          hostedPoolName: "windows-latest"
 
   - stage: Deploy	
     jobs:	
       - template: deploy.yml	
-        parameters:	
-          #poolName: "pool1"
-          poolName: "windows-latest"
+        parameters:
+          hostedPoolName: "windows-latest"
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
