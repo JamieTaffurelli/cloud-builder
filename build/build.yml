@@ -3,14 +3,13 @@ parameters:
   azureSubscription: "rg1"
   resourceGroupName: "rg1"
 
-variables: 
-- group: 'Shared'
-
 jobs:
   - job:
     timeoutInMinutes: 120
     pool:
       vmImage: ${{ parameters.poolName }}
+    variables: 
+    - group: 'Shared'
     steps:
 
       - task: AzureResourceGroupDeployment@2
