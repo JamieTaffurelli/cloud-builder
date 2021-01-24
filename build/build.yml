@@ -1,25 +1,27 @@
 parameters:
   poolName: ""
+  azureSubscription: "rg1"
+  resourceGroupName: "rg1"
+
+variables: 
+- group: 'Shared'
 
 jobs:
   - job:
     timeoutInMinutes: 120
     pool:
-      #name: ${{ parameters.poolName }}
       vmImage: ${{ parameters.poolName }}
     steps:
 
-      - task: PowerShell@2	
-        displayName: "Install Required PowerShell Modules"	
-        inputs:	
-          targetType: "filePath"	
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
-          arguments: '@("az", "AzureAD")'	
-          errorActionPreference: "stop"	
-          failOnStderr: false	
-          ignoreLASTEXITCODE: false	
-          pwsh: false	
-          workingDirectory: "$(System.DefaultWorkingDirectory)"
+      - task: AzureResourceGroupDeployment@2
+        displayName: "Deploy ACI"
+        inputs:
+          azureSubscription: ${{ parameters.azureSubscription }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          location: "West Europe"
+          csmFile: "$(Pipeline.Workspace)/scripts/arm/acr-ado-agent.json"
+          overrideParameters: '-templatesSas $(templates-sas) -adoPat $(PAT) -logAnalyticsKey $(logAnalyticsKey)'
+          deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
 
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
@@ -27,7 +29,6 @@ jobs:
           scriptFolder: '$(System.DefaultWorkingDirectory)\tests\*'
           resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
           CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
-          #usePSCore: true
           usePSCore: false
           CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
           PesterVersion: 'OtherVersion'
@@ -55,7 +56,6 @@ jobs:
   - job:
     timeoutInMinutes: 120
     pool:
-      #name: ${{ parameters.poolName }}
       vmImage: ${{ parameters.poolName }}
     steps:
       - task: PowerShell@2
@@ -67,7 +67,6 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          #pwsh: true
           pwsh: false
 
       - task: AzSKARMTemplateChecker@1
@@ -79,19 +78,6 @@ jobs:
           disableAutoUpdate: false
 
       - task: PowerShell@2
-        displayName: "Install Required PowerShell Modules"
-        inputs:
-          targetType: "filePath"
-          filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'
-          arguments: '@("az")'
-          errorActionPreference: "stop"
-          failOnStderr: false
-          ignoreLASTEXITCODE: false
-          #pwsh: true
-          pwsh: false
-          workingDirectory: "$(System.DefaultWorkingDirectory)"
-
-      - task: PowerShell@2
         displayName: "Version ARM Templates"
         inputs:
           targetType: "filePath"
@@ -99,7 +85,6 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          #pwsh: true
           pwsh: false
 
       - task: PowerShell@2
@@ -111,7 +96,6 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          #pwsh: true
           pwsh: false
 
       - task: PowerShell@2
@@ -123,7 +107,6 @@ jobs:
           errorActionPreference: "stop"
           failOnStderr: false
           ignoreLASTEXITCODE: false
-          #pwsh: true
           pwsh: false
 
       - task: PublishPipelineArtifact@1

@@ -1,6 +1,9 @@
 trigger:
   - master
 
+variables:
+- group: Shared
+
 stages:
   - stage: Build
     jobs:
