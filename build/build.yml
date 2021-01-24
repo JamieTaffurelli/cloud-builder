@@ -18,7 +18,7 @@ jobs:
           azureSubscription: ${{ parameters.azureSubscription }}
           resourceGroupName: ${{ parameters.resourceGroupName }}
           location: "West Europe"
-          csmFile: "$(Pipeline.Workspace)/scripts/arm/acr-ado-agent.json"
+          csmFile: "$(Pipeline.Workspace)/scripts/arm/aci-ado-agent.json"
           overrideParameters: '-templatesSas $(templates-sas) -adoPat $(PAT) -logAnalyticsKey $(logAnalyticsKey)'
           deploymentName: "$(Environment.Name)-$(Build.BuildNumber)"
 

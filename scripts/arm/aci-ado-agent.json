@@ -1,0 +1,122 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "templateStorageAccountName": {
+      "type": "string",
+      "defaultValue": "templatessa6546"
+    },
+    "templatesSas": {
+      "type": "secureString"
+    },
+    "containerGroupName": {
+      "type": "string",
+      "defaultValue": "aci1"
+    },
+    "repoName": {
+      "type": "string",
+      "defaultValue": "azuredevops"
+    },
+    "repoTag": {
+      "type": "string",
+      "defaultValue": "latest"
+    },
+    "adoUrl": {
+      "type": "string",
+      "defaultValue": "https://dev.azure.com/jltaffurelli"
+    },
+    "adoPat": {
+      "type": "secureString"
+    },
+    "adoPool": {
+      "type": "string",
+      "defaultValue": "pool1"
+    },
+    "username": {
+      "type": "string",
+      "defaultValue": "jamietaffurelli"
+    },
+    "logAnalyticsId": {
+      "type": "string",
+      "defaultValue": "3e43caff-5422-49be-805d-3c8e5266cdc0"
+    },
+    "logAnalyticsKey": {
+      "type": "secureString"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {}
+    }
+  },
+  "variables": {
+    "templateBaseUrl": "[concat('https://', parameters('templateStorageAccountName'), '.blob.core.windows.net/templates/')]",
+    "aciTemplateUrl": "[concat(variables('templateBaseUrl'), 'Microsoft.ContainerInstance/containerGroups/containerGroup.1.0.0.0.json', parameters('templatesSas'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2018-05-01",
+      "name": "[parameters('containerGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('aciTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "containerGroupName": {
+            "value": "[parameters('containerGroupName')]"
+          },
+          "containers": {
+            "value": [
+              {
+                "name": "win1",
+                "properties": {
+                  "image": "[concat(parameters('username'), '/', parameters('repoName'), ':', parameters('repoTag'))]",
+                  "environmentVariables": [
+                    {
+                      "name": "AZP_URL",
+                      "value": "[parameters('adoUrl')]"
+                    },
+                    {
+                      "name": "AZP_TOKEN",
+                      "secureValue": "[parameters('adoPat')]"
+                    },
+                    {
+                      "name": "AZP_POOL",
+                      "value": "[parameters('adoPool')]"
+                    }
+                  ],
+                  "resources": {
+                    "requests": {
+                      "memoryInGB": "2",
+                      "cpu": "1"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "imageRegistryCredentials": {
+            "value": {
+              "array": []
+            }
+          },
+          "osType": {
+            "value": "Windows"
+          },
+          "logAnalyticsId": {
+            "value": "[parameters('logAnalyticsId')]"
+          },
+          "logAnalyticsWorkspaceKey": {
+            "value": "[parameters('logAnalyticsKey')]"
+          },
+          "tags": {
+            "value": "[parameters('tags')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
