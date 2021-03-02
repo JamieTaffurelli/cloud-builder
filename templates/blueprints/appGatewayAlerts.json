@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.0.1.0",
+  "contentVersion": "2.1.1.0",
   "parameters": {
     "templateStorageAccountName": {
       "type": "string",
@@ -142,6 +142,20 @@
         "description": "Percentage of WAF failures before alerting"
       }
     },
+    "wafPathsToExclude": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Wildcard paths to exclude from WAF Scheduled Query"
+      }
+    },
+    "wafRulesToExclude": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "WAF rules to exclude from WAF Scheduled Query"
+      }
+    },
     "tags": {
       "type": "object",
       "metadata": {
@@ -168,7 +182,7 @@
     "appGatewayTotalRequestTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayTotalRequestMetricAlert.1.0.3.0.json', parameters('templatesSas'))]",
     "appGatewayUnhealthyHostTemplateUrl": "[concat(variables('metricAlertBaseUrl'), 'appGatewayUnhealthyHostMetricAlert.1.0.1.0.json', parameters('templatesSas'))]",
     "appGatewayHttpReturnCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayHttpReturnCodeRule.2.0.1.0.json', parameters('templatesSas'))]",
-    "appGatewayWafViolationCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayWafViolationRule.2.0.1.0.json', parameters('templatesSas'))]"
+    "appGatewayWafViolationCodeTemplateUrl": "[concat(variables('scheduledQueryRuleBaseUrl'), 'appGatewayWafViolationRule.2.1.1.0.json', parameters('templatesSas'))]"
   },
   "resources": [
     {
@@ -386,7 +400,7 @@
         "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('appGatewayWafViolationCodeTemplateUrl')]",
-          "contentVersion": "2.0.1.0"
+          "contentVersion": "2.1.1.0"
         },
         "parameters": {
           "appGatewayName": {
@@ -397,6 +411,12 @@
           },
           "failurePercentage": {
             "value": "[parameters('appGatewayWafFailurePercentage')]"
+          },
+          "pathsToExclude": {
+            "value": "[parameters('wafPathsToExclude')]"
+          },
+          "rulesToExclude": {
+            "value": "[parameters('wafRulesToExclude')]"
           },
           "enabled": {
             "value": "[string(parameters('enabled'))]"

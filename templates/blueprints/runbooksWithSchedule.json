@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.2.1.0",
+  "contentVersion": "1.2.2.0",
   "parameters": {
     "templateStorageAccountName": {
       "type": "string",
@@ -43,6 +43,10 @@
     "frequency": {
       "type": "string",
       "allowedValues": ["OneTime", "Minute", "Hour", "Day", "Week", "Month"]
+    },
+    "deployJobSchedule": {
+      "type": "bool",
+      "defaultValue": false
     },
     "timeZone": {
       "type": "string",
@@ -163,6 +167,7 @@
       }
     },
     {
+      "condition": "[equals(parameters('deployJobSchedule'), json('true'))]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2018-05-01",
       "name": "[concat(parameters('runbooks')[copyIndex('runbookScheduleLoop')].name, parameters('scheduleName'))]",

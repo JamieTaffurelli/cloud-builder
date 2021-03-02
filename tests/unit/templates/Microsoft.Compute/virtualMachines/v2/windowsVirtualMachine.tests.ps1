@@ -404,6 +404,24 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
+    Context "zones Validation" {
+
+        It "Has zones parameter" {
+
+            $json.parameters.zones | should not be $null
+        }
+
+        It "zones parameter is of type array" {
+
+            $json.parameters.zones.type | should be "array"
+        }
+
+        It "zones parameter default value is an empty array" {
+
+            $json.parameters.zones.defaultValue | should be @()
+        }
+    }
+
     Context "templateContainerUrl Validation" {
 
         It "Has templateContainerUrl parameter" {

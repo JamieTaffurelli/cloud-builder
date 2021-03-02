@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.3.0.0",
+  "contentVersion": "2.4.0.0",
   "parameters": {
     "vmName": {
       "type": "string",
@@ -146,6 +146,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "Resource ID of the Availabilty Set to deploy Virtual Machine to"
+      }
+    },
+    "zones": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Deploy to redunant zones"
       }
     },
     "templateContainerUrl": {
@@ -352,7 +359,8 @@
       },
       "identity": {
         "type": "SystemAssigned"
-      }
+      },
+      "zones": "[parameters('zones')]"
     },
     {
       "type": "Microsoft.Resources/deployments",

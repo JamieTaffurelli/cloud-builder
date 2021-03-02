@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "2.0.1.0",
+  "contentVersion": "2.1.1.0",
   "parameters": {
     "appGatewayName": {
       "type": "string",
@@ -23,6 +23,20 @@
       "maxValue": 100,
       "metadata": {
         "description": "Percentage of failed requests to requests before alerting"
+      }
+    },
+    "pathsToExclude": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Wildcard paths to exclude from Scheduled Query"
+      }
+    },
+    "rulesToExclude": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "WAF rules to exclude from Scheduled Query"
       }
     },
     "enabled": {
@@ -87,8 +101,10 @@
     }
   },
   "variables": {
+    "pathsToExclude": "[replace(replace(string(parameters('pathsToExclude')), '[', ''), ']', '')]",
+    "rulesToExclude": "[replace(replace(string(parameters('rulesToExclude')), '[', ''), ']', '')]",
     "queryName": "[concat(parameters('appGatewayName'), '-waf-violations-rule')]",
-    "query": "[concat('let appGatewayRequests = AzureDiagnostics | where Category == \"ApplicationGatewayAccessLog\" and Resource == \"', toUpper(parameters('appGatewayName')), '\" | summarize appGatewayRequestCount = count() | extend output = \"output\"; AzureDiagnostics | where Category == \"ApplicationGatewayFirewallLog\" and Resource == \"', toUpper(parameters('appGatewayName')), '\" | summarize failedRequestCount = count() | extend output = \"output\"  | join appGatewayRequests on output | project failurePercent = (100 * todouble(failedRequestCount) / todouble(appGatewayRequestCount)) | where failurePercent > ', parameters('failurePercentage'))]"
+    "query": "[concat('let appGatewayRequests = AzureDiagnostics | where Category == \"ApplicationGatewayAccessLog\" and Resource == \"', toUpper(parameters('appGatewayName')), '\"', if(empty(variables('pathsToExclude')), '', concat(' and not (requestUri_s has_any (', variables('pathsToExclude'), '))')), ' | summarize appGatewayRequestCount = count() | extend output = \"output\"; AzureDiagnostics | where Category == \"ApplicationGatewayFirewallLog\" and Resource == \"', toUpper(parameters('appGatewayName')), '\"', if(empty(variables('rulesToExclude')), '', concat(' and ruleGroup_s !in (', variables('rulesToExclude'), ')')), ' | summarize failedRequestCount = count() | extend output = \"output\"  | join appGatewayRequests on output | project failurePercent = (100 * todouble(failedRequestCount) / todouble(appGatewayRequestCount)) | where failurePercent > ', parameters('failurePercentage'))]"
   },
   "resources": [
     {
