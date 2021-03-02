@@ -2,33 +2,23 @@ $testPath = Join-Path -Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Nam
 $armTemplatePath = ($testPath -replace "tests.ps1", "json") -replace [Regex]::Escape(("tests{0}unit{1}" -f [IO.Path]::DirectorySeparatorChar, [IO.Path]::DirectorySeparatorChar)), [String]::Empty
 $json = (Get-Content -Path $armTemplatePath) | ConvertFrom-Json
 
-Describe "Windows Virtual Machine Parameter Validation" {
+Describe "Data Disk Parameter Validation" {
 
-    Context "vmName Validation" {
+    Context "diskName Validation" {
 
-        It "Has vmName parameter" {
+        It "Has diskName parameter" {
 
-            $json.parameters.vmName | should not be $null
+            $json.parameters.diskName | should not be $null
         }
 
-        It "vmName parameter is of type string" {
+        It "diskName parameter is of type string" {
 
-            $json.parameters.vmName.type | should be "string"
+            $json.parameters.diskName.type | should be "string"
         }
 
-        It "vmName parameter is mandatory" {
+        It "diskName parameter is mandatory" {
 
-            ($json.parameters.vmName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-
-        It "vmName parameter minimum length is 1" {
-
-            $json.parameters.vmName.minLength | should be 1
-        }
-
-        It "vmName parameter maximum length is 15" {
-
-            $json.parameters.vmName.maxLength | should be 15
+            ($json.parameters.diskName.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
@@ -55,352 +45,54 @@ Describe "Windows Virtual Machine Parameter Validation" {
         }
     }
 
-    Context "purchasePlanRequired Validation" {
+    Context "sku Validation" {
 
-        It "Has purchasePlanRequired parameter" {
+        It "Has sku parameter" {
 
-            $json.parameters.purchasePlanRequired | should not be $null
+            $json.parameters.sku | should not be $null
         }
 
-        It "purchasePlanRequired parameter is of type bool" {
+        It "sku parameter is of type string" {
 
-            $json.parameters.purchasePlanRequired.type | should be "bool"
+            $json.parameters.sku.type | should be "string"
         }
 
-        It "purchasePlanRequired parameter default value is false" {
+        It "sku parameter default value is Premium_LRS" {
 
-            $json.parameters.purchasePlanRequired.defaultValue | should be $false
-        }
-    }
-
-    Context "vmSize Validation" {
-
-        It "Has vmSize parameter" {
-
-            $json.parameters.vmSize | should not be $null
+            $json.parameters.sku.defaultValue | should be "Premium_LRS"
         }
 
-        It "vmSize parameter is of type string" {
+        It "sku parameter allowed values are Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS" {
 
-            $json.parameters.vmSize.type | should be "string"
-        }
-
-        It "vmSize parameter is mandatory" {
-
-            ($json.parameters.vmSize.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            (Compare-Object -ReferenceObject $json.parameters.sku.allowedValues -DifferenceObject @("Standard_LRS", "Premium_LRS", "StandardSSD_LRS", "UltraSSD_LRS")).Length | should be 0
         }
     }
 
-    Context "imagePublisher Validation" {
+    Context "diskSizeGB Validation" {
 
-        It "Has imagePublisher parameter" {
+        It "Has diskSizeGB parameter" {
 
-            $json.parameters.imagePublisher | should not be $null
+            $json.parameters.diskSizeGB | should not be $null
         }
 
-        It "imagePublisher parameter is of type string" {
+        It "diskSizeGB parameter is of type int" {
 
-            $json.parameters.imagePublisher.type | should be "string"
+            $json.parameters.diskSizeGB.type | should be "int"
         }
 
-        It "imagePublisher parameter default value is MicrosoftWindowsServer" {
+        It "diskSizeGB parameter does not have a default value" {
 
-            $json.parameters.imagePublisher.defaultValue | should be "MicrosoftWindowsServer"
-        }
-    }
-
-    Context "imageOffer Validation" {
-
-        It "Has imageOffer parameter" {
-
-            $json.parameters.imageOffer | should not be $null
+            ($json.parameters.diskSizeGB.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
 
-        It "imageOffer parameter is of type string" {
+        It "diskSizeGB parameter minimum value is 32" {
 
-            $json.parameters.imageOffer.type | should be "string"
+            $json.parameters.diskSizeGB.minValue | should be 32
         }
 
-        It "imageOffer parameter default value is WindowsServer" {
+        It "diskSizeGB parameter maximum value is 32767" {
 
-            $json.parameters.imageOffer.defaultValue | should be "WindowsServer"
-        }
-    }
-
-    Context "imageSku Validation" {
-
-        It "Has imageSku parameter" {
-
-            $json.parameters.imageSku | should not be $null
-        }
-
-        It "imageSku parameter is of type string" {
-
-            $json.parameters.imageSku.type | should be "string"
-        }
-
-        It "imageSku parameter default value is 2016-Datacenter" {
-
-            $json.parameters.imageSku.defaultValue | should be "2016-Datacenter"
-        }
-    }
-
-    Context "osDiskName Validation" {
-
-        It "Has osDiskName parameter" {
-
-            $json.parameters.osDiskName | should not be $null
-        }
-
-        It "osDiskName parameter is of type string" {
-
-            $json.parameters.osDiskName.type | should be "string"
-        }
-
-        It "osDiskName parameter is mandatory" {
-
-            ($json.parameters.osDiskName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "osDiskCaching Validation" {
-
-        It "Has osDiskCaching parameter" {
-
-            $json.parameters.osDiskCaching | should not be $null
-        }
-
-        It "osDiskCaching parameter is of type string" {
-
-            $json.parameters.osDiskCaching.type | should be "string"
-        }
-
-        It "osDiskCaching parameter default value is an empty string" {
-
-            $json.parameters.osDiskCaching.defaultValue | should be ([String]::Empty)
-        }
-
-        It "osDiskCaching parameter allowed values are '', None, ReadOnly, ReadWrite" {
-
-            (Compare-Object -ReferenceObject $json.parameters.osDiskCaching.allowedValues -DifferenceObject @("", "None", "ReadOnly", "ReadWrite")).Length | should be 0
-        }
-    }
-
-    Context "osDiskCreateOption Validation" {
-
-        It "Has osDiskCreateOption parameter" {
-
-            $json.parameters.osDiskCreateOption | should not be $null
-        }
-
-        It "osDiskCreateOption parameter is of type string" {
-
-            $json.parameters.osDiskCreateOption.type | should be "string"
-        }
-
-        It "osDiskCreateOption parameter default value is FromImage" {
-
-            $json.parameters.osDiskCreateOption.defaultValue | should be "FromImage"
-        }
-
-        It "osDiskCreateOption parameter allowed values are FromImage, Empty, Attach" {
-
-            (Compare-Object -ReferenceObject $json.parameters.osDiskCreateOption.allowedValues -DifferenceObject @("FromImage", "Empty", "Attach")).Length | should be 0
-        }
-    }
-
-    Context "writeAcceleratorEnabled Validation" {
-
-        It "Has writeAcceleratorEnabled parameter" {
-
-            $json.parameters.writeAcceleratorEnabled | should not be $null
-        }
-
-        It "writeAcceleratorEnabled parameter is of type bool" {
-
-            $json.parameters.writeAcceleratorEnabled.type | should be "bool"
-        }
-
-        It "writeAcceleratorEnabled parameter default value is false" {
-
-            $json.parameters.writeAcceleratorEnabled.defaultValue | should be $false
-        }
-    }
-
-    Context "osDiskSizeInGB Validation" {
-
-        It "Has osDiskSizeInGB parameter" {
-
-            $json.parameters.osDiskSizeInGB | should not be $null
-        }
-
-        It "osDiskSizeInGB parameter is of type int" {
-
-            $json.parameters.osDiskSizeInGB.type | should be "int"
-        }
-
-        It "osDiskSizeInGB parameter default value is 127" {
-
-            $json.parameters.osDiskSizeInGB.defaultValue | should be 127
-        }
-
-        It "osDiskSizeInGB parameter minimum value is 127" {
-
-            $json.parameters.osDiskSizeInGB.minValue | should be 127
-        }
-
-        It "osDiskSizeInGB parameter maximum value is 2048" {
-
-            $json.parameters.osDiskSizeInGB.maxValue | should be 2048
-        }
-    }
-
-    Context "osDiskStorageAccountType Validation" {
-
-        It "Has osDiskStorageAccountType parameter" {
-
-            $json.parameters.osDiskStorageAccountType | should not be $null
-        }
-
-        It "osDiskStorageAccountType parameter is of type string" {
-
-            $json.parameters.osDiskStorageAccountType.type | should be "string"
-        }
-
-        It "osDiskStorageAccountType parameter default value is Premium_LRS" {
-
-            $json.parameters.osDiskStorageAccountType.defaultValue | should be "Premium_LRS"
-        }
-
-        It "osDiskStorageAccountType parameter allowed values are Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS" {
-
-            (Compare-Object -ReferenceObject $json.parameters.osDiskStorageAccountType.allowedValues -DifferenceObject @("Standard_LRS", "Premium_LRS", "StandardSSD_LRS", "UltraSSD_LRS")).Length | should be 0
-        }
-    }
-
-    Context "dataDisks Validation" {
-
-        It "Has dataDisks parameter" {
-
-            $json.parameters.dataDisks | should not be $null
-        }
-
-        It "dataDisks parameter is of type array" {
-
-            $json.parameters.dataDisks.type | should be "array"
-        }
-
-        It "dataDisks parameter default value is an empty array" {
-
-            $json.parameters.dataDisks.defaultValue | should be @()
-        }
-    }
-
-    Context "adminUsername Validation" {
-
-        It "Has adminUsername parameter" {
-
-            $json.parameters.adminUsername | should not be $null
-        }
-
-        It "adminUsername parameter is of type string" {
-
-            $json.parameters.adminUsername.type | should be "string"
-        }
-
-        It "adminUsername parameter is mandatory" {
-
-            ($json.parameters.adminUsername.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "adminPassword Validation" {
-
-        It "Has adminPassword parameter" {
-
-            $json.parameters.adminPassword | should not be $null
-        }
-
-        It "adminPassword parameter is of type securestring" {
-
-            $json.parameters.adminPassword.type | should be "securestring"
-        }
-
-        It "adminPassword parameter is mandatory" {
-
-            ($json.parameters.adminPassword.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "enableAutomaticUpdates Validation" {
-
-        It "Has enableAutomaticUpdates parameter" {
-
-            $json.parameters.enableAutomaticUpdates | should not be $null
-        }
-
-        It "enableAutomaticUpdates parameter is of type bool" {
-
-            $json.parameters.enableAutomaticUpdates.type | should be "bool"
-        }
-
-        It "enableAutomaticUpdates parameter default value is true" {
-
-            $json.parameters.enableAutomaticUpdates.defaultValue | should be $false
-        }
-    }
-
-    Context "networkInterfaces Validation" {
-
-        It "Has networkInterfaces parameter" {
-
-            $json.parameters.networkInterfaces | should not be $null
-        }
-
-        It "networkInterfaces parameter is of type array" {
-
-            $json.parameters.networkInterfaces.type | should be "array"
-        }
-
-        It "networkInterfaces parameter is mandatory" {
-
-            ($json.parameters.networkInterfaces.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "diagnosticsStorageAccountName Validation" {
-
-        It "Has diagnosticsStorageAccountName parameter" {
-
-            $json.parameters.diagnosticsStorageAccountName | should not be $null
-        }
-
-        It "diagnosticsStorageAccountName parameter is of type string" {
-
-            $json.parameters.diagnosticsStorageAccountName.type | should be "string"
-        }
-
-        It "diagnosticsStorageAccountName parameter is mandatory" {
-
-            ($json.parameters.diagnosticsStorageAccountName.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "availabilitySetId Validation" {
-
-        It "Has availabilitySetId parameter" {
-
-            $json.parameters.availabilitySetId | should not be $null
-        }
-
-        It "availabilitySetId parameter is of type string" {
-
-            $json.parameters.availabilitySetId.type | should be "string"
-        }
-
-        It "availabilitySetId parameter default value is an empty string" {
-
-            $json.parameters.availabilitySetId.defaultValue | should be ([String]::Empty)
+            $json.parameters.diskSizeGB.maxValue | should be 32767
         }
     }
 
@@ -419,78 +111,6 @@ Describe "Windows Virtual Machine Parameter Validation" {
         It "zones parameter default value is an empty array" {
 
             $json.parameters.zones.defaultValue | should be @()
-        }
-    }
-
-    Context "templateContainerUrl Validation" {
-
-        It "Has templateContainerUrl parameter" {
-
-            $json.parameters.templateContainerUrl | should not be $null
-        }
-
-        It "templateContainerUrl parameter is of type string" {
-
-            $json.parameters.templateContainerUrl.type | should be "string"
-        }
-
-        It "templateContainerUrl parameter is mandatory" {
-
-            ($json.parameters.templateContainerUrl.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "templateSas Validation" {
-
-        It "Has templateSas parameter" {
-
-            $json.parameters.templateSas | should not be $null
-        }
-
-        It "templateSas parameter is of type securestring" {
-
-            $json.parameters.templateSas.type | should be "securestring"
-        }
-
-        It "templateSas parameter is mandatory" {
-
-            ($json.parameters.templateSas.PSObject.Properties.Name -contains "defaultValue") | should be $false
-        }
-    }
-
-    Context "bgVersion Validation" {
-
-        It "Has bgVersion parameter" {
-
-            $json.parameters.bgVersion | should not be $null
-        }
-
-        It "bgVersion parameter is of type string" {
-
-            $json.parameters.availabilitySetId.type | should be "string"
-        }
-
-        It "bgVersion parameter default value is an empty string" {
-
-            $json.parameters.bgVersion.defaultValue | should be "2.1"
-        }
-    }
-
-    Context "dependencyAgentVersion Validation" {
-
-        It "Has dependencyAgentVersion parameter" {
-
-            $json.parameters.dependencyAgentVersion | should not be $null
-        }
-
-        It "dependencyAgentVersion parameter is of type string" {
-
-            $json.parameters.dependencyAgentVersion.type | should be "string"
-        }
-
-        It "dependencyAgentVersion parameter default value is an empty string" {
-
-            $json.parameters.dependencyAgentVersion.defaultValue | should be "9.9"
         }
     }
 
@@ -513,161 +133,53 @@ Describe "Windows Virtual Machine Parameter Validation" {
     }
 }
 
-Describe "Windows Virtual Machine Resource Validation" {
+Describe "Data Disk Resource Validation" {
 
-    $vmResource = $json.resources | Where-Object { $PSItem.type -eq "Microsoft.Compute/virtualMachines" }
-    $bgInfoResource = $json.resources | Where-Object { $PSItem.name -like "*BGInfo*" }
-    $dependencyAgentResource = $json.resources | Where-Object { $PSItem.name -like "*DependencyAgentWindows*" }
-    
     Context "type Validation" {
 
-        It "type value is Microsoft.Compute/virtualMachines" {
+        It "type value is Microsoft.Compute/disks" {
 
-            $vmResource.type | should be "Microsoft.Compute/virtualMachines"
+            $json.resources.type | should be "Microsoft.Compute/disks"
         }
     }
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2019-03-01" {
+        It "apiVersion value is 2020-06-30" {
 
-            $vmResource.apiVersion | should be "2019-03-01"
+            $json.resources.apiVersion | should be "2020-06-30"
         }
     }
 
-    Context "imageReference version Validation" {
+    Context "creationData Validation" {
 
-        It "Uses latest image" {
+        It "createOption value is Empty" {
 
-            $vmResource.properties.storageProfile.imageReference.version | should be "latest"
+            $json.resources.properties.creationData.createOption | should be "Empty"
         }
     }
 
-    Context "osDisk Validation" {
+    Context "Encryption Validation" {
 
-        It "Uses Windows OS" {
+        It "Default encryption is enabled" {
 
-            $vmResource.properties.storageProfile.osDisk.osType | should be "Windows"
+            $json.resources.properties.encryption.type | should be "EncryptionAtRestWithPlatformKey"
         }
     }
+}
 
-    Context "additionalCapabilities Validation" {
+Describe "Data Disk Output Validation" {
 
-        It "Uses ultra SSD if disk supports it" {
+    Context "Data Disk Reference Validation" {
 
-            $vmResource.properties.additionalCapabilities.ultraSSDEnabled | should be "[if(equals(parameters('osDiskStorageAccountType'), 'UltraSSD_LRS'), json('true'), json('false'))]"
-        }
-    }
+        It "type value is object" {
 
-    Context "windowsConfiguration Validation" {
-
-        It "Provisions VM agent" {
-
-            $vmResource.properties.osProfile.windowsConfiguration.provisionVMAgent | should be $true
-        }
-    }
-
-    Context "bootDiagnostics Validation" {
-
-        It "Boot diagnostics is enabled" {
-
-            $vmResource.properties.diagnosticsProfile.bootDiagnostics.enabled | should be $true
-        }
-    }
-
-    Context "BGInfo Validation" {
-
-        It "type is Microsoft.Resources/deployments" {
-
-            $bgInfoResource.type | should be "Microsoft.Resources/deployments"
+            $json.outputs.dataDisk.type | should be "object"
         }
 
-        It "apiVersion is 2018-05-01" {
+        It "Uses full reference for Data Disk" {
 
-            $bgInfoResource.apiVersion | should be "2018-05-01"
-        }
-
-        It "mode is Incremental" {
-
-            $bgInfoResource.properties.mode | should be "Incremental"
-        }
-
-        It "contentVersion is 1.0.4.0" {
-
-            $bgInfoResource.properties.templateLink.contentVersion | should be "1.0.4.0"
-        }
-
-        It "vmExtensionName is BGInfo" {
-
-            $bgInfoResource.properties.parameters.vmExtensionName.value | should be "BGInfo"
-        }
-
-        It "vmName is [parameters('vmName')]" {
-
-            $bgInfoResource.properties.parameters.vmName.value | should be "[parameters('vmName')]"
-        }
-
-        It "publisher is Microsoft.Compute" {
-
-            $bgInfoResource.properties.parameters.publisher.value | should be "Microsoft.Compute"
-        }
-        
-        It "type is BGInfo" {
-
-            $bgInfoResource.properties.parameters.type.value | should be "BGInfo"
-        }
-
-        It "depends on VM creation" {
-
-            $bgInfoResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
-        }
-    }
-
-    Context "DependencyAgentWindows Validation" {
-
-        It "type is Microsoft.Resources/deployments" {
-
-            $dependencyAgentResource.type | should be "Microsoft.Resources/deployments"
-        }
-
-        It "apiVersion is 2018-05-01" {
-
-            $dependencyAgentResource.apiVersion | should be "2018-05-01"
-        }
-
-        It "mode is Incremental" {
-
-            $dependencyAgentResource.properties.mode | should be "Incremental"
-        }
-
-        It "contentVersion is 1.0.4.0" {
-
-            $dependencyAgentResource.properties.templateLink.contentVersion | should be "1.0.4.0"
-        }
-
-        It "vmExtensionName is DependencyAgentWindows" {
-
-            $dependencyAgentResource.properties.parameters.vmExtensionName.value | should be "DependencyAgentWindows"
-        }
-
-        It "vmName is [parameters('vmName')]" {
-
-            $dependencyAgentResource.properties.parameters.vmName.value | should be "[parameters('vmName')]"
-        }
-
-        It "publisher is Microsoft.Azure.Monitoring.DependencyAgent" {
-
-            $dependencyAgentResource.properties.parameters.publisher.value | should be "Microsoft.Azure.Monitoring.DependencyAgent"
-        }
-        
-        It "type is DependencyAgentWindows" {
-
-            $dependencyAgentResource.properties.parameters.type.value | should be "DependencyAgentWindows"
-        }
-
-        It "depends on VM creation" {
-
-            $dependencyAgentResource.dependsOn | should be @("[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]")
+            $json.outputs.dataDisk.value | should be "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2020-06-30', 'Full')]"
         }
     }
 }
