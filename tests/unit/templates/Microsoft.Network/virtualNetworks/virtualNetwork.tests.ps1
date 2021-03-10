@@ -284,7 +284,7 @@ Describe "Virtual Network Resource Validation" {
     }
 }
 
-Describe "Virtual Network Output Validation" {a
+Describe "Virtual Network Output Validation" {
 
     Context "Virtual Network Reference Validation" {
 
