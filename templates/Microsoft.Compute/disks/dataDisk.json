@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.1.1.0",
+  "contentVersion": "1.2.0.0",
   "parameters": {
     "diskName": {
       "type": "string",
@@ -37,6 +37,13 @@
         "description": "The size in GB of the disk to be created"
       }
     },
+    "zones": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Data centers to replicate disk to"
+      }
+    },
     "tags": {
       "type": "object"
     }
@@ -46,7 +53,7 @@
     {
       "name": "[parameters('diskName')]",
       "type": "Microsoft.Compute/disks",
-      "apiVersion": "2019-11-01",
+      "apiVersion": "2020-06-30",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
@@ -60,13 +67,14 @@
         "encryption": {
           "type": "EncryptionAtRestWithPlatformKey"
         }
-      }
+      },
+      "zones": "[parameters('zones')]"
     }
   ],
   "outputs": {
     "dataDisk": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2018-09-30', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2020-06-30', 'Full')]"
     }
   }
 }

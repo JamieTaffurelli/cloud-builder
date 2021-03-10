@@ -96,6 +96,24 @@ Describe "Data Disk Parameter Validation" {
         }
     }
 
+    Context "zones Validation" {
+
+        It "Has zones parameter" {
+
+            $json.parameters.zones | should not be $null
+        }
+
+        It "zones parameter is of type array" {
+
+            $json.parameters.zones.type | should be "array"
+        }
+
+        It "zones parameter default value is an empty array" {
+
+            $json.parameters.zones.defaultValue | should be @()
+        }
+    }
+
     Context "tags Validation" {
 
         It "Has tags parameter" {
@@ -127,9 +145,9 @@ Describe "Data Disk Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2019-11-01" {
+        It "apiVersion value is 2020-06-30" {
 
-            $json.resources.apiVersion | should be "2019-11-01"
+            $json.resources.apiVersion | should be "2020-06-30"
         }
     }
 
@@ -161,7 +179,7 @@ Describe "Data Disk Output Validation" {
 
         It "Uses full reference for Data Disk" {
 
-            $json.outputs.dataDisk.value | should be "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2018-09-30', 'Full')]"
+            $json.outputs.dataDisk.value | should be "[reference(resourceId('Microsoft.Compute/disks', parameters('diskName')), '2020-06-30', 'Full')]"
         }
     }
 }

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.2.0.0",
+  "contentVersion": "1.3.0.0",
   "parameters": {
     "virtualNetworkName": {
       "type": "string",
@@ -81,9 +81,7 @@
             "name": "[parameters('subnets')[copyIndex('subnets')].name]",
             "properties": {
               "addressPrefix": "[parameters('subnets')[copyIndex('subnets')].addressPrefix]",
-              "networkSecurityGroup": {
-                "id": "[resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupSubscriptionId'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupResourceGroupName'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupName)]"
-              },
+              "networkSecurityGroup": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupName'), json(concat('{\"id\": \"', resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupSubscriptionId'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'networkSecurityGroupResourceGroupName'), parameters('subnets')[copyIndex('subnets')].networkSecurityGroupResourceGroupName, resourceGroup().name), 'Microsoft.Network/networkSecurityGroups', parameters('subnets')[copyIndex('subnets')].networkSecurityGroupName), '\"}')), json('null'))]",
               "routeTable": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableName'), json(concat('{\"id\": \"', resourceId(if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameSubscriptionId'), parameters('subnets')[copyIndex('subnets')].routeTableNameSubscriptionId, subscription().subscriptionId), if(contains(parameters('subnets')[copyIndex('subnets')], 'routeTableNameResourceGroupName'), parameters('subnets')[copyIndex('subnets')].routeTableNameResourceGroupName, resourceGroup().name), 'Microsoft.Network/routeTables', parameters('subnets')[copyIndex('subnets')].routeTableName), '\"}')), json('null'))]",
               "serviceEndpoints": "[if(contains(parameters('subnets')[copyIndex('subnets')], 'serviceEndpoints'), parameters('subnets')[copyIndex('subnets')].serviceEndpoints, json('null'))]"
             }

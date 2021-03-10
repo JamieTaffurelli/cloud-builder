@@ -236,9 +236,9 @@ Describe "Virtual Network Resource Validation" {
 
     Context "subnets Validation" {
 
-        It "subnets variable must have Network Security Group" {
+        It "subnets variable allows Network Security Group" {
 
-            $json.variables.subnets.copy.input.properties.networkSecurityGroup.id | should not be $null
+            $json.variables.subnets.copy.input.properties.networkSecurityGroup | should not be $null
         }
 
         It "subnets variable allows route table" {
