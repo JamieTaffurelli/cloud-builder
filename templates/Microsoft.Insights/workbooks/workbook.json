@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.1.0",
+  "contentVersion": "1.0.2.0",
   "parameters": {
     "workbookName": {
       "type": "string",
@@ -72,7 +72,7 @@
   "variables": {},
   "resources": [
     {
-      "name": "[parameters('workbookName')]",
+      "name": "[guid(parameters('workbookName'), resourceGroup().id)]",
       "type": "Microsoft.Insights/workbooks",
       "apiVersion": "2020-10-20",
       "kind": "[parameters('kind')]",
