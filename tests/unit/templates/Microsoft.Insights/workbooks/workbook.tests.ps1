@@ -133,9 +133,9 @@ Describe "Workbook Parameter Validation" {
             $json.parameters.category.type | should be "string"
         }
 
-        It "category parameter is mandatory" {
+        It "category parameter default value is workbook" {
 
-            ($json.parameters.version.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            $json.parameters.category.defaultValue | should be "workbook"
         }
     }
 
