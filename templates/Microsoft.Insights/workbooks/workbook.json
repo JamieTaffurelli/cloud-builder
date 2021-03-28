@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "workbookName": {
       "type": "string",
@@ -44,6 +44,7 @@
     },
     "category": {
       "type": "string",
+      "defaultValue": "workbook",
       "metadata": {
         "description": "Workbook category"
       }
@@ -77,9 +78,6 @@
       "kind": "[parameters('kind')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
-      "identity": {
-        "type": "SystemAssigned"
-      },
       "properties": {
         "displayName": "[parameters('displayName')]",
         "serializedData": "[parameters('serializedData')]",
