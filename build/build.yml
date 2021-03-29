@@ -19,7 +19,6 @@ jobs:
           ignoreLASTEXITCODE: false	
           pwsh: false	
           workingDirectory: "$(System.DefaultWorkingDirectory)"
-      condition: eq(variables['Build.Reason'], 'PullRequest')
 
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
@@ -31,7 +30,6 @@ jobs:
           CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
           PesterVersion: 'OtherVersion'
           preferredPesterVersion: '4.10.1'
-        condition: eq(variables['Build.Reason'], 'PullRequest')
 
       - task: PublishTestResults@2
         displayName: "Publish Test Results"
@@ -42,7 +40,7 @@ jobs:
           mergeTestResults: false
           failTaskOnFailedTests: true
           publishRunAttachments: true
-        condition: eq(variables['Build.Reason'], 'PullRequest')
+        condition: always()
 
       - task: PublishCodeCoverageResults@1
         displayName: "Publish Code Coverage"
@@ -50,7 +48,7 @@ jobs:
           codeCoverageTool: "JaCoCo"
           summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
           failIfCoverageEmpty: true
-        condition: eq(variables['Build.Reason'], 'PullRequest')
+        condition: always()
 
   - job:
     timeoutInMinutes: 120
