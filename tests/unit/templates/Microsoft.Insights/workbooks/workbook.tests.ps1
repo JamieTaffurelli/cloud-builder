@@ -224,7 +224,7 @@ Describe "Workbook Output Validation" {
 
         It "Uses full reference for Workbook" {
 
-            $json.outputs.workbook.value | should be "[reference(resourceId('Microsoft.Insights/workbooks', parameters('workbookName')), '2020-10-20', 'Full')]"
+            $json.outputs.workbook.value | should be "[reference(resourceId('Microsoft.Insights/workbooks', guid(parameters('workbookName'), resourceGroup().id)), '2020-10-20', 'Full')]"
         }
     }
 }

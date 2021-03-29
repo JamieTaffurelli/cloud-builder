@@ -30,6 +30,7 @@ jobs:
           CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
           PesterVersion: 'OtherVersion'
           preferredPesterVersion: '4.10.1'
+        condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: PublishTestResults@2
         displayName: "Publish Test Results"
@@ -40,7 +41,7 @@ jobs:
           mergeTestResults: false
           failTaskOnFailedTests: true
           publishRunAttachments: true
-        condition: always()
+        condition: and(ne(variables['Build.Reason'], 'PullRequest'))
 
       - task: PublishCodeCoverageResults@1
         displayName: "Publish Code Coverage"
@@ -48,7 +49,7 @@ jobs:
           codeCoverageTool: "JaCoCo"
           summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
           failIfCoverageEmpty: true
-        condition: always()
+        condition: and(ne(variables['Build.Reason'], 'PullRequest'))
 
   - job:
     timeoutInMinutes: 120

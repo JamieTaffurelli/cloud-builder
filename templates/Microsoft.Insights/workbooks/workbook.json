@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.2.0",
+  "contentVersion": "1.0.3.0",
   "parameters": {
     "workbookName": {
       "type": "string",
@@ -91,7 +91,7 @@
   "outputs": {
     "workbook": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Insights/workbooks', parameters('workbookName')), '2020-10-20', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Insights/workbooks', guid(parameters('workbookName'), resourceGroup().id)), '2020-10-20', 'Full')]"
     }
   }
 }
