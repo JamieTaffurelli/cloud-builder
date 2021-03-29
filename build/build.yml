@@ -49,7 +49,7 @@ jobs:
           codeCoverageTool: "JaCoCo"
           summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
           failIfCoverageEmpty: true
-        condition: and(ne(variables['Build.Reason'], 'PullRequest')
+        condition: ne(variables['Build.Reason'], 'PullRequest')
 
   - job:
     timeoutInMinutes: 120
