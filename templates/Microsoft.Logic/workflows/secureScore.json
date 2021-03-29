@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.1.0",
+  "contentVersion": "1.0.2.0",
   "parameters": {
     "logicAppName": {
       "type": "string",
@@ -14,14 +14,6 @@
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Logic App"
-      }
-    },
-    "sku": {
-      "type": "string",
-      "defaultValue": "Standard",
-      "allowedValues": ["Free", "Basic", "Standard"],
-      "metadata": {
-        "description": "Sku of the Logic App"
       }
     },
     "workflowOutGoingIpAddresses": {
@@ -59,25 +51,11 @@
         "description": "Allowed trigger caller IP addresses"
       }
     },
-    "triggerAuthenticationPolicies": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "Authentication polices for trigger"
-      }
-    },
     "contentsCallerIpAddresses": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "Allowed contents caller IP addresses"
-      }
-    },
-    "contentsAuthenticationPolicies": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "Authentication polices for contents"
       }
     },
     "actionCallerIpAddresses": {
@@ -87,25 +65,11 @@
         "description": "Allowed action caller IP addresses"
       }
     },
-    "actionAuthenticationPolicies": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "Authentication polices for action"
-      }
-    },
     "workflowCallerIpAddresses": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "Allowed workflow caller IP addresses"
-      }
-    },
-    "workflowAuthenticationPolicies": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "Authentication polices for workflow"
       }
     },
     "logAnalyticsConnectorId": {
@@ -149,33 +113,18 @@
             "accessEndpointIpAddresses": "[parameters('connectorAccessEndpointsIpAddresses')]"
           }
         },
-        "sku": {
-          "name": "[parameters('sku')]"
-        },
         "accessControl": {
           "triggers": {
-            "allowedCallerIpAddresses": "[parameters('triggerCallerIpAddresses')]",
-            "openAuthenticationPolicies": {
-              "policies": "[parameters('triggerAuthenticationPolicies')]"
-            }
+            "allowedCallerIpAddresses": "[parameters('triggerCallerIpAddresses')]"
           },
           "contents": {
-            "allowedCallerIpAddresses": "[parameters('contentsCallerIpAddresses')]",
-            "openAuthenticationPolicies": {
-              "policies": "[parameters('contentsAuthenticationPolicies')]"
-            }
+            "allowedCallerIpAddresses": "[parameters('contentsCallerIpAddresses')]"
           },
           "actions": {
-            "allowedCallerIpAddresses": "[parameters('actionCallerIpAddresses')]",
-            "openAuthenticationPolicies": {
-              "policies": "[parameters('actionAuthenticationPolicies')]"
-            }
+            "allowedCallerIpAddresses": "[parameters('actionCallerIpAddresses')]"
           },
           "workflowManagement": {
-            "allowedCallerIpAddresses": "[parameters('workflowCallerIpAddresses')]",
-            "openAuthenticationPolicies": {
-              "policies": "[parameters('workflowAuthenticationPolicies')]"
-            }
+            "allowedCallerIpAddresses": "[parameters('workflowCallerIpAddresses')]"
           }
         },
         "definition": {
@@ -658,7 +607,8 @@
           "$connections": {
             "value": {
               "azureloganalyticsdatacollector": {
-                "connectionId": "[parameters('logAnalyticsConnectorId')]"
+                "connectionId": "[parameters('logAnalyticsConnectorId')]",
+                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', resourceGroup().location, '/managedApis/azureloganalyticsdatacollector')]"
               }
             }
           }

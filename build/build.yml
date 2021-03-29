@@ -19,6 +19,7 @@ jobs:
           ignoreLASTEXITCODE: false	
           pwsh: false	
           workingDirectory: "$(System.DefaultWorkingDirectory)"
+      condition: eq(variables['Build.Reason'], 'PullRequest')
 
       - task: Pester.PesterRunner.Pester-Task.Pester@9
         displayName: "Run Unit Tests"
