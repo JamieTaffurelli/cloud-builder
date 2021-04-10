@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.2.0",
+  "contentVersion": "1.0.3.0",
   "parameters": {
     "logicAppName": {
       "type": "string",
@@ -506,18 +506,6 @@
                           "id": {
                             "type": "string"
                           },
-                          "managedByTenants": {
-                            "items": {
-                              "properties": {
-                                "tenantId": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": ["tenantId"],
-                              "type": "object"
-                            },
-                            "type": "array"
-                          },
                           "state": {
                             "type": "string"
                           },
@@ -545,7 +533,6 @@
                         "required": [
                           "id",
                           "authorizationSource",
-                          "managedByTenants",
                           "subscriptionId",
                           "tenantId",
                           "displayName",

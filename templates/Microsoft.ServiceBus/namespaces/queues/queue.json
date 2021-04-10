@@ -1,0 +1,147 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "queueName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Service Bus Queue that you wish to create."
+      }
+    },
+    "serviceBusName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Service Bus to create the Queue in."
+      }
+    },
+    "lockDuration": {
+      "type": "string",
+      "defaultValue": "PT1M",
+      "metadata": {
+        "description": "Lock time for other receivers"
+      }
+    },
+    "maxSizeInMegabytes": {
+      "type": "int",
+      "defaultValue": 1024,
+      "metadata": {
+        "description": "Max size in megabytes"
+      }
+    },
+    "requiresDuplicateDetection": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Check for duplicates"
+      }
+    },
+    "requiresSession": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Support sessions"
+      }
+    },
+    "defaultMessageTimeToLive": {
+      "type": "string",
+      "defaultValue": "P14D",
+      "metadata": {
+        "description": "Time before expiration"
+      }
+    },
+    "deadLetteringOnMessageExpiration": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Support dead lettering"
+      }
+    },
+    "duplicateDetectionHistoryTimeWindow": {
+      "type": "string",
+      "defaultValue": "PT10M",
+      "metadata": {
+        "description": "Timespan to check for duplicates"
+      }
+    },
+    "maxDeliveryCount": {
+      "type": "int",
+      "defaultValue": 10,
+      "metadata": {
+        "description": "Dead letter after this number of deliveries"
+      }
+    },
+    "enableBatchedOperations": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable batched operations"
+      }
+    },
+    "autoDeleteOnIdle": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Idle interval after which to delete"
+      }
+    },
+    "enablePartitioning": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Partition across message brokers"
+      }
+    },
+    "enableExpress": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Hold message in memory before writing to disk"
+      }
+    },
+    "forwardTo": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Queue/Topic to forward to"
+      }
+    },
+    "forwardDeadLetteredMessagesTo": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Queue/Topic to forward dead lettered messages to"
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "name": "[concat(parameters('serviceBusName'), '/', parameters('queueName'))]",
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "2017-04-01",
+      "properties": {
+        "lockDuration": "[parameters('lockDuration')]",
+        "maxSizeInMegabytes": "[parameters('maxSizeInMegabytes')]",
+        "requiresDuplicateDetection": "[parameters('requiresDuplicateDetection')]",
+        "requiresSession": "[parameters('requiresSession')]",
+        "defaultMessageTimeToLive": "[parameters('defaultMessageTimeToLive')]",
+        "deadLetteringOnMessageExpiration": "[parameters('deadLetteringOnMessageExpiration')]",
+        "duplicateDetectionHistoryTimeWindow": "[parameters('duplicateDetectionHistoryTimeWindow')]",
+        "maxDeliveryCount": "[parameters('maxDeliveryCount')]",
+        "enableBatchedOperations": "[parameters('enableBatchedOperations')]",
+        "autoDeleteOnIdle": "[parameters('autoDeleteOnIdle')]",
+        "enablePartitioning": "[parameters('enablePartitioning')]",
+        "enableExpress": "[parameters('enableExpress')]",
+        "forwardTo": "[if(empty(parameters('forwardTo')), json('null'), parameters('forwardTo'))]",
+        "forwardDeadLetteredMessagesTo": "[if(empty(parameters('forwardDeadLetteredMessagesTo')), json('null'), parameters('forwardDeadLetteredMessagesTo'))]"
+      }
+    }
+  ],
+  "outputs": {
+    "serviceBusQueue": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.ServiceBus/namespaces/queues', parameters('serviceBusName'), parameters('queueName')), '2017-04-01', 'Full')]"
+    }
+  }
+}

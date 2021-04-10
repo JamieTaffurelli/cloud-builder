@@ -44,9 +44,9 @@ Describe "SQL Server Parameter Validation" {
         }
     }
 
-    Context "kind Validation" {
+    Context "administratorLogin Validation" {
 
-        It "Has kind parameter" {
+        It "Has administratorLogin parameter" {
 
             $json.parameters.administratorLogin | should not be $null
         }
