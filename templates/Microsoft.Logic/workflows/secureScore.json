@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.3.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "logicAppName": {
       "type": "string",
@@ -14,62 +14,6 @@
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Logic App"
-      }
-    },
-    "workflowOutGoingIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Allowed outbound IP address for workflow"
-      }
-    },
-    "workflowAccessEndpointsIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Access endpoint IP addresses for workflow"
-      }
-    },
-    "connectorOutGoingIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Allowed outbound IP address for connector"
-      }
-    },
-    "connectorAccessEndpointsIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Access endpoint IP addresses for connector"
-      }
-    },
-    "triggerCallerIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Allowed trigger caller IP addresses"
-      }
-    },
-    "contentsCallerIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Allowed contents caller IP addresses"
-      }
-    },
-    "actionCallerIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Allowed action caller IP addresses"
-      }
-    },
-    "workflowCallerIpAddresses": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Allowed workflow caller IP addresses"
       }
     },
     "logAnalyticsConnectorId": {
@@ -103,30 +47,6 @@
         "type": "SystemAssigned"
       },
       "properties": {
-        "endpointsConfiguration": {
-          "workflow": {
-            "outgoingIpAddresses": "[parameters('workflowOutGoingIpAddresses')]",
-            "accessEndpointIpAddresses": "[parameters('workflowAccessEndpointsIpAddresses')]"
-          },
-          "connector": {
-            "outgoingIpAddresses": "[parameters('connectorOutGoingIpAddresses')]",
-            "accessEndpointIpAddresses": "[parameters('connectorAccessEndpointsIpAddresses')]"
-          }
-        },
-        "accessControl": {
-          "triggers": {
-            "allowedCallerIpAddresses": "[parameters('triggerCallerIpAddresses')]"
-          },
-          "contents": {
-            "allowedCallerIpAddresses": "[parameters('contentsCallerIpAddresses')]"
-          },
-          "actions": {
-            "allowedCallerIpAddresses": "[parameters('actionCallerIpAddresses')]"
-          },
-          "workflowManagement": {
-            "allowedCallerIpAddresses": "[parameters('workflowCallerIpAddresses')]"
-          }
-        },
         "definition": {
           "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
           "actions": {
