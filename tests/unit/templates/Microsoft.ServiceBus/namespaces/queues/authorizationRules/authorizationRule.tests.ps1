@@ -92,7 +92,7 @@ Describe "Authorization Rule Resource Validation" {
 
         It "apiVersion value is 2021-01-01-preview" {
 
-            $authorizationRule.apiVersion | should be "2021-01-01-preview"
+            $authorizationRule.apiVersion | should be "2018-01-01-preview"
         }
     }
 }
@@ -108,7 +108,7 @@ Describe "Authorization Rule Output Validation" {
 
         It "Uses full reference for Authorization Rule" {
 
-            $json.outputs.authorizationRule.value | should be "[reference(resourceId('Microsoft.ServiceBus/namespaces/queues/authorizationRules', parameters('serviceBusName'), parameters('queueName'), parameters('authorizationRuleName')), '2021-01-01-preview', 'Full')]"
+            $json.outputs.authorizationRule.value | should be "[reference(resourceId('Microsoft.ServiceBus/namespaces/queues/authorizationRules', parameters('serviceBusName'), parameters('queueName'), parameters('authorizationRuleName')), '2018-01-01-preview', 'Full')]"
         }
     }
 }

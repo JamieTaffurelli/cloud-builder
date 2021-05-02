@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "authorizationRuleName": {
       "type": "string",
@@ -26,7 +26,7 @@
     {
       "name": "[concat(parameters('serviceBusName'), '/', parameters('authorizationRuleName'))]",
       "type": "Microsoft.ServiceBus/namespaces/authorizationRules",
-      "apiVersion": "2021-01-01-preview",
+      "apiVersion": "2018-01-01-preview",
       "properties": {
         "rights": "[parameters('rights')]"
       }
@@ -35,7 +35,7 @@
   "outputs": {
     "authorizationRule": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('serviceBusName'), parameters('authorizationRuleName')), '2021-01-01-preview', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('serviceBusName'), parameters('authorizationRuleName')), '2018-01-01-preview', 'Full')]"
     }
   }
 }
