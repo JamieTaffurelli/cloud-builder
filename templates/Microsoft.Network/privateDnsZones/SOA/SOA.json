@@ -5,7 +5,7 @@
       "recordName": {
         "type": "string",
         "metadata": {
-          "description": "The name of the A record that you wish to create."
+          "description": "The name of the SOA record that you wish to create."
         }
       },
       "privateDnsZoneName": {
@@ -17,7 +17,7 @@
       "properties": {
         "type": "object",
         "metadata": {
-          "description": "Properties of the A record"
+          "description": "Properties of the SOA record"
         }
       }
     },
@@ -33,7 +33,7 @@
     "outputs": {
       "publicIP": {
         "type": "object",
-        "value": "[reference(resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', parameters('privateDnsZoneName'), parameters('recordName')), '2020-06-01', 'Full')]"
+        "value": "[reference(resourceId('Microsoft.Network/privateDnsZones/SOA', parameters('privateDnsZoneName'), parameters('recordName')), '2020-06-01', 'Full')]"
       }
     }
   }
