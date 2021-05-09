@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "2.0.0.0",
   "parameters": {
     "routeTableName": {
       "type": "string",
@@ -14,6 +14,12 @@
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Route Table to"
+      }
+    },
+    "routes": {
+      "type": "array",
+      "metadata": {
+        "description": "Routes to apply to the route table"
       }
     },
     "disableBgpRoutePropagation": {
@@ -39,6 +45,7 @@
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "properties": {
+        "routes": "[parameters('routes')]",
         "disableBgpRoutePropagation": "[parameters('disableBgpRoutePropagation')]"
       }
     }

@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "recordName": {
+        "type": "string",
+        "metadata": {
+          "description": "The name of the A record that you wish to create."
+        }
+      },
+      "privateDnsZoneName": {
+        "type": "string",
+        "metadata": {
+          "description": "The name of the private dns zone"
+        }
+      },
+      "properties": {
+        "type": "object",
+        "metadata": {
+          "description": "Properties of the A record"
+        }
+      }
+    },
+    "variables": {},
+    "resources": [
+      {
+        "name": "[concat(parameters('privateDnsZoneName'), '/', parameters('recordName'))]",
+        "type": "Microsoft.Network/privateDnsZones/A",
+        "apiVersion": "2020-06-01",
+        "properties": "[parameters('properties')]"
+      }
+    ],
+    "outputs": {
+      "publicIP": {
+        "type": "object",
+        "value": "[reference(resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', parameters('privateDnsZoneName'), parameters('recordName')), '2020-06-01', 'Full')]"
+      }
+    }
+  }
+  
