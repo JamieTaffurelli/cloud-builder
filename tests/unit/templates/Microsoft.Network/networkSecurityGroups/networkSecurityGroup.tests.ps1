@@ -55,6 +55,24 @@ Describe "Network Security Group Parameter Validation" {
         }
     }
 
+    Context "securityRules Validation" {
+
+        It "Has securityRules parameter" {
+
+            $json.parameters.securityRules | should not be $null
+        }
+
+        It "securityRules parameter is of type array" {
+
+            $json.parameters.securityRules.type | should be "array"
+        }
+
+        It "securityRules parameter default value is an empty array" {
+
+            $json.parameters.securityRules.defaultValue.Count | should be 0
+        }
+    }
+
     Context "logAnalyticsSubscriptionId Validation" {
 
         It "Has logAnalyticsSubscriptionId parameter" {

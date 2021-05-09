@@ -45,21 +45,21 @@ Describe "Route Table Parameter Validation" {
         }
     }
 
-    Context "routeTableName Validation" {
+    Context "routes Validation" {
 
-        It "Has routeTableName parameter" {
+        It "Has routes parameter" {
 
-            $json.parameters.routeTableName | should not be $null
+            $json.parameters.routes | should not be $null
         }
 
-        It "routeTableName parameter is of type array" {
+        It "routes parameter is of type array" {
 
-            $json.parameters.routeTableName.type | should be "array"
+            $json.parameters.routes.type | should be "array"
         }
 
-        It "routeTableName parameter is mandatory" {
+        It "routes parameter is mandatory" {
 
-            ($json.parameters.routeTableName.PSObject.Properties.Name -contains "defaultValue") | should be $false
+            ($json.parameters.routes.PSObject.Properties.Name -contains "defaultValue") | should be $false
         }
     }
 
