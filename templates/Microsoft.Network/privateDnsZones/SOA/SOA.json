@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
+    "contentVersion": "1.0.1.0",
     "parameters": {
       "recordName": {
         "type": "string",
@@ -31,7 +31,7 @@
       }
     ],
     "outputs": {
-      "publicIP": {
+      "soaRecord": {
         "type": "object",
         "value": "[reference(resourceId('Microsoft.Network/privateDnsZones/SOA', parameters('privateDnsZoneName'), parameters('recordName')), '2020-06-01', 'Full')]"
       }

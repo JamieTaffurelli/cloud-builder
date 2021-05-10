@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.0.1.0",
   "parameters": {
     "firewallPolicyName": {
       "type": "string",
@@ -102,7 +102,7 @@
     }
   ],
   "outputs": {
-    "routeTable": {
+    "firewallPolicy": {
       "type": "object",
       "value": "[reference(resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicyName')), '2020-07-01', 'Full')]"
     }
