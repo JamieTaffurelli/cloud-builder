@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.0",
+    "contentVersion": "1.0.2.0",
     "parameters": {
       "privateDnsZoneName": {
         "type": "string",
@@ -18,7 +18,7 @@
       {
         "name": "[parameters('privateDnsZoneName')]",
         "type": "Microsoft.Network/privateDnsZones",
-        "apiVersion": "2020-05-01",
+        "apiVersion": "2020-06-01",
         "location": "global",
         "tags": "[parameters('tags')]",
         "properties": {
@@ -28,7 +28,7 @@
     "outputs": {
       "privateDnsZone": {
         "type": "object",
-        "value": "[reference(resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName')), '2020-05-01', 'Full')]"
+        "value": "[reference(resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName')), '2020-06-01', 'Full')]"
       }
     }
   }
