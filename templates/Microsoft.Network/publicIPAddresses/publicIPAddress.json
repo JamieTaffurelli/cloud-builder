@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.2.0.0",
+  "contentVersion": "1.2.1.0",
   "parameters": {
     "publicIPName": {
       "type": "string",
@@ -190,7 +190,7 @@
   "outputs": {
     "publicIP": {
       "type": "object",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName')), '2020-05-01', 'Full')]"
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName')), '2020-11-01', 'Full')]"
     }
   }
 }

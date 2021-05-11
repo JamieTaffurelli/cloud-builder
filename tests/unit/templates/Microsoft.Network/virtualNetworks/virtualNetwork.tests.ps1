@@ -127,6 +127,24 @@ Describe "Virtual Network Parameter Validation" {
         }
     }
 
+    Context "azureFirewallSubnetPrefix Validation" {
+
+        It "Has azureFirewallSubnetPrefix parameter" {
+
+            $json.parameters.azureFirewallSubnetPrefix | should not be $null
+        }
+
+        It "azureFirewallSubnetPrefix parameter is of type string" {
+
+            $json.parameters.azureFirewallSubnetPrefix.type | should be "string"
+        }
+
+        It "azureFirewallSubnetPrefix parameter default value is an empty string" {
+
+            $json.parameters.azureFirewallSubnetPrefix.defaultValue | should be ([string]::Empty)
+        }
+    }
+
     Context "logAnalyticsSubscriptionId Validation" {
 
         It "Has logAnalyticsSubscriptionId parameter" {

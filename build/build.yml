@@ -4,6 +4,55 @@ parameters:
 jobs:
 
   - job:
+      timeoutInMinutes: 120
+      pool:
+        vmImage: ${{ parameters.poolName }}
+      steps:
+
+        - task: PowerShell@2	
+          displayName: "Install Required PowerShell Modules"	
+          inputs:	
+            targetType: "filePath"	
+            filePath: '$(System.DefaultWorkingDirectory)\scripts\install-modules.ps1'	
+            arguments: '@("az", "AzureAD")'	
+            errorActionPreference: "stop"	
+            failOnStderr: false	
+            ignoreLASTEXITCODE: false	
+            pwsh: false	
+            workingDirectory: "$(System.DefaultWorkingDirectory)"
+          condition: eq(variables['Build.Reason'], 'PullRequest')
+
+        - task: Pester.PesterRunner.Pester-Task.Pester@9
+          displayName: "Run Unit Tests"
+          inputs:
+            scriptFolder: '$(System.DefaultWorkingDirectory)\tests\*'
+            resultsFile: '$(System.DefaultWorkingDirectory)\test-results.xml'
+            CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+            usePSCore: false
+            CodeCoverageFolder: '$(System.DefaultWorkingDirectory)\module\cmdlets'
+            PesterVersion: 'OtherVersion'
+            preferredPesterVersion: '4.10.1'
+          condition: eq(variables['Build.Reason'], 'PullRequest')
+
+        - task: PublishTestResults@2
+          displayName: "Publish Test Results"
+          inputs:
+            testResultsFormat: "NUnit"
+            testResultsFiles: "test-results.xml"
+            searchFolder: "$(System.DefaultWorkingDirectory)"
+            mergeTestResults: false
+            failTaskOnFailedTests: true
+            publishRunAttachments: true
+          condition: eq(variables['Build.Reason'], 'PullRequest')
+
+        - task: PublishCodeCoverageResults@1
+          displayName: "Publish Code Coverage"
+          inputs:
+            codeCoverageTool: "JaCoCo"
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
+            failIfCoverageEmpty: true
+          condition: eq(variables['Build.Reason'], 'PullRequest')
+  - job:
     timeoutInMinutes: 120
     pool:
       vmImage: ${{ parameters.poolName }}
