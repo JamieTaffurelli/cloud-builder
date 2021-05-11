@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.2.0",
+  "contentVersion": "1.0.3.0",
   "parameters": {
     "firewallPolicyName": {
       "type": "string",
@@ -75,7 +75,9 @@
       }
     }
   },
-  "variables": {},
+  "variables": {
+    "transportSecurity": "[if(empty(parameters('transportSecurity')), json('{}'), parameters('transportSecurity'))]"
+  },
   "resources": [
     {
       "name": "[parameters('firewallPolicyName')]",
@@ -91,7 +93,6 @@
           "mode": "[parameters('intrusionDetectionMode')]",
           "configuration": "[parameters('intrusionDetectionConfiguration')]"
         },
-        "transportSecurity": "[parameters('transportSecurity')]",
         "sku": {
           "tier": "[parameters('skuTier')]"
         }
