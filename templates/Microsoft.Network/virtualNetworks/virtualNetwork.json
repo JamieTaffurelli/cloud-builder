@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.4.0.0",
+  "contentVersion": "1.4.1.0",
   "parameters": {
     "virtualNetworkName": {
       "type": "string",
@@ -108,12 +108,12 @@
       {
         "name": "AzureFirewallSubnet",
         "properties": {
-          "addressPrefix": "[parameters('gatewaySubnetPrefix')]"
+          "addressPrefix": "[parameters('azureFirewallSubnetPrefix')]"
         }
       }
     ],
     "gatewaySubnetUnion": "[if(empty(parameters('gatewaySubnetPrefix')), variables('subnets').subnets, union(variables('subnets').subnets, variables('gatewaySubnet')))]",
-    "firewallSubnetUnion": "[if(empty(parameters('azureFirewallSubnetPrefix')), variables('gatewaySubnetUnion').subnets, union(variables('gatewaySubnetUnion').subnets, variables('azureFirewallSubnet')))]",
+    "firewallSubnetUnion": "[if(empty(parameters('azureFirewallSubnetPrefix')), variables('gatewaySubnetUnion'), union(variables('gatewaySubnetUnion'), variables('azureFirewallSubnet')))]",
     "diagnosticsEnabled": true,
     "diagnosticsRetentionInDays": 365
   },
