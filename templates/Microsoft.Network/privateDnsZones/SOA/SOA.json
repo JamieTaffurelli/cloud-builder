@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.1.0",
+    "contentVersion": "1.0.2.0",
     "parameters": {
       "recordName": {
         "type": "string",
@@ -25,7 +25,7 @@
     "resources": [
       {
         "name": "[concat(parameters('privateDnsZoneName'), '/', parameters('recordName'))]",
-        "type": "Microsoft.Network/privateDnsZones/A",
+        "type": "Microsoft.Network/privateDnsZones/SOA",
         "apiVersion": "2020-06-01",
         "properties": "[parameters('properties')]"
       }
