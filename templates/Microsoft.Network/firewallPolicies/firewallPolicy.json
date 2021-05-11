@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.3.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "firewallPolicyName": {
       "type": "string",
@@ -53,7 +53,7 @@
         "description": "Configuration for intrusion detection"
       }
     },
-    "transportSecurity": {
+    "certificateAuthority": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
@@ -76,17 +76,8 @@
     }
   },
   "variables": {
-    "transportSecurity": "[if(empty(parameters('transportSecurity')), json('{}'), parameters('transportSecurity'))]"
-  },
-  "resources": [
-    {
-      "name": "[parameters('firewallPolicyName')]",
-      "type": "Microsoft.Network/firewallPolicies",
-      "apiVersion": "2020-07-01",
-      "location": "[parameters('location')]",
-      "tags": "[parameters('tags')]",
-      "properties": {
-        "threatIntelMode": "[parameters('threatIntelMode')]",
+    "propertiesNoTls": {
+      "threatIntelMode": "[parameters('threatIntelMode')]",
         "threatIntelWhitelist": "[parameters('threatIntelWhitelist')]",
         "dnsSettings": "[parameters('dnsSettings')]",
         "intrusionDetection": {
@@ -96,7 +87,22 @@
         "sku": {
           "tier": "[parameters('skuTier')]"
         }
+    },
+    "tls": {
+      "transportSecurity": {
+        "certificateAuthority": "[parameters('certificateAuthority')]"
       }
+    },
+    "properties": "[if(empty(parameters('certificateAuthority')), variables('propertiesNoTls'), union(variables('propertiesNoTls'), variables('tls')))]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('firewallPolicyName')]",
+      "type": "Microsoft.Network/firewallPolicies",
+      "apiVersion": "2020-07-01",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "properties": "[variables('properties')]"
     }
   ],
   "outputs": {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.1.1.0",
+  "contentVersion": "1.2.0.0",
   "parameters": {
     "publicIPName": {
       "type": "string",
@@ -121,7 +121,7 @@
     {
       "name": "[parameters('publicIPName')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2020-05-01",
+      "apiVersion": "2020-11-01",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
       "sku": {
