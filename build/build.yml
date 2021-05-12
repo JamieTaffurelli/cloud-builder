@@ -2,6 +2,7 @@ parameters:
   poolName: ""
 
 jobs:
+
   - job:
     timeoutInMinutes: 120
     pool:
@@ -51,7 +52,6 @@ jobs:
           summaryFileLocation: '$(System.DefaultWorkingDirectory)\code-coverage.xml'
           failIfCoverageEmpty: true
         condition: eq(variables['Build.Reason'], 'PullRequest')
-
   - job:
     timeoutInMinutes: 120
     pool:

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.1.0.0",
+  "contentVersion": "2.0.0.0",
   "parameters": {
     "nsgName": {
       "type": "string",
@@ -16,6 +16,13 @@
       "allowedValues": ["northeurope", "westeurope"],
       "metadata": {
         "description": "The location to deploy the Network Security Group to"
+      }
+    },
+    "securityRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Rules to apply to the nsg"
       }
     },
     "logAnalyticsSubscriptionId": {
@@ -53,6 +60,9 @@
       "apiVersion": "2020-06-01",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
+      "properties": {
+        "securityRules": "[parameters('securityRules')]"
+      },
       "resources": [
         {
           "apiVersion": "2015-07-01",
