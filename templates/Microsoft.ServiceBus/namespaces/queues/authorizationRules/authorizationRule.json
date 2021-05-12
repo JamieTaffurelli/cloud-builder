@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.1.0",
+  "parameters": {
+    "authorizationRuleName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the authorization rule that you wish to create."
+      }
+    },
+    "serviceBusName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Service Bus to create the authorization rule in."
+      }
+    },
+    "queueName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Service Bus Queue that you wish to create the rule in."
+      }
+    },
+    "rights": {
+      "type": "array",
+      "metadata": {
+        "description": "Rights of the rule"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[concat(parameters('serviceBusName'), '/', parameters('queueName'), '/', parameters('authorizationRuleName'))]",
+      "type": "Microsoft.ServiceBus/namespaces/queues/authorizationRules",
+      "apiVersion": "2018-01-01-preview",
+      "properties": {
+        "rights": "[parameters('rights')]"
+      }
+    }
+  ],
+  "outputs": {
+    "authorizationRule": {
+      "type": "object",
+      "value": "[reference(resourceId('Microsoft.ServiceBus/namespaces/queues/authorizationRules', parameters('serviceBusName'), parameters('queueName'), parameters('authorizationRuleName')), '2018-01-01-preview', 'Full')]"
+    }
+  }
+}

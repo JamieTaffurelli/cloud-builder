@@ -325,9 +325,9 @@ Describe "Public IP Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2020-05-01" {
+        It "apiVersion value is 2020-11-01" {
 
-            $publicIp.apiVersion | should be "2020-05-01"
+            $publicIp.apiVersion | should be "2020-11-01"
         }
     }
 
@@ -366,7 +366,7 @@ Describe "Public IP Output Validation" {
 
         It "Uses full reference for Public IP" {
 
-            $json.outputs.publicIP.value | should be "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName')), '2020-05-01', 'Full')]"
+            $json.outputs.publicIP.value | should be "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName')), '2020-11-01', 'Full')]"
         }
     }
 }

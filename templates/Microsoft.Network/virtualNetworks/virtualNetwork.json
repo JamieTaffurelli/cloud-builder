@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.3.0.0",
+  "contentVersion": "1.4.1.0",
   "parameters": {
     "virtualNetworkName": {
       "type": "string",
@@ -42,6 +42,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "The CIDR range of the gateway subnet, leave empty to exclude gateway subnet deployment"
+      }
+    },
+    "azureFirewallSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The CIDR range of the Azure Firewall, leave empty to exclude Azure Firewall subnet deployment"
       }
     },
     "logAnalyticsSubscriptionId": {
@@ -97,6 +104,16 @@
         }
       }
     ],
+    "azureFirewallSubnet": [
+      {
+        "name": "AzureFirewallSubnet",
+        "properties": {
+          "addressPrefix": "[parameters('azureFirewallSubnetPrefix')]"
+        }
+      }
+    ],
+    "gatewaySubnetUnion": "[if(empty(parameters('gatewaySubnetPrefix')), variables('subnets').subnets, union(variables('subnets').subnets, variables('gatewaySubnet')))]",
+    "firewallSubnetUnion": "[if(empty(parameters('azureFirewallSubnetPrefix')), variables('gatewaySubnetUnion'), union(variables('gatewaySubnetUnion'), variables('azureFirewallSubnet')))]",
     "diagnosticsEnabled": true,
     "diagnosticsRetentionInDays": 365
   },
@@ -114,7 +131,7 @@
         "dhcpOptions": {
           "dnsServers": "[parameters('dnsServers')]"
         },
-        "subnets": "[if(empty(parameters('gatewaySubnetPrefix')), variables('subnets').subnets, union(variables('subnets').subnets, variables('gatewaySubnet')))]",
+        "subnets": "[variables('firewallSubnetUnion')]",
         "enableVmProtection": true,
         "enableDdosProtection": false
       },

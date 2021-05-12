@@ -45,6 +45,24 @@ Describe "Route Table Parameter Validation" {
         }
     }
 
+    Context "routes Validation" {
+
+        It "Has routes parameter" {
+
+            $json.parameters.routes | should not be $null
+        }
+
+        It "routes parameter is of type array" {
+
+            $json.parameters.routes.type | should be "array"
+        }
+
+        It "routes parameter is mandatory" {
+
+            ($json.parameters.routes.PSObject.Properties.Name -contains "defaultValue") | should be $false
+        }
+    }
+
     Context "disableBgpRoutePropagation Validation" {
 
         It "Has disableBgpRoutePropagation parameter" {
