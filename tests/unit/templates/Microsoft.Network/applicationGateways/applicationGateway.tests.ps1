@@ -72,9 +72,9 @@ Describe "Application Gateway Parameter Validation" {
             $json.parameters.skuName.defaultValue | should be "WAF_Medium"
         }
 
-        It "skuName parameter allowed values are 'WAF_Medium', 'WAF_Large', 'WAF_v2'" {
+        It "skuName parameter allowed values are 'WAF_Medium', 'WAF_Large', 'WAF_v2', 'Standard_Small', 'Standard_Medium', 'Standard_Large', 'Standard_v2'" {
 
-            (Compare-Object -ReferenceObject $json.parameters.skuName.allowedValues -DifferenceObject @("WAF_Medium", "WAF_Large", "WAF_v2")).Length | should be 0
+            (Compare-Object -ReferenceObject $json.parameters.skuName.allowedValues -DifferenceObject @("WAF_Medium", "WAF_Large", "WAF_v2", "Standard_Small", "Standard_Small", "Standard_Medium", "Standard_Large", "Standard_v2")).Length | should be 0
         }
     }
 
