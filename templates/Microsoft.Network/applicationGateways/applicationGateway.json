@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.2.2.0",
+  "contentVersion": "1.3.0.0",
   "parameters": {
     "appGatewayName": {
       "type": "string",
@@ -21,7 +21,15 @@
     "skuName": {
       "type": "string",
       "defaultValue": "WAF_Medium",
-      "allowedValues": ["WAF_Medium", "WAF_Large", "WAF_v2"],
+      "allowedValues": [
+        "WAF_Medium",
+        "WAF_Large",
+        "WAF_v2",
+        "Standard_Small",
+        "Standard_Medium",
+        "Standard_Large",
+        "Standard_v2"
+      ],
       "metadata": {
         "description": "The sku of the Application Gateway"
       }
@@ -403,7 +411,6 @@
       "properties": {
         "sku": {
           "name": "[parameters('skuName')]",
-          "tier": "[if(contains(createArray('WAF_Medium', 'WAF_Large'), parameters('skuName')), 'WAF', parameters('skuName'))]",
           "capacity": "[parameters('capacity')]"
         },
         "sslPolicy": {

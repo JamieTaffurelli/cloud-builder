@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
+  "contentVersion": "1.1.0.0",
   "parameters": {
     "accountName": {
       "type": "string",
@@ -16,11 +16,31 @@
         "description": "Location of the Cognitive Service Account."
       }
     },
+    "kind": {
+      "type": "string",
+      "metadata": {
+        "description": "Cognitive Services API type"
+      }
+    },
     "customSubDomainName": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
         "description": "Optional subdomain for token authentication"
+      }
+    },
+    "ipRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Allowed IP addresses to connect"
+      }
+    },
+    "virtualNetworkRules": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Allowed virtual networks to connect"
       }
     },
     "privateEndpointConnections": {
@@ -43,6 +63,12 @@
       "defaultValue": {},
       "metadata": {
         "description": "Special API properties"
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "metadata": {
+        "description": "Sku to use"
       }
     },
     "logAnalyticsSubscriptionId": {
@@ -71,7 +97,21 @@
   },
   "variables": {
     "diagnosticsEnabled": true,
-    "diagnosticsRetentionInDays": 365
+    "diagnosticsRetentionInDays": 365,
+    "networkProperties": {
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "ipRules": "[parameters('ipRules')]",
+        "virtualNetworkRules": "[parameters('virtualNetworkRules')]"
+      }
+    },
+    "miscProperties": {
+      "customSubDomainName": "[parameters('customSubDomainName')]",
+      "privateEndpointConnections": "[parameters('privateEndpointConnections')]",
+      "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+      "apiProperties": "[parameters('apiProperties')]"
+    },
+    "properties": "[if(and(empty(parameters('ipRules')), empty(parameters('ipRules'))), variables('miscProperties'), union(variables('miscProperties'), variables('networkProperties')))]"
   },
   "resources": [
     {
@@ -80,15 +120,10 @@
       "apiVersion": "2017-04-18",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
-      "kind": "CognitiveServices",
-      "properties": {
-        "customSubDomainName": "[parameters('customSubDomainName')]",
-        "privateEndpointConnections": "[parameters('privateEndpointConnections')]",
-        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
-        "apiProperties": "[parameters('apiProperties')]"
-      },
+      "kind": "[parameters('kind')]",
+      "properties": "[variables('properties')]",
       "sku": {
-        "name": "S0"
+        "name": "[parameters('skuName')]"
       },
       "identity": {
         "type": "SystemAssigned"

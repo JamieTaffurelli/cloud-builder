@@ -63,6 +63,42 @@ Describe "Cognitive Services Parameter Validation" {
     }
   }
 
+  Context "ipRules Validation" {
+
+    It "Has ipRules parameter" {
+
+      $json.parameters.ipRules | should not be $null
+    }
+
+    It "ipRules parameter is of type array" {
+
+      $json.parameters.ipRules.type | should be "array"
+    }
+
+    It "ipRules parameter default value is an empty array" {
+
+      $json.parameters.ipRules.defaultValue.Count | should be 0
+    }
+  }
+
+  Context "virtualNetworkRules Validation" {
+
+    It "Has virtualNetworkRules parameter" {
+
+      $json.parameters.virtualNetworkRules | should not be $null
+    }
+
+    It "virtualNetworkRules parameter is of type array" {
+
+      $json.parameters.virtualNetworkRules.type | should be "array"
+    }
+
+    It "virtualNetworkRules parameter default value is an empty array" {
+
+      $json.parameters.virtualNetworkRules.defaultValue.Count | should be 0
+    }
+  }
+
   Context "privateEndpointConnections Validation" {
 
     It "Has privateEndpointConnections parameter" {
@@ -119,6 +155,24 @@ Describe "Cognitive Services Parameter Validation" {
     It "apiProperties parameter default value is an empty secureobject" {
 
       $json.parameters.apiProperties.defaultValue.PSObject.Properties.Name.Count | should be 0
+    }
+  }
+
+  Context "skuName Validation" {
+
+    It "Has skuName parameter" {
+
+      $json.parameters.skuName | should not be $null
+    }
+
+    It "skuName parameter is of type string" {
+
+      $json.parameters.skuName.type | should be "string"
+    }
+
+    It "skuName parameter is mandatory" {
+
+      ($json.parameters.skuName.PSObject.Properties.Name -contains "defaultValue") | should be $false
     }
   }
 
