@@ -90,7 +90,7 @@ Describe "Authorization Rule Resource Validation" {
 
     Context "apiVersion Validation" {
 
-        It "apiVersion value is 2021-01-01-preview" {
+        It "apiVersion value is 2018-01-01-preview" {
 
             $authorizationRule.apiVersion | should be "2018-01-01-preview"
         }
