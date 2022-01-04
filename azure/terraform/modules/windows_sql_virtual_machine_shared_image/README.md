@@ -1,0 +1,3 @@
+# Azure Windows SQL Virtual Machine from Shared Image Gallery module
+
+This folder contains a [Terraform](https://www.terraform.io/) module that defines a Windows SQL Virtual Machine where the image is taken from a shared image gallery, has disk encryption enabled, required virtual machine extensions installed and backup policy is configured. You will need an existing Storage Account, Recovery Services Vault, Log Analytics Workspace, Key Vault with encryption key and Network Interface.

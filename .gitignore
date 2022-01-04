@@ -1,3 +1,5 @@
 test-results.xml
 code-coverage.xml
-prototypes/**/*
+**/prototypes/**/*
+**/*.tfstate*
+**/*.terraform*

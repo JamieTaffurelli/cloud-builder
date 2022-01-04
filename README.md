@@ -1,3 +1,3 @@
-# AzureBuilder
+# cloud-builder
 
-Set of PowerShell cmdlets for building Azure environments
+Terraform and automation scripts for cloud environments
