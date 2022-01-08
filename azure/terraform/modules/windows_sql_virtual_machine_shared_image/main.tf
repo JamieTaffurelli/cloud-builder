@@ -73,6 +73,38 @@ SETTINGS
   tags     = var.tags
 }
 
+resource "azurerm_virtual_machine_extension" "logs" {
+  name                       = "MicrosoftMonitoringAgent"
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+  publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
+  type                       = "MicrosoftMonitoringAgent"
+  type_handler_version       = "1.0"
+  auto_upgrade_minor_version = true
+
+  settings = <<SETTINGS
+    {
+      "workspaceId": "${var.log_analytics_workspace_customer_id}"
+    }
+SETTINGS
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "workspaceKey": "${var.log_analytics_workspace_customer_key}"
+    }
+PROTECTED_SETTINGS
+  tags     = var.tags
+}
+
+resource "azurerm_virtual_machine_extension" "dep" {
+  name                       = "DependencyAgentWindows"
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+  publisher                  = "Microsoft.Azure.Monitoring.DependencyAgent"
+  type                       = "DependencyAgentWindows"
+  type_handler_version       = "9.10"
+  auto_upgrade_minor_version = true
+  tags     = var.tags
+  depends_on = [azurerm_virtual_machine_extension.logs]
+}
+
 resource "azurerm_virtual_machine_extension" "av" {
   name                       = "IaaSAntimalware"
   virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
@@ -106,6 +138,15 @@ resource "azurerm_virtual_machine_extension" "nwa" {
   tags                       = var.tags
 }
 
+resource "azurerm_virtual_machine_extension" "gh" {
+  name                       = "GuestHealthWindowsAgent"
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+  publisher                  = "Microsoft.Azure.Monitor.VirtualMachines.GuestHealth"
+  type                       = "GuestHealthWindowsAgent"
+  type_handler_version       = "1.0"
+  auto_upgrade_minor_version = true
+  tags     = var.tags
+}
 resource "azurerm_virtual_machine_extension" "bg" {
   name                       = "BGInfo"
   virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
