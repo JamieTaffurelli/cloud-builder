@@ -439,21 +439,3 @@ resource "azurerm_log_analytics_datasource_windows_performance_counter" "perf" {
   interval_seconds    = 60
 }
 
-resource "azurerm_resource_group_template_deployment" "vmguesthealth" {
-  name                = "vm-guest-health"
-  resource_group_name = var.resource_group_name
-  template_content    = file("..\\azure\\terraform\\arm-templates\\dataCollectionRule.json")
-  parameters_content = jsonencode({
-    "location" = {
-      value = var.location
-    },
-    "destinationWorkspaceResourceId" = {
-      value = azurerm_log_analytics_workspace.logging.id
-    },
-    "tags" = {
-      value = var.tags
-    }
-  })
-  deployment_mode = "Incremental"
-  depends_on      = [azurerm_log_analytics_solution.logging]
-}
