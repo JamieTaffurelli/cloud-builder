@@ -3,3 +3,7 @@ code-coverage.xml
 **/prototypes/**/*
 **/*.tfstate*
 **/*.terraform*
+**/prototypes/**/*
+**/*.tfstate*
+**/*.terraform*
+**/out.txt

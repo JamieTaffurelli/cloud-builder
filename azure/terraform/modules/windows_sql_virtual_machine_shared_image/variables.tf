@@ -112,6 +112,11 @@ variable "log_analytics_workspace_customer_key" {
   description = "Customer key of Log Analytics Workspace to send diagnostics"
 }
 
+variable "data_collection_rule_id" {
+  type        = string
+  description = "Id of the data collection rule to associate for VM health"
+}
+
 variable "tags" {
   type        = map(any)
   description = "Tags of the Log Analytics Workspace"
