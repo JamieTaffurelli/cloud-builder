@@ -157,6 +157,25 @@ resource "azurerm_virtual_machine_extension" "bg" {
   tags     = var.tags
 }
 
+resource "azurerm_resource_group_template_deployment" "data_collection" {
+  name                = "data-collection-${var.virtual_machine_name}"
+  resource_group_name = var.resource_group_name
+  template_content    = file("..\\azure\\terraform\\arm-templates\\vmDataCollectionRuleAssociation.json")
+  parameters_content = jsonencode({
+    "vmName" = {
+      value = var.virtual_machine_name
+    },
+    "associationName" = {
+      value = "VM-Health-Dcr-Association"
+    },
+    "dataCollectionRuleId" = {
+      value = var.data_collection_rule_id
+    }
+  })
+  deployment_mode = "Incremental"
+  depends_on      = [azurerm_virtual_machine_extension.gh]
+}
+
 resource "azurerm_mssql_virtual_machine" "vm" {
   virtual_machine_id    = azurerm_windows_virtual_machine.vm.id
   sql_license_type      = "PAYG"

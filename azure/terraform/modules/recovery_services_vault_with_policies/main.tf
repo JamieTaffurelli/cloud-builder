@@ -16,6 +16,7 @@ resource "azurerm_recovery_services_vault" "backup" {
   location            = var.location
   resource_group_name = var.resource_group_name
   sku                 = "Standard"
+  storage_mode_type   = "GeoRedundant"
   soft_delete_enabled = true
 
   identity {

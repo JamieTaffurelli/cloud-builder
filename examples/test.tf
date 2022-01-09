@@ -118,7 +118,7 @@ resource "azurerm_network_security_rule" "network" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.logs.name
   network_security_group_name = "testingnsg123"
-  depends_on = [module.nsg]
+  depends_on                  = [module.nsg]
 }
 
 resource "azurerm_virtual_network" "network" {
@@ -340,7 +340,7 @@ resource "azurerm_key_vault_access_policy" "backup" {
   secret_permissions = [
     "Backup", "Get", "List"
   ]
-  depends_on = [ module.recovery_services ]
+  depends_on = [module.recovery_services]
 }
 
 module "sql_vm" {
@@ -367,11 +367,24 @@ module "sql_vm" {
   log_analytics_workspace_id                  = module.logs.log_analytics_workspace_id
   log_analytics_workspace_customer_id         = module.logs.log_analytics_workspace_customer_id
   log_analytics_workspace_customer_key        = module.logs.log_analytics_workspace_primary_shared_key
+  data_collection_rule_id                     = module.logs.data_collection_rule_id
   tags                                        = {}
 }
 
-resource "azurerm_role_assignment" "aws_backup" {
+resource "azurerm_role_assignment" "aws_backup_rg_reader" {
   scope                = azurerm_resource_group.logs.id
   role_definition_name = "Reader"
+  principal_id         = lookup(module.sql_vm.identity[0], "principal_id")
+}
+
+resource "azurerm_role_assignment" "aws_backup_vault_reader" {
+  scope                = module.recovery_services.recovery_services_vault_id
+  role_definition_name = "Backup Operator"
+  principal_id         = lookup(module.sql_vm.identity[0], "principal_id")
+}
+
+resource "azurerm_role_assignment" "aws_virtual_machine_contributor" {
+  scope                = module.sql_vm.virtual_machine_id
+  role_definition_name = "Contributor"
   principal_id         = lookup(module.sql_vm.identity[0], "principal_id")
 }
