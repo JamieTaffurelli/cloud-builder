@@ -81,7 +81,7 @@ resource "azurerm_virtual_machine_extension" "logs" {
   type_handler_version       = "1.0"
   auto_upgrade_minor_version = true
 
-  settings = <<SETTINGS
+  settings           = <<SETTINGS
     {
       "workspaceId": "${var.log_analytics_workspace_customer_id}"
     }
@@ -91,7 +91,8 @@ SETTINGS
       "workspaceKey": "${var.log_analytics_workspace_customer_key}"
     }
 PROTECTED_SETTINGS
-  tags     = var.tags
+  tags               = var.tags
+  depends_on         = [azurerm_resource_group_template_deployment.data_collection]
 }
 
 resource "azurerm_virtual_machine_extension" "dep" {
@@ -101,8 +102,19 @@ resource "azurerm_virtual_machine_extension" "dep" {
   type                       = "DependencyAgentWindows"
   type_handler_version       = "9.10"
   auto_upgrade_minor_version = true
-  tags     = var.tags
-  depends_on = [azurerm_virtual_machine_extension.logs]
+  tags                       = var.tags
+  depends_on                 = [azurerm_virtual_machine_extension.logs]
+}
+
+resource "azurerm_virtual_machine_extension" "pol" {
+  name                       = "AzurePolicyforWindows"
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm.id
+  publisher                  = "Microsoft.GuestConfiguration"
+  type                       = "ConfigurationforWindows"
+  type_handler_version       = "1.1"
+  auto_upgrade_minor_version = true
+  automatic_upgrade_enabled  = true
+  tags                       = var.tags
 }
 
 resource "azurerm_virtual_machine_extension" "av" {
@@ -145,7 +157,8 @@ resource "azurerm_virtual_machine_extension" "gh" {
   type                       = "GuestHealthWindowsAgent"
   type_handler_version       = "1.0"
   auto_upgrade_minor_version = true
-  tags     = var.tags
+  tags                       = var.tags
+  depends_on                 = [azurerm_resource_group_template_deployment.data_collection]
 }
 resource "azurerm_virtual_machine_extension" "bg" {
   name                       = "BGInfo"
@@ -154,7 +167,7 @@ resource "azurerm_virtual_machine_extension" "bg" {
   type                       = "BGInfo"
   type_handler_version       = "2.1"
   auto_upgrade_minor_version = true
-  tags     = var.tags
+  tags                       = var.tags
 }
 
 resource "azurerm_resource_group_template_deployment" "data_collection" {
@@ -173,15 +186,14 @@ resource "azurerm_resource_group_template_deployment" "data_collection" {
     }
   })
   deployment_mode = "Incremental"
-  depends_on      = [azurerm_virtual_machine_extension.gh]
 }
 
 resource "azurerm_mssql_virtual_machine" "vm" {
-  virtual_machine_id    = azurerm_windows_virtual_machine.vm.id
-  sql_license_type      = "PAYG"
-  r_services_enabled    = false
-  sql_connectivity_port = 1433
-  sql_connectivity_type = "PRIVATE"
+  virtual_machine_id               = azurerm_windows_virtual_machine.vm.id
+  sql_license_type                 = "PAYG"
+  r_services_enabled               = false
+  sql_connectivity_port            = 1433
+  sql_connectivity_type            = "PRIVATE"
   sql_connectivity_update_password = var.sql_password
   sql_connectivity_update_username = var.sql_username
 }
@@ -277,4 +289,3 @@ resource "azurerm_monitor_diagnostic_setting" "virtual_machine_diagnostics" {
     }
   }
 }
-

@@ -40,6 +40,11 @@ variable "network_watcher_name" {
   description = "Name of the network watcher"
 }
 
+variable "data_collection_rule_template_path" {
+  type        = string
+  description = "Path to Data Collection Rule ARM template"
+}
+
 variable "tags" {
   type        = map(any)
   description = "Tags of the Log Analytics Workspace"

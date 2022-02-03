@@ -442,7 +442,7 @@ resource "azurerm_log_analytics_datasource_windows_performance_counter" "perf" {
 resource "azurerm_resource_group_template_deployment" "vmguesthealth" {
   name                = "vm-guest-health"
   resource_group_name = var.resource_group_name
-  template_content    = file("..\\azure\\terraform\\arm-templates\\dataCollectionRule.json")
+  template_content    = file(var.data_collection_rule_template_path)
   parameters_content = jsonencode({
     "location" = {
       value = var.location
