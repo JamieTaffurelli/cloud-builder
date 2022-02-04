@@ -11,6 +11,10 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_resource_group" "scripts" {
+  name                = var.config_resource_group_name
+}
+
 resource "azurerm_resource_group" "images" {
   name     = var.resource_group_name
   location = var.location
@@ -51,5 +55,11 @@ resource "azurerm_user_assigned_identity" "images" {
 resource "azurerm_role_assignment" "images" {
   scope                = azurerm_resource_group.images.id
   role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.images.principal_id
+}
+
+resource "azurerm_role_assignment" "scripts" {
+  scope                = data.azurerm_resource_group.scripts.id
+  role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_user_assigned_identity.images.principal_id
 }

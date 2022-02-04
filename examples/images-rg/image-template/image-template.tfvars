@@ -1,6 +1,6 @@
 resource_group_name         = "images"
 location                    = "eastus"
-image_builder_template_path = "../../azure/terraform/arm-templates/windowsImageTemplate.json"
+image_builder_template_path = "../../../azure/arm-templates/windowsImageTemplate.json"
 image_template_name         = "win2016-sql2017web"
 user_assigned_identity_name = "image-builder"
 gallery_name                = "imggal"

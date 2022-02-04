@@ -54,6 +54,11 @@ variable "identity_name" {
   description = "Name of identity for Image Gallery"
 }
 
+variable "config_resource_group_name" {
+  type        = string
+  description = "Resource Group name of config scripts"
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to resources"

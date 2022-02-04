@@ -16,8 +16,8 @@ if ($guestAccount) {
 
 # Start set reg keys
 
-if (!(Get-PSDrive -Name "HKU")) {
-    New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
+if (!(Get-PSDrive | Where-Object { $PSITEM.Name = "HKU" } )) {
+    New-PSDrive -PSProvider Registry -Name "HKU" -Root "HKEY_USERS"
 }
 
 $regKeys = @(
