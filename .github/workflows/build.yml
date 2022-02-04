@@ -1,0 +1,29 @@
+name: 'Terraform'
+
+on:
+  push:
+  - master
+
+jobs:
+  config:
+    name: 'Push to storage'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Upload to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob upload-batch --account-name configsajdn --auth-mode login --destination '$scripts' --source ./azure/scripts
+
+    - name: logout
+      run: |
+            az logout
+      if: always()

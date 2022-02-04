@@ -1,0 +1,14 @@
+resource_group_name                         = "network"
+location                                    = "eastus"
+network_security_group_name                 = "nsg"
+virtual_network_name                        = "vnet"
+virtual_network_address_space               = ["10.0.0.0/16"]
+subnet_name                                 = "sql"
+subnet_address_prefix                       = "10.0.0.0/24"
+log_analytics_workspace_name                = "logging-law"
+log_analytics_workspace_resource_group_name = "logging"
+storage_account_name                        = "loggingsaidnfr"
+storage_account_resource_group_name         = "logging"
+network_watcher_name                        = "logging-nwa"
+network_watcher_resource_group_name         = "logging"
+tags                                        = {}

@@ -1,0 +1,11 @@
+resource_group_name                 = "logging"
+location                            = "eastus"
+log_analytics_workspace_name        = "logging-law"
+automation_account_name             = "logging-aa"
+storage_account_name                = "loggingsaidnfr"
+subnet_name                         = "sql"
+virtual_network_name                = "vnet"
+virtual_network_resource_group_name = "network"
+network_watcher_name                = "logging-nwa"
+data_collection_rule_template_path  = "..\\..\\azure\\terraform\\arm-templates\\vmInsightsDataCollectionRule.json"
+tags                                = {}
