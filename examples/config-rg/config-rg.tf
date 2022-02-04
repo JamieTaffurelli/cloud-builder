@@ -60,6 +60,12 @@ resource "azurerm_storage_account" "config" {
   tags = var.tags
 }
 
+resource "azurerm_storage_container" "scripts" {
+  name                  = var.container_name
+  storage_account_name  = azurerm_storage_account.config.name
+  container_access_type = "private"
+}
+
 resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {
   name                       = "security-logging"
   target_resource_id         = azurerm_storage_account.config.id

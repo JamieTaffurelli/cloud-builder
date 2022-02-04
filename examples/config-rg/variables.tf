@@ -28,6 +28,11 @@ variable "storage_account_resource_group_name" {
   description = "Resource Group of Storage Account to create"
 }
 
+variable "container_name" {
+  type        = string
+  description = "Storage container to name"
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags of the Virtual Machine"
