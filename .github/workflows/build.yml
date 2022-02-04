@@ -19,13 +19,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Login
-      run: az login --service-principal -u "e949a9c8-cb1e-41d7-bd64-07773635f176" -p "yY7Mv~_YMWgRW19t9eynJheBj-lT89HDMH" --tenant "39133f74-b0c2-4b65-ac2d-5900ee40a76c"
-
-
-    - name: Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      run: az login --service-principal -u "593a0caf-2c37-45f6-9a5e-cf78187b7c67" -p ${{ secrets.AZURE_CREDENTIALS }} --tenant "39133f74-b0c2-4b65-ac2d-5900ee40a76c"
     
     - name: Upload to blob storage
       uses: azure/CLI@v1
