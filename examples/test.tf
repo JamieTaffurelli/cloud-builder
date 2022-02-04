@@ -118,6 +118,7 @@ resource "azurerm_network_security_rule" "network" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.logs.name
   network_security_group_name = "testingnsg123"
+  depends_on                  = [module.nsg]
 }
 
 resource "azurerm_virtual_network" "network" {
@@ -163,16 +164,29 @@ resource "azurerm_monitor_diagnostic_setting" "virtual_network_diagnostics" {
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "encryption" {
-  name                        = "testingkv1234"
+  name                        = "testingkv123456"
   location                    = azurerm_resource_group.logs.location
   resource_group_name         = azurerm_resource_group.logs.name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 90
   purge_protection_enabled    = true
-  enable_rbac_authorization   = true
+  enable_rbac_authorization   = false
   sku_name                    = "standard"
   tags                        = {}
+}
+
+resource "azurerm_key_vault_access_policy" "me" {
+  key_vault_id = azurerm_key_vault.encryption.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+  key_permissions = [
+    "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import", "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey", "Update", "Verify", "WrapKey"
+  ]
+  secret_permissions = [
+    "Backup", "Delete", "Get", "List", "Purge", "Recover", "Restore", "Set"
+  ]
+  certificate_permissions = ["Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers", "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers", "Purge", "Recover", "Restore", "SetIssuers", "Update"]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "key_vault_diagnostics" {
@@ -211,14 +225,8 @@ resource "azurerm_monitor_diagnostic_setting" "key_vault_diagnostics" {
   }
 }
 
-resource "azurerm_role_assignment" "encryption" {
-  scope                = azurerm_key_vault.encryption.id
-  role_definition_name = "Key Vault Crypto Officer"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
-
 resource "azurerm_key_vault_key" "encryption" {
-  name         = "disk-encryption"
+  name         = "disk-encryption1"
   key_vault_id = azurerm_key_vault.encryption.id
   key_type     = "RSA"
   key_size     = 4096
@@ -232,7 +240,7 @@ resource "azurerm_key_vault_key" "encryption" {
     "wrapKey",
   ]
   tags       = {}
-  depends_on = [azurerm_role_assignment.encryption]
+  depends_on = [azurerm_key_vault_access_policy.me]
 }
 
 resource "azurerm_public_ip" "vm" {
@@ -246,6 +254,52 @@ resource "azurerm_public_ip" "vm" {
   ip_version              = "IPv4"
   idle_timeout_in_minutes = 4
   tags                    = {}
+}
+
+resource "azurerm_monitor_diagnostic_setting" "public_ip_diagnostics" {
+  name                       = "security-logging"
+  target_resource_id         = azurerm_public_ip.vm.id
+  log_analytics_workspace_id = module.logs.log_analytics_workspace_id
+
+  log {
+    category = "DDoSProtectionNotifications"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+
+  log {
+    category = "DDoSMitigationFlowLogs"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+
+  log {
+    category = "DDoSMitigationReports"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
 }
 
 resource "azurerm_network_interface" "vm" {
@@ -276,7 +330,19 @@ module "recovery_services" {
   tags                         = {}
 }
 
-/*
+resource "azurerm_key_vault_access_policy" "backup" {
+  key_vault_id = azurerm_key_vault.encryption.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = "6a71e386-f79a-44a4-8bfb-6f42e2ae92e5"
+  key_permissions = [
+    "Get", "List", "Backup"
+  ]
+  secret_permissions = [
+    "Backup", "Get", "List"
+  ]
+  depends_on = [module.recovery_services]
+}
+
 module "sql_vm" {
   source                                      = "../azure/terraform/modules/windows_sql_virtual_machine_shared_image"
   location                                    = azurerm_resource_group.logs.location
@@ -294,13 +360,170 @@ module "sql_vm" {
   key_vault_resource_group_name               = azurerm_resource_group.logs.name
   key_vault_kek_name                          = azurerm_key_vault_key.encryption.name
   key_vault_kek_version                       = azurerm_key_vault_key.encryption.version
-  sql_username                              = "servermonkey"
-  sql_password                              = "asdhbasjdhbWW2)"
+  sql_username                                = "servermonkey"
+  sql_password                                = "asdhbasjdhbWW2)"
   recovery_services_vault_name                = "testingrsv123"
   recovery_services_vault_resource_group_name = azurerm_resource_group.logs.name
   log_analytics_workspace_id                  = module.logs.log_analytics_workspace_id
   log_analytics_workspace_customer_id         = module.logs.log_analytics_workspace_customer_id
   log_analytics_workspace_customer_key        = module.logs.log_analytics_workspace_primary_shared_key
+  data_collection_rule_id                     = module.logs.data_collection_rule_id
   tags                                        = {}
 }
-*/
+
+resource "azurerm_role_assignment" "aws_backup_rg_reader" {
+  scope                = azurerm_resource_group.logs.id
+  role_definition_name = "Reader"
+  principal_id         = lookup(module.sql_vm.identity[0], "principal_id")
+}
+
+resource "azurerm_role_assignment" "aws_backup_vault_operator" {
+  scope                = module.recovery_services.recovery_services_vault_id
+  role_definition_name = "Backup Operator"
+  principal_id         = lookup(module.sql_vm.identity[0], "principal_id")
+}
+
+resource "azurerm_role_assignment" "aws_virtual_machine_contributor" {
+  scope                = module.sql_vm.virtual_machine_id
+  role_definition_name = "Contributor"
+  principal_id         = lookup(module.sql_vm.identity[0], "principal_id")
+}
+
+resource "azurerm_key_vault_secret" "aws_backup" {
+  name         = "AKIA4LYCUM3NIVYFCFJZ"
+  value        = "USXLd+aMrHwMtqVazoWLR1M5xBlqIVwN122CHZWQ"
+  key_vault_id = azurerm_key_vault.encryption.id
+}
+
+resource "azurerm_key_vault_access_policy" "vm" {
+  key_vault_id = azurerm_key_vault.encryption.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = lookup(module.sql_vm.identity[0], "principal_id")
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
+resource "azurerm_public_ip" "vm2" {
+  name                    = "testingpip123-2"
+  resource_group_name     = azurerm_resource_group.logs.name
+  location                = azurerm_resource_group.logs.location
+  sku                     = "Standard"
+  allocation_method       = "Static"
+  sku_tier                = "Regional"
+  availability_zone       = "Zone-Redundant"
+  ip_version              = "IPv4"
+  idle_timeout_in_minutes = 4
+  tags                    = {}
+}
+
+resource "azurerm_monitor_diagnostic_setting" "public_ip_diagnostics2" {
+  name                       = "security-logging"
+  target_resource_id         = azurerm_public_ip.vm2.id
+  log_analytics_workspace_id = module.logs.log_analytics_workspace_id
+
+  log {
+    category = "DDoSProtectionNotifications"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+
+  log {
+    category = "DDoSMitigationFlowLogs"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+
+  log {
+    category = "DDoSMitigationReports"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = true
+
+    retention_policy {
+      enabled = true
+      days    = 365
+    }
+  }
+}
+
+resource "azurerm_network_interface" "vm2" {
+  name                          = "testingnic123-2"
+  location                      = azurerm_resource_group.logs.location
+  resource_group_name           = azurerm_resource_group.logs.name
+  enable_ip_forwarding          = false
+  enable_accelerated_networking = false
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = "${azurerm_virtual_network.network.id}/subnets/sql"
+    private_ip_address_version    = "IPv4"
+    private_ip_address_allocation = "Static"
+    public_ip_address_id          = azurerm_public_ip.vm2.id
+    primary                       = true
+    private_ip_address            = "10.0.1.11"
+  }
+  tags = {}
+}
+
+module "sql_vm2" {
+  source                                      = "../azure/terraform/modules/windows_sql_virtual_machine_shared_image"
+  location                                    = azurerm_resource_group.logs.location
+  resource_group_name                         = azurerm_resource_group.logs.name
+  virtual_machine_name                        = "testingvm123-2"
+  size                                        = "Standard_B2ms"
+  admin_username                              = "servermonkey"
+  admin_password                              = "asdhbasjdhbWW2)"
+  network_interface_id                        = azurerm_network_interface.vm2.id
+  boot_diagnostics_storage_account_uri        = module.logs.storage_account_primary_blob_endpoint
+  disk_size_gb                                = 127
+  source_image_id                             = azurerm_shared_image.images.id
+  zone                                        = 2
+  key_vault_name                              = azurerm_key_vault.encryption.name
+  key_vault_resource_group_name               = azurerm_resource_group.logs.name
+  key_vault_kek_name                          = azurerm_key_vault_key.encryption.name
+  key_vault_kek_version                       = azurerm_key_vault_key.encryption.version
+  sql_username                                = "servermonkey"
+  sql_password                                = "asdhbasjdhbWW2)"
+  recovery_services_vault_name                = "testingrsv123"
+  recovery_services_vault_resource_group_name = azurerm_resource_group.logs.name
+  log_analytics_workspace_id                  = module.logs.log_analytics_workspace_id
+  log_analytics_workspace_customer_id         = module.logs.log_analytics_workspace_customer_id
+  log_analytics_workspace_customer_key        = module.logs.log_analytics_workspace_primary_shared_key
+  data_collection_rule_id                     = module.logs.data_collection_rule_id
+  tags                                        = {}
+}
+
+resource "azurerm_role_assignment" "restore_rg_reader" {
+  scope                = azurerm_resource_group.logs.id
+  role_definition_name = "Reader"
+  principal_id         = lookup(module.sql_vm2.identity[0], "principal_id")
+}
+
+resource "azurerm_role_assignment" "restore_vault_operator" {
+  scope                = module.recovery_services.recovery_services_vault_id
+  role_definition_name = "Backup Operator"
+  principal_id         = lookup(module.sql_vm2.identity[0], "principal_id")
+}
+
+resource "azurerm_role_assignment" "restore_virtual_machine_contributor" {
+  scope                = module.sql_vm.virtual_machine_id
+  role_definition_name = "Contributor"
+  principal_id         = lookup(module.sql_vm2.identity[0], "principal_id")
+}

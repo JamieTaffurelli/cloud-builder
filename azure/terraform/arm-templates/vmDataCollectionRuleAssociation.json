@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "String"
+    },
+    "associationName": {
+      "type": "String"
+    },
+    "dataCollectionRuleId": {
+      "type": "String"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines/providers/dataCollectionRuleAssociations",
+      "name": "[concat(parameters('vmName'),'/Microsoft.Insights/', parameters('associationName'))]",
+      "apiVersion": "2019-11-01-preview",
+      "properties": {
+        "description": "Association of data collection rule. Deleting this association will break the data collection for this virtual machine.",
+        "dataCollectionRuleId": "[parameters('dataCollectionRuleId')]"
+      }
+    }
+  ]
+}
