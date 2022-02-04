@@ -25,7 +25,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-            az storage blob upload-batch --account-name configsajdn --auth-mode login --destination '$scripts' --source ./azure/scripts
+            az storage blob upload-batch --account-name configsajdn --auth-mode login --destination "scripts" --source ./azure/scripts
 
     - name: logout
       run: |
