@@ -13,9 +13,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      - uses: azure/login@v1
-        with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Upload to blob storage
       uses: azure/CLI@v1
