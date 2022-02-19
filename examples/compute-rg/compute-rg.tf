@@ -4,12 +4,19 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">= 2.90"
     }
+
+    azuread = {
+      source  = "hashicorp/random"
+      version = ">= 3.1.0"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
 }
+
+provider "random" {}
 
 data "azurerm_log_analytics_workspace" "logs" {
   name                = var.log_analytics_workspace_name
@@ -241,10 +248,25 @@ resource "azurerm_monitor_diagnostic_setting" "network_interface_diagnostics" {
   }
 }
 
-resource "azurerm_key_vault_secret" "admin" {
+resource "random_password" "admin_password" {
+  length           = 16
+  special          = true
+  min_numeric      = 1
+  min_special      = 1
+  min_upper        = 1
+  override_special = "!#^(){}[]"
+}
+
+resource "azurerm_key_vault_secret" "admin_password" {
   name         = var.virtual_machine_name
-  value        = var.admin_password
+  value        = random_password.admin_password.result
   key_vault_id = data.azurerm_key_vault.kv.id
+
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
 }
 
 resource "azurerm_windows_virtual_machine" "vm" {
@@ -253,7 +275,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   location            = var.location
   size                = var.size
   admin_username      = "cddadmin"
-  admin_password      = var.admin_password
+  admin_password      = azurerm_key_vault_secret.admin_password.value
   network_interface_ids = [
     azurerm_network_interface.vm.id
   ]
@@ -275,6 +297,12 @@ resource "azurerm_windows_virtual_machine" "vm" {
   }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      admin_password
+    ]
+  }
 }
 
 resource "azurerm_managed_disk" "logdisk" {
@@ -453,10 +481,25 @@ resource "azurerm_virtual_machine_extension" "bg" {
   tags                       = var.tags
 }
 
-resource "azurerm_key_vault_secret" "sqladmin" {
+resource "random_password" "sql_admin_password" {
+  length           = 16
+  special          = true
+  min_numeric      = 1
+  min_special      = 1
+  min_upper        = 1
+  override_special = "_%@$"
+}
+
+resource "azurerm_key_vault_secret" "sql_admin_password" {
   name         = "${var.virtual_machine_name}-sql"
-  value        = var.sql_admin_password
+  value        = random_password.sql_admin_password.result
   key_vault_id = data.azurerm_key_vault.kv.id
+
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
 }
 
 resource "azurerm_mssql_virtual_machine" "vm" {
@@ -465,7 +508,7 @@ resource "azurerm_mssql_virtual_machine" "vm" {
   r_services_enabled               = false
   sql_connectivity_port            = 1433
   sql_connectivity_type            = "PRIVATE"
-  sql_connectivity_update_password = var.sql_admin_password
+  sql_connectivity_update_password = azurerm_key_vault_secret.sql_admin_password.valueH
   sql_connectivity_update_username = "cddadmin"
 
   storage_configuration {
@@ -487,6 +530,12 @@ resource "azurerm_mssql_virtual_machine" "vm" {
     azurerm_virtual_machine_data_disk_attachment.logdisk,
     azurerm_virtual_machine_data_disk_attachment.datadisk
   ]
+
+  lifecycle {
+    ignore_changes = [
+      sql_connectivity_update_password
+    ]
+  }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "virtual_machine_diagnostics" {

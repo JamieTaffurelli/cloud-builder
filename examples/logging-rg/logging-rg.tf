@@ -2,13 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 2.90"
+      version = "~> 2.95"
     }
   }
-}
 
-provider "azurerm" {
-  features {}
+  required_version = "~> 1.1.5"
 }
 
 resource "azurerm_resource_group" "logs" {
@@ -165,13 +163,6 @@ resource "azurerm_storage_account" "logging" {
     type = "SystemAssigned"
   }
   tags = var.tags
-}
-
-resource "azurerm_storage_account_network_rules" "logging" {
-  storage_account_id         = azurerm_storage_account.logging.id
-  default_action             = "Deny"
-  virtual_network_subnet_ids = [data.azurerm_subnet.network.id]
-  bypass                     = ["Metrics", "Logging", "AzureServices"]
 }
 
 resource "azurerm_monitor_diagnostic_setting" "storage_account_diagnostics" {

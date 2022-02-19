@@ -1,0 +1,125 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "imageTemplateName": {
+      "type": "String"
+    },
+    "location": {
+      "type": "String"
+    },
+    "userAssignedIdentityId": {
+      "type": "String"
+    },
+    "galleryImageId": {
+      "type": "String"
+    },
+    "vmSize": {
+      "type": "String",
+      "defaultValue": "Standard_D2s_v4"
+    },
+    "osDiskSizeGB": {
+      "type": "Int",
+      "defaultValue": 0
+    },
+    "buildTimeoutInMinutes": {
+      "type": "Int",
+      "defaultValue": 300
+    },
+    "sourceImagePublisher": {
+      "type": "String"
+    },
+    "sourceImageOffer": {
+      "type": "String"
+    },
+    "sourceImageSku": {
+      "type": "String"
+    },
+    "artifactTags": {
+      "type": "Object"
+    },
+    "replicationRegions": {
+      "type": "Array"
+    },
+    "storageAccountType": {
+      "type": "String",
+      "defaultValue": "Standard_ZRS"
+    },
+    "tags": {
+      "type": "Object"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('imageTemplateName')]",
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "2020-02-14",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('userAssignedIdentityId')]": {}
+        }
+      },
+      "properties": {
+        "buildTimeoutInMinutes": "[parameters('buildTimeoutInMinutes')]",
+        "vmProfile": {
+          "vmSize": "[parameters('vmSize')]",
+          "osDiskSizeGB": "[parameters('osDiskSizeGB')]"
+        },
+        "source": {
+          "type": "PlatformImage",
+          "publisher": "[parameters('sourceImagePublisher')]",
+          "offer": "[parameters('sourceImageOffer')]",
+          "sku": "[parameters('sourceImageSku')]",
+          "version": "latest"
+        },
+        "customize": [
+          {
+            "type": "WindowsUpdate",
+            "searchCriteria": "IsInstalled=0",
+            "filters": ["exclude:$_.Title -like '*Preview*'", "include:$true"],
+            "updateLimit": 1000
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\image-builder\\azureImageBuilderRestart.txt",
+            "restartTimeout": "60m"
+          },
+          {
+            "type": "PowerShell",
+            "inline": ["New-Item -Path HKLM:\\Software\\Microsoft\\DesiredStateConfiguration; New-ItemProperty -Path HKLM:\\Software\\Microsoft\\DesiredStateConfiguration -Name 'AgentId' -PropertyType STRING -Force"],
+            "runElevated": true
+          },
+          {
+            "type": "PowerShell",
+            "inline": ["Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"],
+            "runElevated": true
+          },
+          {
+            "type": "PowerShell",
+            "inline": ["choco install 7zip az.powershell azure-cli awscli googlechrome treesizefree notepadplusplus -y"],
+            "runElevated": true
+          },
+          { 
+             "type": "PowerShell", 
+             "scriptUri": "https://configsajdn.blob.core.windows.net/scripts/windows-server-hardening.ps1",
+             "runElevated": true
+          }
+        ],
+        "distribute": [
+          {
+            "type": "SharedImage",
+            "galleryImageId": "[parameters('galleryImageId')]",
+            "runOutputName": "[parameters('imageTemplateName')]",
+            "artifactTags": "[parameters('artifactTags')]",
+            "replicationRegions": "[parameters('replicationRegions')]",
+            "storageAccountType": "[parameters('storageAccountType')]"
+          }
+        ]
+      }
+    }
+  ]
+}

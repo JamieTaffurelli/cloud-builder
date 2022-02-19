@@ -33,12 +33,6 @@ variable "private_ip_address" {
   description = "Private IP address of the network interface"
 }
 
-variable "admin_password" {
-  type        = string
-  sensitive   = true
-  description = "Password of virtual machine admin account"
-}
-
 variable "size" {
   type        = string
   description = "Size of the virtual machine"
@@ -91,12 +85,6 @@ variable "sql_data_disk_lun" {
 variable "sql_data_disk_size_gb" {
   type        = number
   description = "Size of the os"
-}
-
-variable "sql_admin_password" {
-  type        = string
-  sensitive   = true
-  description = "Name of the Recovery Services Vault"
 }
 
 variable "data_collection_rule_association_template_path" {
